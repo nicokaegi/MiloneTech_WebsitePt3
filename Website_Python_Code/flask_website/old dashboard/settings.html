@@ -1,0 +1,110 @@
+<style>
+table, th, td {
+  border: 1px solid black;
+  padding: 5px;
+}
+</style>
+{% extends "layout_with_sidebar.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+	    {{ form.csrf_token }}
+            <fieldset class="form-group">
+			<legend class="border-bottom mb-4">Settings</legend>
+                <table id="trigger">
+                        <tr>
+			<th>Alert #</th>
+                        <th>Sensor ID</th>
+			<th>Sensor Name</th>
+                        <th>Trigger Level</th>
+                        <th>How do you want the alert?</th>
+                        </tr>
+			{% for alert in alerts %}
+				<tr>
+				<td> {{ alert[0] }} </td>
+				<td> {{ alert[2] }} </td>
+				{% for sensor_ID_to_name in form.sensorID.choices  %}
+					{% if sensor_ID_to_name[0] == alert[2] %}
+						<td> {{ sensor_ID_to_name[1] }} </td>
+					{% endif %}
+				{% endfor %}
+				<td> {{ alert[3] }}% </td>
+				{% if alert[4] == 1 %}
+					<td>text</td>
+				{% else %}
+					<td>email</td>
+				{% endif %}
+				</tr>
+			{% endfor %}
+                </div>
+                </div>
+                </table>
+		<br>
+		<div class="content-section">
+		<legend class="border-bottom mb-4 text-uppercase">Choose Sensor to Update</legend>
+		<center>
+		{{ form.sensorID(class="btn btn-block btn-lg btn-primary") }}
+		<br>
+		</center>
+		<legend class="border-bottom mb-4">Add a New Alert to Chosen Sensor</legend>
+		<div class="content-section">
+		<div class="row">
+			<div class="col-auto">
+                        	{{ form.level(class="form-control form-control-lg", placeholder="Level") }}
+                        </div>
+                        <div class="col-auto">
+				{{ form.textOrEmail(class="btn btn-primary btn-lg") }}
+                        </div>
+			<div class="col-auto">
+				{{ form.submit(class="btn btn-outline-success btn-lg") }}
+			</div>
+		</div>
+		</div>
+		<legend class="border-bottom mb-4">Change Chosen Sensor Name</legend>
+		<div class="content-section">
+		<div class="row">
+			<div class="col-8">
+                                {{form.newSensorName(class="form-control form-control-block form-control-lg", placeholder="New Sensor Name") }}
+                        </div>
+			<div class="col-1">
+                                {{form.changeName(class="btn btn-outline-warning btn-lg") }}
+                        </div>
+		</div>
+		</div>
+		<legend class="border-bottom mb-4">Change Sensor Group of Chosen Sensor</legend>
+		<div class="content-section">
+		<div class="row">
+                        <div class="col-5 mr-0 ml-0">
+                        	{{ form.sensorGroup(class="btn btn-primary btn-lg") }}
+			</div>
+			<div class="col-3 mr-0 ml-0">
+                        	{{ form.newSensorGroup(class="form-control form-control-lg", placeholder="NewGroup") }}
+                        </div>
+                        <div class="col-1">
+                                {{ form.changeGroup(class="btn btn-outline-warning btn-lg") }}
+                        </div>
+                </div>
+
+		</div>
+		</div>
+		<legend class="border-bottom mb-4">Delete Alert</legend>
+                <div class="content-section">
+                <div class="row">
+                        <div class="col-3">
+                        	<h3>Alert #:</h3>
+                        </div>
+			<div class="col-6">
+				{{ form.alerts(class="btn btn-primary btn-lg") }}
+			</div>
+                        <div class="col-2">
+                                {{ form.removeAlert(class="btn btn-outline-danger btn-lg") }}
+                        </div>
+                </div>
+
+                </div>
+
+	    </fieldset>
+        </form>
+    </div>
+{% endblock content %}

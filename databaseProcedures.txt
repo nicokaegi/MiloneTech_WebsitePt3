@@ -1,0 +1,193 @@
+
+A list of procedures the web team will need implemented by John.
+
+aaLOL from PI
+
+https://www.w3schools.com/sql/sql_stored_procedures.asp
+
+	Written by: Isaac
+	Uploaded on: 10/20/20
+
+
+getUserPassword
+		
+		we input the account email, returns the account hash
+		
+	@param accountEmail
+	
+	return accPasswordHash
+	
+createNewAccount
+
+		Creates a new row in ACCOUNTS table with the following
+		information.
+
+	@param accountEmail
+	@param FirstName
+	@param LastName
+	@param PasswordHash
+	
+	return null
+	
+getAccountPaymentTier
+
+		Gets the account status (true for paid, false for free)
+		of the account with the following email.
+
+	@param accountEmail
+	
+	return accountStatus
+	
+setAccountPaymentTier
+
+		sets the account status (true for paid, false for free)
+		of the account with the following email.
+		
+		returns true if account found, else returns false
+
+	@param accountEmail
+	@param newPaidStatus
+	
+	return t/f
+	
+getAllSensors
+
+		returns all sensorID's related to the account email
+
+	@param accountEmail
+	
+	return all sensorsID's
+		
+getSensorInfo
+
+		returns all other information from SENSORS table from
+		a specific sensor ID
+
+	@param sensorID
+	
+	return [Name, GroupString, TypeOfSensor, LengthOfSensor]
+
+getSensorDataPoints
+
+		returns a collection of times and readings for the sensor
+		with that specific sensor ID
+
+	@param sensorID
+	
+	return ALL Sensor data points for that sensor
+			
+	
+getSensorBattery
+
+		returns the MOST RECENT battery reading of the sensor
+		with that specific sensor ID
+
+	@param sensorID
+	
+	return MOST RECENT battery reading
+	
+setAccountEmail
+
+		changes the account with the oldAccountEmail parameter
+		to the email of the newAccountEmail.
+		
+		returns true if that account email is found.
+
+	**NOTE: IMPLEMENTING THIS MAY REQUIRE THERE TO BE
+	A SEPERATE PRIMARY KEY TO ACCOUNTS**
+	
+	@param oldAccountEmail
+	@param newaccountEmail
+	
+	return T/F
+
+setAccountPhoneNumber
+
+		changes the account with the oldAccountEmail's parameter
+		to the phone number of the newPhoneNumber.
+		
+		returns true if that account email is found.
+
+	@param accountEmail
+	@param newPhoneNumber
+	
+	return T/F
+	
+setAccountPassword
+
+		changes the account with the oldAccountEmail's parameter
+		to the password of the newPasswordHash field.
+		
+		returns true if that account email is found.
+
+	@param accountEmail
+	@param newPasswordHash
+	
+	return T/F
+
+addSensorToAccount
+
+		changes the sensor with the sensorID parameter's owns
+		field to the account given
+		
+		returns true if that account email is found.
+	
+	@param sensorID
+	@param accountEmail
+	
+	return T/F
+
+addSensorAlert
+
+		adds a new row to the ALERTS table with the given accountEmail,
+		sensorID, triggerlevel, and subsequent booleans
+		
+		returns true if that account email is found.
+
+	@param accountEmail
+	@param sensorID
+	@param triggerLevel
+	@param email
+	@param text
+	
+	return T/F
+
+
+deleteSensorAlert
+
+		removes a row to the ALERTS table with the given accountEmail,
+		sensorID
+
+		returns true if that account email is found.
+
+	@param accountEmail
+	@param sensorID
+	
+	return T/F
+	
+setSensorName
+
+		sets the sensor with that sensorID's name to the
+		new name parameter.
+
+		returns true if that account email is found.
+		
+	@param sensorID
+	@param newName
+	
+	return T/F
+
+setSensorGroup
+
+		sets the sensor with that sensorID's group to the
+		new group parameter.
+		
+		returns true if that account email is found.
+
+	@param sensorID
+	@param newGroupString
+	
+	return T/F
+	
+	
+	

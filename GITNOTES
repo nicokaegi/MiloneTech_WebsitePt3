@@ -1,0 +1,183 @@
+GIT NOTES
+
+taken on 10/20/20
+from: https://www.youtube.com/watch?v=HVsySz-h9r4
+
+	GIT CONFIG
+
+we can see git global fields via
+
+	>git config [...]
+	
+where we changed my user.name and user.email field.
+
+furthermore, we can get help on any git "verb" via
+
+	>git help <verb> OR git <verb> --help
+	
+	
+	GETTING A LOCAL PROJECT TO GIT
+
+lets say you have a project you want to make a git repo
+
+we can start this via
+
+	>git init
+	
+this creates a .git file in the current directory. If we
+remove this file, we essentially will stop tracking our project
+with git.
+
+
+	OUR FIRST COMMIT
+	
+to see what files in the current folder aren't being tracked
+by git, we use
+
+	>git status
+	
+if there are any files we dont want to add to the git repo, we
+can use a .gitignore file and edit it with any text editor.
+
+the .gitignore file also can use linux wildcards.
+
+if the files are in .gitignore, they wont come up with the status
+command. however, we DO want to commit the .gitignore file.
+
+
+	GIT SET UP
+	
+within git, there are 3 logically connected "areas"
+
+	Working Dir			Staging Area			Git [LOCAL] Repo      Git REMOTE repository
+	
+		|	<-----------check out project--------	|
+		
+		|	---staging fixes->	|					        |
+		
+		|						          | ---commit-------> |
+		
+In this example, we are working in our current directory. To
+add add to the staging area, we use
+
+	>git add [filename]
+	
+to add all files in current dir to the staging area, we use
+
+	>git add -A
+	
+to remove files from the staging area, we use
+
+	>git reset [filename]
+	
+or just ... to remove all from the staging area
+
+	>git reset
+	
+once we're finally ready to commit the thing, we use
+
+	>git commit -m "[commit Message]"
+	^use the -m flag for a commit message
+	
+afterwords, we'd see that the working dir is clean with the
+status command, because our dir reflects whats in the repo
+
+if we use ... we can see the list of commits and commit messages
+
+	>git log
+	
+
+	CLONING A REMOTE Repo
+	
+to clone a remote repo, we use the url on git hub via
+
+	>git clone <url> <where to clone>
+	
+but how do we view this information?
+
+... will show important repo information
+	
+	>git remote -v
+	
+and ... will list all branches in the repo
+
+	>git branch -a
+	
+
+	PUSHING CHANGES
+	
+to push changes, first we must commit them locally
+
+we can use ... to show us the current differences between our
+local code and the repo
+
+	>git diff
+	
+this uses +'s to show the additions, and -'s to show the removed information
+
+after we commit these changes to our local repo, we use pulls and
+pushes to submit the information to the remote repo
+
+GIT PULLS will pull all information from the remote repo onto our
+local repo
+
+	>git pull [repo name] [target branch]
+	
+Once our local repo is up to date, we can then PUSH our changes to
+the remote repo using
+
+	>git push [repo name] [target branch]
+	
+
+	GIT BRANCHES
+	
+generally, people never commit straight to the master branch. this
+is what BRANCHES are for. to create a branch, you use
+
+	>git branch [name of new branch]
+	
+we can see all of our local branches using just 
+
+	>git branch
+	
+once we created it, to work on that said branch we need to use
+... to actually start using that branch
+
+	>git checkout [branch name]
+
+Now we've finished some work on this branch. We then add again to
+our staging area, and commit it to THAT branch, which has no effect
+on the local master branch OR any of the branches in the remote repo.
+
+at this point, we can push our branch to the remote branch via
+
+	>git push -u [name of repo] [name of branch]
+	
+	^basically, the -u flag just means we want associate our local
+	branch name with the remote branch name, and in the future 
+	we can just use
+	
+	>git push
+	>git pull
+	
+from here we'd be testing our code. If the branch is good and we want
+to update the master branch, we'd first check out the master branch,
+pull all the changes from the remote repo, merge the two branches,
+and then push our local master branch to the remote master branch.
+
+	>git checkout master
+	>git pull [repo name] master
+	>git branch --merged
+		^to see what branches have been merged with
+		master so far
+	>git merge [name of local branch]
+	>git push [repo name] master
+	
+now that this feature is updated to the remote master, we can delete
+this branch locally using
+
+	>git branch -d [name of branch]
+	
+and then we can delete a branch on the remote repo using
+
+	>git push [name of repo] --delete [name or branch]

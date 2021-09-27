@@ -1,0 +1,224 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Sensors{% endblock %} 
+
+{% block content %}
+<h1>Sensors</h1>
+
+<div class="dropdown dropdown nav-item">
+    <button onclick="myFunction()" class="dropbtn">Filter by Group</button>
+    <div id="myDropdown" class="dropdown-content">
+        {% for groupname, group in account_info.sensor_data.items() %}
+            <a href="/sensors/sensor-group/{{groupname}}">{{groupname}}</a>
+        {% endfor %}
+    </div>
+  </div>
+{% if account_info.payment_tier == 1 %}
+            <script>
+
+            //an object of key/value pairs of form sensor ID/canvas ID
+            var linecharts = {};
+
+            //Catches and responds to SocketIO messages (mostly for debug)
+            socket.on('message', function(msg) {
+                console.log("SocketIO clientside message: " + msg);
+            });
+
+            //Received from routes.py when a POST request comes in, brings in a datapoint
+            socket.on('POST', function(new_data) {
+                    add_datapoint(new_data);
+            });
+
+            function add_datapoint(new_data) {
+            //Adds a new data_point to its respective
+            //Argument new_data is an array containing [SID, datapoint]
+                var sid = new_data[0];
+                var datapoint = new_data[1];
+
+                //grab the chart we're updating
+                var chart = linecharts[sid];
+
+
+
+                //This is Chart.js standard, push the datapoint label, then the datapoint in
+                chart.data.labels.push(datapoint["Time Stamp"]);
+                chart.data.labels.splice(0, 1);
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.push(datapoint["Liquid %"]);
+                    dataset.data.splice(0, 1);
+                });
+
+                //Update the battery bar percentage and color
+                var batteryBar = document.getElementById("battery col " + sid)
+
+                batteryBar.innerHTML= "Battery Level: " + datapoint["Battery %"] + "%";
+                batteryBar.style.color = get_darker_color_by_batt(datapoint["Battery %"]);
+                batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
+                batteryBar.style.textalign = "center";
+
+                chart.update();
+            }
+
+            function get_chart_by_sid(sid) {
+            //Returns the Chart.js object associated with a sensor by ID
+                return linecharts[sid];
+            }
+
+            </script>
+
+            <!-- Displays chart for sensors -->
+
+            {% for groupname, group in account_info.sensor_data.items() %}
+
+            <div style = " text-align: center"> <h3> <strong>GROUP: {{ groupname }} </strong></h3>
+
+                {% for sensorID, sensor in group.items() %}
+
+                    <article class="media content-section" style="width:60%; margin-right: auto; margin-left: auto">
+
+
+                      <div class="media-body" style="width:100%" >
+
+                      <h3 style="text-align: left; float:left; margin-right:10px">{% if sensor.name != None %}Sensor: {{ sensor.name }}{% else %}SensorID: {{sensorID}}{% endif %}</h3>
+
+                          <a href="/sensors/{{sensorID}}" style="float:left">View</a>
+                      <canvas id='{{sensorID}}'></canvas>
+
+                        <script>
+
+
+                            var myChart{{sensorID}} = document.getElementById('{{sensorID}}').getContext('2d');
+
+                            gradient = myChart{{sensorID}}.createLinearGradient(0, 0, 0, 400);
+                            gradient.addColorStop(0, 'rgba(29, 140, 248, 0.75)');
+                            gradient.addColorStop(0.5, 'rgba(29, 140, 248, 0.5)');
+                            gradient.addColorStop(1, 'rgba(29, 140, 248, 0)');
+
+
+                            // Global Options
+                            Chart.defaults.global.defaultFontFamily = 'inherit';
+                            Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
+                            Chart.defaults.global.defaultFontColor = '#777';
+
+                            var linechart{{sensorID}} = new Chart(myChart{{sensorID}}, {
+                              type:'line',
+                              data:{
+                                labels: {{ sensor.x_vals | tojson }},
+                                datasets:[{
+                                  label:'Liquid Level',
+                                  data:{{ sensor.y_vals }},
+                                  backgroundColor: gradient,
+                                  borderWidth:1, //Effects plotted line on chart
+                                  borderColor:'black',
+                                  hoverBorderWidth:3,
+                                  hoverBorderColor:'#000'
+                                }]
+                              },
+                              options:{
+
+                                    legend:{
+                                      display:true,
+                                      position:'right',
+                                      labels:{
+                                        fontColor:'#000'
+                                      }
+                                    },
+                                    scales: {
+                                        yAxes: [{
+                                            display: true,
+                                            ticks: {
+                                                suggestedMin: 0,
+                                                steps: 10,
+                                                stepValue: 10,
+                                                max: 100
+                                            }
+                                        }],
+                                        xAxes: [{
+                                            display: true,
+                                            ticks: {
+                                                autoSkip: true,
+                                                padding: 4,
+                                                fontSize: 12
+                                            }
+                                        }]
+                                    },
+                                    layout:{
+                                      padding:{
+                                        left:0,
+                                        right:0,
+                                        bottom:0,
+                                        top:0
+                                      }
+                                    },
+                                    tooltips:{
+                                      enabled:true
+                                    }
+
+                                  }
+                            });
+
+                          //add to manual tracking
+                          linecharts['{{sensorID}}'] = linechart{{sensorID}};
+                          </script>
+
+
+                      <div id="battery col {{sensorID}}" class = "battery col-sm-6" style="color :{% if sensor.bat_level > 70 %} green {% elif sensor.bat_level > 30 %} rgb(255, 170, 0) {% else %} red {% endif %}; font-size: 16px; background:
+                      {% if sensor.bat_level > 70 %} rgba(0, 128, 0, 0.3) {% elif sensor.bat_level > 30 %} rgba(255, 170, 0, 0.3) {% else %} rgba(128, 0, 0, 0.3) {% endif %}; text-align: center; margin: auto">Battery Level: {{ sensor.bat_level }}%</div>
+
+                      </div>
+
+
+                    </article>
+
+
+
+                {% endfor %}
+                </div>
+
+            {% endfor %}
+
+
+            Times are represented in EST
+{% else %}
+
+        {% for groupname, group in account_info.sensor_data.items() %}
+
+            <div style = " text-align: center"> <h3> <strong>GROUP: {{ groupname }} </strong></h3>
+
+                {% for sensorID, sensor in group.items() %}
+                    <!---
+                    <div class="topnav" id="myTopNav">
+                        <a class="active" href="/sensor-group">Live</a>
+                        <a href="#">Past Week</a>
+                        <a href="#">Past Month</a>
+                        <a href="#">Past Year</a>
+                     </div>
+                     --->
+
+                    <article class="media content-section">
+
+                      <div class="media-body">
+
+                      <h3 style="text-align: left">Sensor: {{ sensor.name }}, Level: {{ sensor.y_vals[-1] }}</h3>
+
+
+
+                      <div class = "battery col-md-6" style="color : {% if sensor.bat_level > 70 %} red {% elif sensor.bat_level > 30 %} yellow {% else %} red {% endif %};
+                      font-size: 32px; background: rgba(0, 128, 0, 0.3); text-align: center">Battery Level: {{ sensor.bat_level }} %</div>
+
+                      </div>
+
+
+                    </article>
+
+                {% endfor %}
+                </div>
+            {% endfor %}
+
+    {% endif %}
+
+
+
+
+
+{% endblock content %}

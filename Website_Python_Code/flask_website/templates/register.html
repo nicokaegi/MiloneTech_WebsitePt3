@@ -1,0 +1,76 @@
+{% extends "layouts/base-for-login.html" %}
+
+{% block title %} Register {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+        <div class="row">
+          <div class="col-md-8">
+            <!-- <div class="card"> -->
+
+              <form role="form" method="post" action="" class="form-for-register">
+              
+                <!-- <div class="card-header"> -->
+                  <!-- <h3 class="title">Register</h3> -->
+                  <legend class="border-bottom mb-4" id="register">Register</legend>
+
+                  <h6 class="card-category">
+                      Add your credentials
+                  </h6>
+                <!-- </div> -->
+                <br/>
+
+                <div class="card-body2">
+
+                    <div class="row">
+                      <div class="col-md-3 px-md-1">
+                        <div class="form-group">
+                          <label class="label-for-register">Username</label>
+                          <input class="form-control" id="username_create" name="username" required="" type="text" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-3 px-md-1">
+                        <div class="form-group">
+                          <label class="label-for-register2">Email</label>
+                          <input class="form-control" id="email_create" name="email" required="" type="email" value="">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-3 px-md-1">
+                        <div class="form-group">
+                          <label class="label-for-register3">Password</label>
+                          <input class="form-control" id="pwd_create" name="password" required="" type="password" value="">
+                        </div>
+                      </div>
+                    </div>
+                    
+                </div>
+                <div>
+                  <button type="submit" name="register" class="btn btn-fill btn-primary">Register</button>
+                  &nbsp; &nbsp;
+                  <br/>
+                  <div class="have-account">
+
+                                Have an account? <a href="/login" class="text-primary">Login</a>
+                              </div>
+                </div>
+
+              </form>
+
+            <!-- </div> -->
+          </div>
+      </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

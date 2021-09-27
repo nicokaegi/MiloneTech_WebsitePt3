@@ -1,0 +1,28 @@
+[
+	{
+		"email": "isaacharasty@gmail.com",
+		"password": "$2b$12$mE3X.vIwpjlryiuGTBX17OkKfutRHtG3cpPSF/zrgJWLmGXoANZIO",
+		"name": "A rando",
+		"is_paid": false,
+		"owns": [
+			"001",
+			"002"
+		]
+	},
+	{
+		"email": "lgrebe@yahoo.com",
+		"password": "$2b$12$.jQxA4qr1TYxquUU.IYASOWUAbWcbUeat3f0GapJuX9NOn7KguMzm",
+		"name": "Lucas Grebe",
+		"is_paid": false,
+		"owns": [
+			"003"
+		]
+	},
+	{
+		"email": "johnn@rowan.edu",
+		"password": "$2b$12$Cfc1veABlQUS19BJ2btvaO198tn0xpQRFuvYTzJ0SxEixILUwGyVW",
+		"name": "john",
+		"is_paid": false,
+		"owns": ["003"]
+	}
+]

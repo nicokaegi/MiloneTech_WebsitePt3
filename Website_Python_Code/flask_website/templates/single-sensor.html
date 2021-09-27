@@ -1,0 +1,615 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Sensor {{sensorID}} {% endblock %}
+
+{% block content %}
+
+<!--- Welcome to the most complex html document in the website --->
+
+<script>
+    var linechart
+    var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
+
+    var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
+
+    //Catches and responds to SocketIO messages (mostly for debug)
+    socket.on('message', function(msg) {
+        console.log("SocketIO clientside message: " + msg);
+    });
+
+    //Received from routes.py when a POST request comes in, brings in a datapoint
+    socket.on('POST', function(new_data) {
+        if(new_data[0] == '{{sensorID}}') {
+            add_datapoint(new_data);
+        }
+    });
+
+    function add_datapoint(new_data) {
+            //Adds a new data_point to its respective
+            //Argument new_data is an array containing [SID, datapoint]
+
+            if (chart_mode != 0) {
+                return;
+            }
+
+            var datapoint = new_data[1];
+
+            liquidLevel = datapoint["Liquid %"];
+
+            //This is Chart.js standard, push the datapoint label, then the datapoint in
+            linechart.data.labels.push(datapoint["Time Stamp"]);
+            linechart.data.labels.splice(0, 1);
+            linechart.data.datasets.forEach((dataset) => {
+                dataset.data.push(datapoint["Liquid %"]);
+                dataset.data.splice(0, 1);
+            });
+
+            //Update the battery bar percentage and color
+            var batteryBar = document.getElementById("battery col " + '{{sensorID}}')
+
+            //batteryBar.innerHTML= "Battery Level: " + datapoint["Battery %"] + "%";
+            //batteryBar.style.color = get_darker_color_by_batt(datapoint["Battery %"]);
+            //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
+            //batteryBar.style.textalign = "center";
+
+            linechart.update();
+
+
+            //Measurement changes
+            if('{{settings[1]}}' == 'Rectangular Tank') {
+                document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+                document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+            } else if('{{settings[1]}}' == 'Cylindrical Tank') {
+                document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+                document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+            }
+    }
+
+
+    function new_range() {
+        var range_selector = document.getElementById("range_selector");
+        var si = range_selector.selectedIndex
+        if(si == 0) {
+            defaultChart();
+        } else if(si == 1) {
+            changeDate(1);
+        } else if(si == 2) {
+            changeDate(7);
+        } else if(si == 3) {
+            changeDate(30);
+        }
+    }
+
+    function changeDate(new_day) {
+        chart_mode = new_day
+
+        var arr = {days: new_day, sensor_id: "{{sensorID}}"}
+
+        $.ajax({
+            url: '/sensors/get-range',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                linechart.update()
+            }
+        });
+    }
+
+    function defaultChart() {
+        chart_mode = 0
+
+        var arr = {sensor_id: "{{sensorID}}"}
+        $.ajax({
+            url: '/sensors/get-default-datapoints',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                linechart.update()
+            }
+        });
+    }
+
+</script>
+
+<!--- Row containing the graph, and the view+measurement interfaces --->
+<div class="form-group form-inline" style="width:100%">
+
+    <!--- The chart's media section --->
+    <article class="media content-section" style="width:60%; float:left; margin-right:10px">
+        <div class="media-body" style="width:100%;">
+            <h1 style="text-align:center">Sensor {{sensorID}}</h1>
+
+            <!--- Chart canvas --->
+            <canvas id="chart"></canvas>
+
+            <!--- Script initializing the chart --->
+            <script>
+                var myChart = document.getElementById("chart").getContext('2d');
+
+                gradient = myChart.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(29, 140, 248, 0.75)');
+                gradient.addColorStop(0.5, 'rgba(29, 140, 248, 0.5)');
+                gradient.addColorStop(1, 'rgba(29, 140, 248, 0)');
+
+                // Global Options
+                Chart.defaults.global.defaultFontFamily = 'inherit';
+                Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
+                Chart.defaults.global.defaultFontColor = '#777';
+                linechart = new Chart(myChart, {
+                    type:'line',
+                    data:{
+                        labels: {{ data.x_vals | tojson }},
+                        datasets:[{
+                            label:'Liquid Level',
+                            data:{{ data.y_vals }},
+                            backgroundColor: gradient,
+                            borderWidth:1, //Effects plotted line on chart
+                            borderColor:'black',
+                            hoverBorderWidth:3,
+                            hoverBorderColor:'#000'
+                        }]
+                    },
+                    options:{
+
+                        legend:{
+                            display:true,
+                            position:'right',
+                            labels:{
+                                fontColor:'#000'
+                            }
+                        },
+                        scales: {
+                        yAxes: [{
+                        display: true,
+                        ticks: {
+                            suggestedMin: 0,
+                            steps: 10,
+                            stepValue: 10,
+                            max: 100
+                        }
+                    }],
+                    xAxes: [{
+                        display: true,
+                        ticks: {
+                            autoSkip: true,
+                            padding: 4,
+                            fontSize: 12
+                        }
+                    }]
+                },
+                layout:{
+                padding:{
+                    left:0,
+                    right:0,
+                    bottom:0,
+                    top:0
+                }
+            },
+            tooltips:{
+                enabled:true
+                }
+
+            }
+            });
+
+            </script>
+        </div>
+
+
+    </article>
+
+    <!--- Vertical arrangement of timeframe selector and measurement configuration --->
+    <div style="width:30%">
+
+
+        <div class="content-section" style="float:left; width:100%">
+            <h2 style = "text-align:center"><strong>Change View</strong></h2>
+
+            <!--- Chart timeframe selector --->
+            <div style="width:100%; margin-right:10%">
+                <select onchange="new_range()" id="range_selector" style="width:100%;">
+                    <option>Live</option>
+                    <option>Past Day</option>
+                    <option>Past Week</option>
+                    <option>Past Month</option>
+                </select>
+                <script>
+                    //Default index to 0
+                    document.getElementById("range_selector").selectedIndex = 0
+                </script>
+            </div>
+        </div>
+
+        <!--- Measurement Configuration content-section --->
+        <div class="content-section" style="float:left; width:100%">
+
+            <h2 style = "text-align:center"><strong>Measurements</strong></h2>
+
+            <!--- Type selector --->
+            <div class="form-group form-inline">
+                <div style="width:50%; margin-right:10%">
+                    <label for="measurement_type_selector" style="float:left"><strong>Measurement Type</strong></label><br>
+                    <select id="measurement_type_selector" style="width:100%">
+                        <option>None</option>
+                        <option>Height Only</option>
+                        <option>Rectangular Tank</option>
+                        <option>Cylindrical Tank</option>
+                    </select>
+                    <script>
+                        var mts = document.getElementById("measurement_type_selector");
+                        mts.addEventListener("change", function() {
+                            changeShownMenu();
+                        });
+
+                    </script>
+                </div>
+            </div>
+
+            <br>
+
+            <!--- Default/None Parameters Menu --->
+            <div id="none_parameters_menu" style="display:block">
+                <p>
+                    You can set measurements here to
+                    compute information such as current tank volume
+                    and liquid height. Choose a configuration from
+                    the drop-down above!
+                </p>
+            </div>
+            <!--- End of Default/None Parameters Menu --->
+
+            <!--- Height Only Parameters Menu --->
+            <div id="height_only_parameters_menu" style="display:none">
+                <p>For measuring only the height of liquid.</p>
+            </div>
+            <!--- End of Height Only Parameters Menu --->
+
+
+            <!--- Rectangular Parameters Menu --->
+            <div id="rectangular_parameters_menu" style="display:none">
+                <p>For rectangular tanks.</p>
+
+                <!--- Tank Parameter Fields --->
+                <div class="form-group form-inline">
+                    <!--- Width Field --->
+                    <div style="width:30%">
+                        <label for="rectangular_width_field" style="float:left;"><strong>Tank Width</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="rectangular_width_field"  name="Width" style="float:left; width:50%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                    <!--- Length Field --->
+                    <div style="width:30%">
+                        <label for="rectangular_length_field" style="float:left;"><strong>Tank Length</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="rectangular_length_field" name="Width" style="float:left; width:50%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+
+                    <!--- Height Field --->
+                    <div style="width:30%">
+                        <label for="rectangular_height_field" style="float:left;"><strong>Tank Height</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="rectangular_height_field" name="Width" style="float:left; width:50%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--- End of Rectangular Parameters Menu --->
+
+
+            <!--- Cylindrical Parameters Menu --->
+            <div id="cylindrical_parameters_menu" style="display:none">
+                <p>For cylindrical tanks - accuracy depends on how perfectly cylindrical the tank is.</p>
+                <!--- Height Field --->
+                <div class="form-group form-inline">
+                    <div style="width:40%">
+                        <label for="cylindrical_height_field" style="float:left;"><strong>Tank Height</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="cylindrical_height_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                    <div style="width:40%">
+                        <label for="cylindrical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="cylindrical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--- End of Cylindrical Parameters Menu --->
+
+
+            <br>
+
+
+            <!--- Sensor Parameter Fields --->
+            <div  id="sensor_parameters" style="display:none">
+                <div class="form-group form-inline">
+
+                    <!--- Sensor Bottom Height Field --->
+                    <div style="width:50%">
+                        <label for="sensor_bottom_height" style="float:left;"><strong>Height of Bottom of Sensor</strong></label><br>
+                        <input id="sensor_bottom_height" name="sensor_bottom_height" style="float:left; width:30%; margin-right:5px">
+                            in.
+                    </div>
+
+                    <!--- Sensor Top Height Field --->
+                    <div style="width:50%">
+                        <label for="sensor_top_height" style="float:left;"><strong>Height of Top of Sensor</strong></label><br>
+                        <input id="sensor_top_height" name="sensor_bottom_height" style="float:left; width:30%; margin-right:5px">
+                            in.
+                    </div>
+
+                </div>
+
+            </div>
+            <!--- End of Sensor Parameter Fields --->
+
+            <br>
+
+            <button id="update_settings_button" class="btn-primary" type="button" style="width:100%; display:block">
+                Update Measurement Settings
+                <script>
+                    document.getElementById("update_settings_button").addEventListener("click", function(){
+                        updateMeasurementSettings();
+                    });
+                </script>
+            </button>
+        </div>
+
+
+
+
+        </div>
+    </div> <!--- end Row Containing Graph, view, measurement --->
+
+    <!--- bar displaying current liquid volume, tank percentage --->
+    <div class="content-section" style="width:60%">
+        <div class="form-group form-inline">
+            <div style="width:30; margin-right:5%;">
+                <h4>Current Liquid Volume: <b id="liquid_volume">--</b></h4>
+            </div>
+            <div style="width:30">
+                <h4>Current Liquid Height: <b id="liquid_height">--</b></h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!--- Measurement Settings Functions --->
+<script>
+    //Declare global variable measurementConfigMenus, that correspond with the divs for each of their respective
+    //  measurement field groups
+    var measurementConfigMenus = [document.getElementById("none_parameters_menu"),
+                                document.getElementById("height_only_parameters_menu"),
+                                document.getElementById("rectangular_parameters_menu"),
+                                document.getElementById("cylindrical_parameters_menu")];
+
+    const updateMeasurementEvent = new Event('measurements_updated');
+
+
+    //Changes the measurement fields shown based on measurement type
+    function changeShownMenu(index) {
+        //First hide all the menus
+        measurementConfigMenus.forEach((menu) => {
+            if(menu != null) { //unnecessary but harmless if statement
+                menu.style.display = "none";
+            }
+        });
+
+        //Then show only the menu we want
+        measurementConfigMenus[mts.selectedIndex].style.display = "block";
+
+        //For everything but "None", display the sensor specification fields
+        if(mts.selectedIndex != 0) {
+            document.getElementById("sensor_parameters").style.display = "block";
+        } else {
+            document.getElementById("sensor_parameters").style.display = "none";
+        }
+    }
+
+    //When the "update" button is pushed, this function will be called. It grabs the data from the document and attempts
+    //  to send it to /sensors/sensor-settings/store:
+    function updateMeasurementSettings() {
+
+        //Initialize necessary values at 0
+        var width = 0;
+        var length = 0;
+        var radius = 0;
+        var height = 0;
+        var sensorBottomHeight = 0;
+        var sensorTopHeight = 0;
+
+        //Replace sensor top/bottom height values if necessary
+        if(mts.selectedIndex > 0) {
+            sensorBottomHeight = parseInt(document.getElementById("sensor_bottom_height").value)
+            sensorTopHeight = parseInt(document.getElementById("sensor_top_height").value)
+            if(Number.isNaN(sensorBottomHeight) || Number.isNaN(sensorTopHeight)) {
+                alert("Please enter numeric values into all fields: sensor height specifications");
+                return;
+            }
+        }
+
+        //Replace rectangular values if necessary
+        if(mts.selectedIndex == 2) { //RECTANGULAR
+            width = parseInt(document.getElementById("rectangular_width_field").value)
+            length = parseInt(document.getElementById("rectangular_length_field").value)
+            height = parseInt(document.getElementById("rectangular_height_field").value)
+            if(Number.isNaN(width) || Number.isNaN(length) || Number.isNaN(height)) {
+                alert("Please enter numeric input in all fields: rectangular specifications");
+                return;
+            }
+        //Replace cylindrical values if necessary
+        } else if(mts.selectedIndex == 3) { //CYLINDRICAL
+            radius = parseInt(document.getElementById("cylindrical_radius_field").value);
+            height = parseInt(document.getElementById("cylindrical_height_field").value);
+            if(Number.isNaN(radius) || Number.isNaN(height)) {
+                alert("Please enter numeric input in all fields: cylindrical specifications");
+                return;
+            }
+        }
+
+        //Create a JSON with all of the data we want to end up in the settings table of the database
+        var sendData = {"sensorID": '{{sensorID}}',
+                        "measurementType": document.getElementById("measurement_type_selector").value,
+                        "width": width,
+                        "length": length,
+                        "radius": radius,
+                        "height": height,
+                        "sensorBottomHeight": sensorBottomHeight,
+                        "sensorTopHeight": sensorTopHeight,
+                        };
+
+        //Define a request, open as post, delineate that we're sending JSON
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", "/sensors/sensor-settings/store", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        //Set up a handler for when the response is received
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                    var success = $.parseJSON(this.response)["result"];
+                    if(success) {
+                        location.reload();
+                    } else {
+                        alert("Something went wrong saving your settings. If this issue persists, contact support.");
+                    }
+                }
+        };
+
+        //Send the data
+        var data = JSON.stringify(sendData);
+        xhr.send(data);
+    }
+
+    function calculateLiquidHeight(sensorBottom, sensorTop) {
+        relativeHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+        return (sensorBottom + relativeHeight).toFixed(2) + " in.";
+    }
+
+    function calculateRectangularVolumeGals(width, length, height, sensorBottom, sensorTop) {
+        //The height of the liquid relative to the sensor
+
+        if(liquidLevel == 0) {
+            if(sensorBottom == 0) {
+                return "0.00 gal";
+            } else {
+                return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
+            }
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = width * length * absoluteLiquidHeight;
+
+        return (liquidVolume / 231).toFixed(2) + " gal";
+    }
+
+    function calculateRectangularVolumeLiters(width, length, height, sensorBottom, sensorTop, liquidLevel) {
+        //The height of the liquid relative to the sensor
+
+        if(liquidLevel == 0) {
+            if(sensorBottom == 0) {
+                return "0.00L";
+            } else {
+                return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
+            }
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = width * length * absoluteLiquidHeight;
+
+        return (liquidVolume / 61.024).toFixed(2) + "L";
+    }
+
+    function calculateCylindricalVolumeGals(radius, height, sensorBottom, sensorTop, liquidLevel) {
+        if(liquidLevel == 0) {
+            if(sensorBottom == 0) {
+                return "Empty";
+            } else {
+                return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
+            }
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+        var liquidVolume = 3.1415 * radius * radius * height;
+
+        return (liquidVolume / 231).toFixed(2) + " gal";
+    }
+
+    function calculateCylindricalVolumeLiters(radius, height, sensorBottom, sensorTop, liquidLevel) {
+        if(liquidLevel == 0 && sensorBottom > 0) {
+                return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+        var liquidVolume = 3.1415 * radius * radius * height;
+
+        return (liquidVolume / 61.024).toFixed(2) + "L";
+    }
+
+    //Setting measurement field default values to those stored in the db, this should execute on document load
+    document.getElementById("rectangular_width_field").value = {{settings[2]}};
+    document.getElementById("rectangular_length_field").value = {{settings[3]}};
+    document.getElementById("cylindrical_radius_field").value = {{settings[4]}}
+
+    if('{{settings[1]}}' == "None") {
+        mts.selectedIndex = 0;
+
+    } else if('{{settings[1]}}' == "Height Only") {
+        mts.selectedIndex = 1;
+        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+
+    } else if('{{settings[1]}}' == "Rectangular Tank") {
+        mts.selectedIndex = 2;
+        document.getElementById("rectangular_height_field").value = {{settings[5]}};
+        document.getElementById("cylindrical_height_field").value = 0;
+        document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+
+    } else if('{{settings[1]}}' == "Cylindrical Tank") {
+        mts.selectedIndex = 3;
+        document.getElementById("rectangular_height_field").value = 0;
+        document.getElementById("cylindrical_height_field").value = {{settings[5]}};
+        document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+    }
+
+    document.getElementById("sensor_bottom_height").value = {{settings[6]}}
+    document.getElementById("sensor_top_height").value = {{settings[7]}}
+
+    changeShownMenu();
+
+
+</script>
+
+{% endblock content %}

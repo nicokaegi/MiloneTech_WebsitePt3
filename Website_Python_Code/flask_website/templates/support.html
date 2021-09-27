@@ -1,0 +1,32 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Support{% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<h1>Support</h1>
+
+<p>Leave a message down below and a representative will get back to you within 24 hours</p>
+<form>
+    <div class="section1">
+      <input type="text" id="fname" name="fname" placeholder="First Name" value="">
+      <input type="text" id="lname" name="lname" placeholder="Last Name" value="">
+    </div>
+  <input type="text" id="email-support" name="email" placeholder="Email" value="">
+  </br>
+  </br>
+  <form action="/action_page.php">
+    <textarea name="message" id="message" rows="10" cols="70" placeholder="Leave a message here"></textarea>
+    <br><br>
+    <input type="submit" id="support-submit">
+  </form>
+</form>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}

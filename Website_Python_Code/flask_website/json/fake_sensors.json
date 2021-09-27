@@ -1,0 +1,32 @@
+[
+	{
+		"sensorID": "001",
+		"name": "water tower",
+		"time_between_readings": "20",
+		"group": "water"
+	},
+	{
+		"sensorID": "002",
+		"name": "irrigation",
+		"time_between_readings": "1",
+		"group": "water"
+	},
+	{
+		"sensorID": "003",
+		"name": "chemicals",
+		"time_between_readings": "2",
+		"group": "chem"
+	},
+	{
+		"sensorID": "004",
+		"name": "",
+		"time_between_readings": "",
+		"group": ""
+	},
+	{
+		"sensorID": "005",
+		"name": "",
+		"time_between_readings": "",
+		"group": ""
+	}
+]

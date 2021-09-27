@@ -1,0 +1,231 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Sensors{% endblock %} 
+
+
+{% block content %}
+<h1>Sensors</h1>
+
+<div class="dropdown dropdown nav-item">
+    <button onclick="myFunction()" class="dropbtn">Choose a sensor here</button>
+    <div id="myDropdown" class="dropdown-content">
+      <a href="/live-sensors">Real</a>
+      <a href="/live-sensors-2">No Group</a>
+    </div>
+  </div>
+
+<br/>
+<br/>
+
+    {% if account_info.payment_tier == 1 %}
+            <script>
+            $(document).ready(function() {
+                socket.on('message', function(msg) {
+                    console.log("SocketIO clientside message: " + msg);
+                });
+
+                socket.on('POST', function(new_data) {
+                    add_datapoint(new_data)
+                });
+            });
+
+            function add_datapoint(new_data) {
+            //Takes an array containing [SID, datapoint]
+                var sid = new_data[0]
+                var datapoint = new_data[1]
+                var chart = get_chart_by_sid(sid);
+                chart.data.labels.push(datapoint["Time Stamp"]);
+                chart.data.labels.splice(0, 1);
+
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.push(datapoint["Liquid %"]);
+                    dataset.data.splice(0, 1);
+                });
+
+                document.getElementById("battery col " + sid).innerHTML= "Battery Level: " + datapoint["Battery %"] + "%";
+
+                var color
+                var background
+                if (datapoint["Battery %"] > 70) {
+                    color = 'green';
+                    background = 'rgba(0, 128, 0, 0.3)';
+                } else if (datapoint["Battery %"] > 30) {
+                    color = 'rgb(255, 170, 0)';
+                    background = 'rgba(255, 170, 0, 0.3)';
+                } else {
+                    color = "red"
+                    background = 'rgba(128, 0, 0, 0.3)';
+                }
+                document.getElementById("battery col " + sid).style.color = color
+                document.getElementById("battery col " + sid).style.background = background
+                document.getElementById("battery col " + sid).style.textalign = "center"
+
+                chart.update();
+            }
+
+            function get_chart_by_sid(sid) {
+            //Returns the Chart.js object associated with a sensor by ID
+                var returnChart;
+                Chart.helpers.each(Chart.instances, function(instance){
+                    if(instance.chart.canvas.id == sid) {
+                        returnChart = instance.chart;
+                    }
+                });
+                return returnChart;
+            }
+
+            </script>
+
+            <!-- Displays chart for sensors -->
+
+            {% for groupname, group in account_info.sensor_data.items() %}
+
+            {% if groupname == "No Group" %}
+            <div style = " text-align: center"> <h3> <strong>GROUP: {{ groupname }} </strong></h3>
+
+                {% for sensorID, sensor in group.items() %}
+
+                    <article class="media content-section">
+
+                      <div class="media-body">
+
+                      <h3 style="text-align: left">{% if sensor.name != None %}Sensor: {{ sensor.name }}{% else %}SensorID: {{sensorID}}{% endif %}</h3>
+
+                      <canvas id='{{sensorID}}'></canvas>
+
+                        <script>
+
+                            var myChart{{sensorID}} = document.getElementById('{{sensorID}}').getContext('2d');
+                            gradient = myChart{{sensorID}}.createLinearGradient(0, 0, 0, 650);
+                            gradient.addColorStop(0, 'rgba(29, 140, 248, 0.75)');
+                            gradient.addColorStop(0.5, 'rgba(29, 140, 248, 0.5)');
+                            gradient.addColorStop(1, 'rgba(29, 140, 248, 0)');
+
+                            green_gradient = myChart{{sensorID}}.createLinearGradient(0, 0, 0, 650);
+                            green_gradient.addColorStop(0, 'rgba(50, 205, 50, 0.75)');
+                            green_gradient.addColorStop(0.5, 'rgba(50, 205, 50, 0.5)');
+                            green_gradient.addColorStop(1, 'rgba(50, 205, 50, 0)');
+
+                            // Global Options
+                            Chart.defaults.global.defaultFontFamily = 'inherit';
+                            Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
+                            Chart.defaults.global.defaultFontColor = '#777';
+
+                            var linechart{{sensorID}} = new Chart(myChart{{sensorID}}, {
+                              type:'line',
+                              data:{
+                                labels: {{ sensor.x_vals | tojson }},
+                                datasets:[{
+                                  label:'Liquid Level',
+                                  data:{{ sensor.y_vals }},
+                                  backgroundColor: {% if sensor.type == 'chem' %} green_gradient {% else %} gradient {% endif %},
+                                  borderWidth:1, //Effects plotted line on chart
+                                  borderColor:'black',
+                                  hoverBorderWidth:3,
+                                  hoverBorderColor:'#000'
+                                }]
+                              },
+                              options:{
+
+                                    legend:{
+                                      display:true,
+                                      position:'right',
+                                      labels:{
+                                        fontColor:'#000'
+                                      }
+                                    },
+                                    scales: {
+                                        yAxes: [{
+                                            display: true,
+                                            ticks: {
+                                                suggestedMin: 0,
+                                                steps: 10,
+                                                stepValue: 10,
+                                                max: 100
+                                            }
+                                        }],
+                                        xAxes: [{
+                                            display: true,
+                                            ticks: {
+                                                autoSkip: true,
+                                                padding: 4,
+                                                fontSize: 12
+                                            }
+                                        }]
+                                    },
+                                    layout:{
+                                      padding:{
+                                        left:0,
+                                        right:0,
+                                        bottom:0,
+                                        top:0
+                                      }
+                                    },
+                                    tooltips:{
+                                      enabled:true
+                                    }
+
+                                  }
+                            });
+                          </script>
+
+
+                      <div id="battery col {{sensorID}}" class = "battery col-md-6" style="color :{% if sensor.bat_level > 70 %} green {% elif sensor.bat_level > 30 %} rgb(255, 170, 0) {% else %} red {% endif %}; font-size: 32px; background:
+                      {% if sensor.bat_level > 70 %} rgba(0, 128, 0, 0.3) {% elif sensor.bat_level > 30 %} rgba(255, 170, 0, 0.3) {% else %} rgba(128, 0, 0, 0.3) {% endif %}; text-align: center">Battery Level: {{ sensor.bat_level }}%</div>
+
+                      </div>
+
+
+                    </article>
+
+
+
+                {% endfor %}
+                </div>
+              {% endif %}
+
+            {% endfor %}
+      
+
+            Times are represented in EST
+{% else %}
+
+        {% for groupname, group in account_info.sensor_data.items() %}
+
+            <div style = " text-align: center"> <h3> <strong>GROUP: {{ groupname }} </strong></h3>
+
+                {% for sensorID, sensor in group.items() %}
+
+                    <article class="media content-section">
+
+                      <div class="media-body">
+
+                      <h3 style="text-align: left">Sensor: {{ sensor.name }}, Level: {{ sensor.y_vals[-1] }}</h3>
+
+
+
+                      <div class = "battery col-md-6" style="color : {% if sensor.bat_level > 70 %} red {% elif sensor.bat_level > 30 %} yellow {% else %} red {% endif %};
+                      font-size: 32px; background: rgba(0, 128, 0, 0.3); text-align: center">Battery Level: {{ sensor.bat_level }} %</div>
+
+                      </div>
+
+
+                    </article>
+
+                {% endfor %}
+                </div>
+            {% endfor %}
+
+    {% endif %}
+
+
+   
+
+
+{% endblock content %}
+
+
+{% block javascripts %}
+
+<script src="static/assets/js/plugins/dropdown.js"></script>
+{% endblock javascripts %}

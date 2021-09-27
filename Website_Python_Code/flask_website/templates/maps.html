@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Maps {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block content %}
+
+<h1>Maps</h1>
+<!--The div element for the map -->
+<div id="map"></div>
+
+<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSClPi4WlCV38A2MafigdfMPKQL7RwLnY&callback=initMap&libraries=&v=weekly"
+  async
+></script>
+
+{% endblock content %}
+
+{% block javascripts %}
+<script async
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSClPi4WlCV38A2MafigdfMPKQL7RwLnY&callback=initMap">
+</script>
+{% endblock javascripts%}
+
+

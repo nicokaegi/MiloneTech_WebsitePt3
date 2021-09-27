@@ -1,0 +1,126 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Home{% endblock %} 
+
+{% block content %}
+
+<!--- Commented by Nick 4/20 in favor of the if statement below. Uncomment this and comment that if needed.
+<h1>Welcome User</h1>
+{% for user in info %}
+    <h1>Welcome {{ current_user.name }}</h1>
+{% endfor %}
+--->
+
+{% if account_info.name %}
+  <h1>Welcome, {{ account_info.name }}!</h1>
+{% else %}
+  <h1>Welcome!</h1>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-6 col-md-12">
+      <div class="card card-tasks">
+        <div class="card-header ">
+          <h6 class="title d-inline">What you've missed...</h6>
+          <p class="card-category d-inline">today</p>
+          <!--- Example notifications
+            <div class="alert alert-info">
+                      
+              <button type="button" aria-hidden="true" class="close" data-dismiss="alert" arial-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+              <span>eTape Liquid Sensor battery is at 25%</span>
+            </div>
+
+            <div class="alert alert-info">
+                      
+              <button type="button" aria-hidden="true" class="close" data-dismiss="alert" arial-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+              <span>eTape Liquid Sensor battery is at 25%</span>
+            </div>
+            
+            <div class="alert alert-warning">
+                      
+              <button type="button" aria-hidden="true" class="close" data-dismiss="alert" arial-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+              <span>Liquid levels are above 50%</span>
+            </div>
+
+            <div class="alert alert-danger">
+                      
+              <button type="button" aria-hidden="true" class="close" data-dismiss="alert" arial-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+              <span>Liquid levels are above 90%</span>
+            </div>
+        --->
+            
+        </div>
+        
+      </div>
+    </div>
+
+
+    <div class="col-lg-6 col-md-12">
+      <div class="card ">
+        <div class="card-header">
+          <h4 class="card-title"> Active Sensors</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table tablesorter " id="">
+              <thead class=" text-primary">
+                <tr>
+                  <th>
+                    Sensor Name
+                  </th>
+                  <th>
+                    Liquid Level
+                  </th>
+                  <th>
+                    Battery Percentage
+                  </th>
+                 
+                </tr>
+              </thead>
+              <tbody>
+
+
+                {% for groupname, group in account_info.sensor_data.items() %}
+                  {% for sensorID, sensor in group.items() %}
+                    <tr>
+                      <td>
+                        {{ sensor.name }}
+                      </td>
+
+                      <td>
+                        {{ sensor.y_vals[-1] }}
+                      </td>
+
+                      <td>
+                        {{ sensor.bat_level}}%
+                      </td>
+                    </tr>
+            
+                  {% endfor %}
+                {% endfor %}
+
+
+
+
+             
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+
+{% endblock content %}
+
