@@ -140,7 +140,6 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
-
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -152,6 +151,7 @@ def login():
     if form.validate_on_submit():
 
         userID = db.accounts.get_id_by_email(form.email.data)
+
         if userID is False:
             flash('Login Unsuccessful. Please check username and password', 'danger')
             return render_template('login.html', title='Login', form=form)
@@ -159,7 +159,6 @@ def login():
         user = User(userID)
 
         if user and bcrypt.check_password_hash(db.accounts.get_pass_by_id(userID), str(form.password.data)):
-            print("almost there")
             login_user(user, remember=form.remember.data)
             return redirect(url_for('home'))
 
@@ -300,6 +299,13 @@ def support():
     return render_template('support.html')
 
 
+'''
+register : this handles the intial user generation, by taking in info
+from the form in the registration template, hashing the chosen password
+and, then storing all relevant information into the database
+
+the form on the front end confirms password choice, and well as if the email is valid
+'''
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
