@@ -26,6 +26,16 @@ for the ubuntu VM users:
 sudo apt install <the name of the package you want>
 - type this in the terminal to install pakages like git, and python.
 
+# overall guide to setting up a test enviroment on linux, and mac systems 
+  
+1. clone the repo : git clone https://github.com/nicokaegi/MiloneTech_WebsitePt3.git
+2. (optional) create a virtual enviroment : python -m venv <what ever name you want>
+3. (optional) activte your virtual eniroment : source <you env name>/bin/activate
+4. go to this file : cd MiloneTech_WebisitePt3/Website_Python_Code/
+5. install nessary python packages : pip install -r packages.txt
+6. finally run the website : python run.py
+
+  
 # Introduction
 Hello. If you are reading this it's because you will be working on an expansion to the MiloneTech Website.
 
