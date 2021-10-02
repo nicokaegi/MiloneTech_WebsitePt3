@@ -1,6 +1,6 @@
 git command cheat sheet:
 
-git add <files with changes you want to add>
+git add "files with changes you want to add"
 - let git know what changes you have made
   
 git commit -m "some message detailing what changes you made"
@@ -12,13 +12,13 @@ git push
 git branch 
 - show you what branch you are on
   
-git branch <name of your branch>
+git branch "name of your branch"
 - make a new branch using the name provided
   
-git checkout <name of your branch>
+git checkout "name of your branch"
 - changes what branch you are on (make sure either your changes are commited/saved somewhere, or else will git will stop you from changing branches)
   
-git fetch origin <name of a branch>
+git fetch origin "name of a branch"
 - get a specific branch from the git hub
   
 for the ubuntu VM users:
