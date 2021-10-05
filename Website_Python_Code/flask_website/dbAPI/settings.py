@@ -64,12 +64,13 @@ def store_sensor_settings(new_settings):
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
+        base = new_settings[8]
         with db.engine.connect() as connection:
             result = connection.execute("insert into sensor_settings "
                                         "values ('{}', '{}', {}, {}, {}, "
-                                        "{}, {}, {})"
+                                        "{}, {}, {}, {})"
                                         .format(sensor_id, measurement_type, width, length, radius,
-                                                height, sensor_bottom_height, sensor_top_height))
+                                                height, sensor_bottom_height, sensor_top_height, base))
         return True
     except exc.SQLAlchemyError as e:
         print(str(e))
@@ -86,6 +87,7 @@ def update_sensor_settings(new_settings):
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
+        base = new_settings[8]
         with db.engine.connect() as connection:
             result = connection.execute("update sensor_settings "
                                         "set "
@@ -95,10 +97,11 @@ def update_sensor_settings(new_settings):
                                         "radius = {}, "
                                         "height = {}, "
                                         "sensorBottomHeight = {}, "
-                                        "sensorTopHeight = {} "
+                                        "sensorTopHeight = {}, "
+                                        "base = {} "
                                         "where sensorID = '{}'"
                                         .format(measurement_type, width, length, radius,
-                                                height, sensor_bottom_height, sensor_top_height, sensor_id))
+                                                height, sensor_bottom_height, sensor_top_height, base, sensor_id))
             return True
     except exc.SQLAlchemyError as e:
         print(str(e))
