@@ -480,58 +480,7 @@ def account():
     return render_template('account.html', title='Account', form=form, sensorAccountForm=sensorAccountForm,
                            account_info=current_user.user_data, currentUser=current_user)
 
-def update_setings_form():
-    form = SettingsForm()
-    alerts = []
-    for sensor in db.sensors.get_all_sensors(current_user.id):
-        if db.sensors.get_sensor_info(sensor)[0][4] == None:
-            form.sensorID.choices.append((sensor, db.sensors.get_sensor_info(sensor)[0][2]))
-        else:
-            form.sensorID.choices.append((sensor, db.sensors.get_sensor_info(sensor)[0][4]))
-        alerts += db.alerts.check_alerts(sensor)
-        if not (not db.sensors.get_sensor_info(sensor)[0][6] or db.sensors.get_sensor_info(sensor)[0][6] == 'None'):
-            if db.sensors.get_sensor_info(sensor)[0][6] not in form.sensorGroup.choices:
-                form.sensorGroup.choices.append(
-                    (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
-    return form, alerts
 
-@app.route("/settings", methods=['GET', 'POST'])
-@login_required
-def settings():
-    form, alerts = update_setings_form()
-    alerts.sort()
-
-    for alert in alerts:
-        form.alerts.choices.append((alert[0], alert[0]))
-
-    if form.is_submitted():
-        if int(form.textOrEmail.data) == 1:
-            if not form.level.data == '':
-                db.alerts.add_sensor_alert(current_user.id, form.sensorID.data, form.level.data, 1, 0)
-                flash('Successfully Added Email Alert at Level: ' + form.level.data, 'success')
-        else:
-            if not form.level.data == '':
-                db.alerts.add_sensor_alert(current_user.id, form.sensorID.data, form.level.data, 0, 1)
-                flash('Successfully Added Text Alert at Level: ' + form.level.data, 'success')
-        if not form.alerts.data == '':
-            db.alerts.remove_alert(form.alerts.data)
-            flash('Successfully removed Alert #: ' + form.alerts.data, 'success')
-        if not form.newSensorName.data == '':
-            db.sensors.set_sensor_name(form.sensorID.data, form.newSensorName.data)
-            flash('Changed Current Sensor Name to: ' + form.sensorID.data, 'success')
-        if not form.sensorGroup.data == '':
-            db.sensors.set_sensor_group(form.sensorID.data, form.sensorGroup.data)
-            flash("Changed Current Sensor's Group to: " + form.sensorGroup.data, 'success')
-        else:
-            if not form.newSensorGroup.data == '':
-                db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
-                flash("Changed Current Sensor's Group to: " + form.newSensorGroup.data, 'success')
-        form, alerts = update_setings_form()
-
-    logger.info("{}".format(form.sensorID))
-
-    return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
-                           alerts=alerts)
 
 
 @app.route("/logout")
