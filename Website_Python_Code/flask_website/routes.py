@@ -498,7 +498,7 @@ def update_settings_form():
 @app.route("/settings", methods=['GET', 'POST'])
 @login_required
 def settings():
-    form, alerts = update_setings_form()
+    form, alerts = update_settings_form()
     alerts.sort()
 
     for alert in alerts:
@@ -526,9 +526,7 @@ def settings():
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
                 flash("Changed Current Sensor's Group to: " + form.newSensorGroup.data, 'success')
-        form, alerts = update_setings_form()
-
-    logger.info("{}".format(form.sensorID))
+        form, alerts = update_settings_form()
 
     return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
                            alerts=alerts)
