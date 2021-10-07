@@ -272,7 +272,9 @@ def store_settings_route():
             request_data["height"],
             request_data["sensorBottomHeight"],
             request_data["sensorTopHeight"],
-            request_data["base"]]
+            request_data["base"],
+            request_data["majorRadius"],
+            request_data["minorRadius"]]
 
     result = db.settings.store_sensor_settings(data)
     return {"result": result}
