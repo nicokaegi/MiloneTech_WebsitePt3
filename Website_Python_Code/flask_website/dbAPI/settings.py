@@ -29,7 +29,7 @@ def get_sensor_settings(sensor_id):
             # If this sensor has no settings stored in the db, give it placeholder ones
             if not has_stored_settings(sensor_id):
                 connection.execute("insert into sensor_settings "
-                                   "values ('{}', 'None', 0, 0, 0, 0, 0, 0)"
+                                   "values ('{}', 'None', 0, 0, 0, 0, 0, 0, 0, 0)"
                                    .format(sensor_id))
 
             result = connection.execute("select * from sensor_settings "
@@ -64,12 +64,15 @@ def store_sensor_settings(new_settings):
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
+        base = new_settings[8]
+        majorRadius = new_settings[9]
+        minorRadius = new_settings[10]
         with db.engine.connect() as connection:
             result = connection.execute("insert into sensor_settings "
                                         "values ('{}', '{}', {}, {}, {}, "
-                                        "{}, {}, {})"
+                                        "{}, {}, {}, {}, {}, {})"
                                         .format(sensor_id, measurement_type, width, length, radius,
-                                                height, sensor_bottom_height, sensor_top_height))
+                                                height, sensor_bottom_height, sensor_top_height, base, majorRadius, minorRadius))
         return True
     except exc.SQLAlchemyError as e:
         print(str(e))
@@ -86,6 +89,9 @@ def update_sensor_settings(new_settings):
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
+        base = new_settings[8]
+        majorRadius = new_settings[9]
+        minorRadius = new_settings[10]
         with db.engine.connect() as connection:
             result = connection.execute("update sensor_settings "
                                         "set "
@@ -95,10 +101,13 @@ def update_sensor_settings(new_settings):
                                         "radius = {}, "
                                         "height = {}, "
                                         "sensorBottomHeight = {}, "
-                                        "sensorTopHeight = {} "
+                                        "sensorTopHeight = {}, "
+                                        "base = {}, "
+                                        "majorRadius = {}, "
+                                        "minorRadius = {} "
                                         "where sensorID = '{}'"
                                         .format(measurement_type, width, length, radius,
-                                                height, sensor_bottom_height, sensor_top_height, sensor_id))
+                                                height, sensor_bottom_height, sensor_top_height, base, majorRadius, minorRadius, sensor_id))
             return True
     except exc.SQLAlchemyError as e:
         print(str(e))
