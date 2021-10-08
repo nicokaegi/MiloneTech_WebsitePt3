@@ -478,7 +478,7 @@
 
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
-        First hide all the menus
+        //First hide all the menus
         measurementConfigMenus.forEach((menu) => {
             if(menu != null) { //unnecessary but harmless if statement
                 menu.style.display = "none";
@@ -715,7 +715,7 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (pi * minorRadius * minorRadius) * (2 * pi * majorRadius);
+        var liquidVolume = (3.1415 * minorRadius * minorRadius) * (2 * 3.1415 * majorRadius);
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
@@ -730,7 +730,7 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (pi * minorRadius * minorRadius) * (2 * pi * majorRadius);
+        var liquidVolume = (3.1415 * minorRadius * minorRadius) * (2 * 3.1415 * majorRadius);
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
