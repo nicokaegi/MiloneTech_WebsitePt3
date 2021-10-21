@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var linechart
+    var barchart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -37,9 +37,9 @@
             liquidLevel = datapoint["Liquid %"];
 
             //This is Chart.js standard, push the datapoint label, then the datapoint in
-            linechart.data.labels.push(datapoint["Time Stamp"]);
-            linechart.data.labels.splice(0, 1);
-            linechart.data.datasets.forEach((dataset) => {
+            barchart.data.labels.push(datapoint["Time Stamp"]);
+            barchart.data.labels.splice(0, 1);
+            barchart.data.datasets.forEach((dataset) => {
                 dataset.data.push(datapoint["Liquid %"]);
                 dataset.data.splice(0, 1);
             });
@@ -52,7 +52,7 @@
             //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
             //batteryBar.style.textalign = "center";
 
-            linechart.update();
+            barchart.update();
 
 
             //Measurement changes
@@ -93,11 +93,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
     }
@@ -114,11 +114,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
     }
@@ -149,8 +149,8 @@
                 Chart.defaults.global.defaultFontFamily = 'inherit';
                 Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
                 Chart.defaults.global.defaultFontColor = '#777';
-                linechart = new Chart(myChart, {
-                    type:'line',
+                barchart = new Chart(myChart, {
+                    type:'bar',
                     data:{
                         labels: {{ data.x_vals | tojson }},
                         datasets:[{
@@ -160,7 +160,8 @@
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'black',
                             hoverBorderWidth:3,
-                            hoverBorderColor:'#000'
+                            hoverBorderColor:'white',
+                            barThickness:15
                         }]
                     },
                     options:{
