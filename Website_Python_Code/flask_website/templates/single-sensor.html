@@ -255,7 +255,7 @@
             <div class="form-group form-inline">
                 <div style="width:50%; margin-right:10%">
                     <label for="measurement_type_selector" style="float:left"><strong>Measurement Type</strong></label><br>
-                    <select id="measurement_type_selector" style="width:100%">
+                    <select id="measurement_type_selector" style="width:100%" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
                         <option>None</option>
                         <option>Height Only</option>
                         <option>Rectangular Tank</option>
