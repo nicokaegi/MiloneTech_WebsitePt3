@@ -54,6 +54,26 @@ Have a great day!
 
 possible_endings = ['@txt.att.net','@sms.myboostmobile.com','@messaging.sprintpcs.com','@tmomail.net', '@vtext.com']
 
+def send_confirmation_email(to_email, redirect_address):
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Users Milone Tech Registration Confirmation"
+    message["To"] = to_email
+    message["From"] = sender_email
+
+    text = f'''
+This is an email from <a href="http://usersmilonetech.com">usersmilonetech.com</a> notifying you of your account creation.
+To finish this process, please click the link below:
+
+{redirect_address}
+
+
+
+If you have not made an attempt for an account registration, please do not click the link and no further action is required.
+    
+    '''
+
+
+
 def parse_num(num_to_be):
 
     finished = ""

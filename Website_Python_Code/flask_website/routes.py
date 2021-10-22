@@ -325,7 +325,7 @@ def register():
         lastname = fullname[-1]
 
         db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
-
+        email.send_confirmation_email(form.email.data, url_for('confirmation', _external=True))
         flash(f'Your account has been Created! You may now Login', 'success')
         return redirect(url_for('login'))
 
@@ -576,6 +576,12 @@ def reset_token(token):
         return redirect(url_for('login'))
 
     return render_template('reset_token.html', title="Reset Password", form=form)
+
+
+#@app.route("/confirm_")
+
+
+
 
 
 # Catch users connecting, store the (session id):(user id) pair in the sessions dictionary
