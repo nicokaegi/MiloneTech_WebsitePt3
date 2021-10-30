@@ -127,6 +127,15 @@ def create_account(email, first_name, last_name, pass_hash):
     except exc.SQLAlchemyError:
         return False
 
+def delete_account_by_id(user_id):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("DELETE FROM accounts "
+                               "WHERE accountID = {}"
+                               .format(user_id))
+            return True
+    except exc.SQLAlchemyError:
+        return False
 
 def set_account_email(old_email, new_email):
     try:
