@@ -528,9 +528,26 @@
         //Then show only the menu we want
         measurementConfigMenus[mts.selectedIndex].style.display = "block";
 
-        //For everything but "None", display the sensor specification fields
-        if(mts.selectedIndex != 0) {
+        if(mts.selectedIndex == 1) {
+             document.getElementById("sensor_parameters").style.display = "block";
+        } else if(mts.selectedIndex == 2) {
             document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/rectangle-tank.png" width="50" height="60">
+        } else if(mts.selectedIndex == 3) {
+            document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/horizontal-cylinder-tank.png" width="50" height="60">
+        } else if(mts.selectedIndex == 4) {
+            document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" width="50" height="60">
+        } else if(mts.selectedIndex == 5) {
+            document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" width="50" height="60">
+        } else if(mts.selectedIndex == 6) {
+            document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/sphere-tank.png" width="50" height="60">
+        } else if(mts.selectedIndex == 7) {
+            document.getElementById("sensor_parameters").style.display = "block";
+            <img align="bottom" src="https://i.stack.imgur.com/kIeFB.png" width="50" height="60">
         } else {
             document.getElementById("sensor_parameters").style.display = "none";
         }
