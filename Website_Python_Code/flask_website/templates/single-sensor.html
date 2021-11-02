@@ -92,17 +92,17 @@
         } else if(si == 4){
             var UserInput = prompt('Select number of days range');
             changeDate(parseInt(UserInput));
-            
+
         }
     }
 
     function changeDate(new_day) {
         chart_mode = new_day
 
-        var arr = {days: new_day, sensor_id: "{{sensorID}}"}
+        var arr = {first_date: new_day, second_date : ,sensor_id: "{{sensorID}}"}
 
         $.ajax({
-            url: '/sensors/get-range',
+            url: '/sensors/get-date',
             type: 'POST',
             data: JSON.stringify(arr),
             contentType: 'application/json; charset=utf-8',
@@ -118,14 +118,42 @@
         });
     }
 
+    function gate_date_range(first_date, first_date) {
+        chart_mode = new_day
+
+        var arr = {first_date: first_date, second_date : second_date, sensor_id: "{{sensorID}}"}
+
+        $.ajax({
+            url: '/sensors/get-date',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+
+                console.log(response);
+                /*
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                linechart.update()
+                */
+            }
+        });
+    }
+
+    gate_date_range(date1, date2);
+
     function customDate(){
         var date1 = prompt('Starting Date eg. MM/DD/YYYY');
         var date2 = prompt('Ending Date eg. MM/DD/YYYY');
         var curDate = new Date();
-        var daysFromDate1 = curDate.getTime() - date1.getTime();
-        var daysFromDate2 = curDate.getTime() - date2.getTime();
-        changeDate(daysFromDate1);
-           
+        //var daysFromDate1 = curDate.getTime() - date1.getTime();
+        //var daysFromDate2 = curDate.getTime() - date2.getTime();
+        gate_date_range(date1, date2);
+
     }
 
     function defaultChart() {
@@ -249,7 +277,7 @@
 
             <!--- Chart timeframe selector --->
             <div style="width:100%; margin-right:10%">
-                <select onchange="new_range()" id="range_selector" style="width:100%;">         
+                <select onchange="new_range()" id="range_selector" style="width:100%;">
                     <option>Live</option>
                     <option>Past Day</option>
                     <option>Past Week</option>
@@ -370,7 +398,7 @@
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
-    
+
             <!--- Triangular Prism Parameters Menu --->
             <div id="triangular_prism_parameters_menu" style="display:none">
                 <p>For triangular prism tanks.</p>
@@ -405,7 +433,7 @@
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
-        
+
             <!--- Torus Parameters Menu --->
             <div id="torus_parameters_menu" style="display:none">
                 <p>For torus tanks.</p>
@@ -625,7 +653,7 @@
                 alert("Please enter numeric input in all fields: hemispherical specifications");
                 return;
             }
-        }  
+        }
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
@@ -770,7 +798,7 @@
         var liquidVolume = 0.5 * (base * length) * height;
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
-    } 
+    }
 
     function calculateTorusVolumeGals(majorRadius, minorRadius, sensorBottom, sensorTop) {
 
@@ -908,7 +936,7 @@
         document.getElementById("hemispherical_radius_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-    
+
     } else if('{{settings[1]}}' == "Triangular Prism Tank") {
         mts.selectedIndex = 4;
         document.getElementById("rectangular_height_field").value = 0;
