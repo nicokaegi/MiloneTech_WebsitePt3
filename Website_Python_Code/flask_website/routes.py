@@ -4,6 +4,7 @@ import datetime
 import io
 import base64
 import json
+import sys
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
@@ -210,6 +211,8 @@ def single_sensor_page_route(sensor_id):
 
     sensor_settings = db.settings.get_sensor_settings(sensor_id)
 
+    print(sensor_id, sensor_settings, file=sys.stdout)
+
     return render_template('single-sensor.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings)
 
 
@@ -260,10 +263,10 @@ def get_sensor_date_range_route():
     # elements are the lower and upper time bounds of the sensor readings we wish to query, in
     # datetime format: 'YYYY-MM-DD HH:MM:SS'
     data = request.json
-    first_date = datetime.strptime(data['first_date'], "%d/%m/%Y")
-    second_date = datetime.strptime(data['second_date'], "%d/%m/%Y")
+    first_date = datetime.datetime.strptime(data['first_date'], "%Y/%m/%d")
+    second_date = datetime.datetime.strptime(data['second_date'], "%Y/%m/%d")
     time_delta = first_date - second_date
-    start_date.replace(hour=0, minute=0, second=0)
+    #start_date.replace(hour=0, minute=0, second=0)
     sensor_id = data["sensor_id"]
 
     # Dynamically determine number of datapoints to display
