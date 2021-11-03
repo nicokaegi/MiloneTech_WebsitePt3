@@ -165,8 +165,7 @@
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
-                            radius:0, // To remove the dots, remove this entire line to see data points
-                            hoverBorderWidth:3,
+                            hoverBorderWidth:1,
                             hoverBorderColor:'white',
                             barThickness:15
                         }]
@@ -347,7 +346,7 @@
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
-    
+
             <!--- Triangular Prism Parameters Menu --->
             <div id="triangular_prism_parameters_menu" style="display:none">
                 <p>For triangular prism tanks.</p>
@@ -382,7 +381,7 @@
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
-        
+
             <!--- Torus Parameters Menu --->
             <div id="torus_parameters_menu" style="display:none">
                 <p>For torus tanks.</p>
@@ -556,7 +555,7 @@
                 alert("Please enter numeric input in all fields: torus specifications");
                 return;
             }
-        }  
+        }
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
@@ -701,7 +700,7 @@
         var liquidVolume = 0.5 * (base * length) * height;
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
-    } 
+    }
 
     function calculateTorusVolumeGals(majorRadius, minorRadius, sensorBottom, sensorTop) {
 
@@ -769,7 +768,7 @@
         document.getElementById("triangular_prism_height_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-    
+
     } else if('{{settings[1]}}' == "Triangular Prism Tank") {
         mts.selectedIndex = 4;
         document.getElementById("rectangular_height_field").value = 0;
