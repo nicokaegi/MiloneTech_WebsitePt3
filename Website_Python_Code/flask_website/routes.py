@@ -263,8 +263,8 @@ def get_sensor_date_range_route():
     # elements are the lower and upper time bounds of the sensor readings we wish to query, in
     # datetime format: 'YYYY-MM-DD HH:MM:SS'
     data = request.json
-    first_date = datetime.datetime.strptime(data['first_date'], "%Y/%m/%d")
-    second_date = datetime.datetime.strptime(data['second_date'], "%Y/%m/%d")
+    first_date = datetime.datetime.strptime(data['first_date'], "%m/%d/%Y")
+    second_date = datetime.datetime.strptime(data['second_date'], "%m/%d/%Y")
     time_delta = first_date - second_date
     #start_date.replace(hour=0, minute=0, second=0)
     sensor_id = data["sensor_id"]
