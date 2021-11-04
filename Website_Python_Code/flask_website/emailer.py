@@ -5,8 +5,13 @@ from email.mime.multipart import MIMEMultipart
 
 smtp_server = "smtp.gmail.com"
 port = 587  # For starttls
+'''
 sender_email = "milonetechnotifications@gmail.com"
 password = "SEGroupIV"
+'''
+sender_email = "testrowan1122@gmail.com"
+password = "myersswe"
+
 # Create a secure SSL context
 context = ssl.create_default_context()
 
@@ -61,7 +66,7 @@ def send_confirmation_email(to_email, redirect_address):
     message["From"] = sender_email
 
     text = f'''
-This is an email from <a href="http://usersmilonetech.com">usersmilonetech.com</a> notifying you of your account creation.
+This is an email from http://usersmilonetech.com notifying you of your account creation.
 To finish this process, please click the link below:
 
 {redirect_address}
@@ -71,6 +76,13 @@ To finish this process, please click the link below:
 If you have not made an attempt for an account registration, please do not click the link and no further action is required.
     
     '''
+    # Turn these into plain/html MIMEText objects
+    part1 = MIMEText(text, "plain")
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    message.attach(part1)
+    send_mail(to_email,message)
 
 
 
