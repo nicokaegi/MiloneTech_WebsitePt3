@@ -1,3 +1,41 @@
+git command cheat sheet:
+
+git add "files with changes you want to add"
+- let git know what changes you have made
+  
+git commit -m "some message detailing what changes you made"
+- make those changes permenate  
+  
+git push
+- push all your permenate changes to the github
+  
+git branch 
+- show you what branch you are on
+  
+git branch "name of your branch"
+- make a new branch using the name provided
+  
+git checkout "name of your branch"
+- changes what branch you are on (make sure either your changes are commited/saved somewhere, or else will git will stop you from changing branches)
+  
+git fetch origin "name of a branch"
+- get a specific branch from the git hub
+  
+for the ubuntu VM users:
+    
+sudo apt install <the name of the package you want>
+- type this in the terminal to install pakages like git, and python.
+
+# overall guide to setting up a test enviroment on linux, and mac systems 
+  
+1. clone the repo : git clone https://github.com/nicokaegi/MiloneTech_WebsitePt3.git
+2. (optional) create a virtual enviroment : python -m venv "what ever name you want"
+3. (optional) activte your virtual eniroment : source "you env name"/bin/activate
+4. go to this file : cd MiloneTech_WebisitePt3/Website_Python_Code/
+5. install nessary python packages : pip install -r packages.txt
+6. finally run the website : python run.py
+
+  
 # Introduction
 Hello. If you are reading this it's because you will be working on an expansion to the MiloneTech Website.
 

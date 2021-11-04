@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var linechart
+    var barchart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -37,9 +37,9 @@
             liquidLevel = datapoint["Liquid %"];
 
             //This is Chart.js standard, push the datapoint label, then the datapoint in
-            linechart.data.labels.push(datapoint["Time Stamp"]);
-            linechart.data.labels.splice(0, 1);
-            linechart.data.datasets.forEach((dataset) => {
+            barchart.data.labels.push(datapoint["Time Stamp"]);
+            barchart.data.labels.splice(0, 1);
+            barchart.data.datasets.forEach((dataset) => {
                 dataset.data.push(datapoint["Liquid %"]);
                 dataset.data.splice(0, 1);
             });
@@ -52,7 +52,7 @@
             //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
             //batteryBar.style.textalign = "center";
 
-            linechart.update();
+            barchart.update();
 
 
             //Measurement changes
@@ -89,6 +89,10 @@
             changeDate(7);
         } else if(si == 3) {
             changeDate(30);
+        } else if(si == 4){
+            var UserInput = prompt('Select number of days range');
+            changeDate(parseInt(UserInput));
+            
         }
     }
 
@@ -105,13 +109,23 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
+    }
+
+    function customDate(){
+        var date1 = prompt('Starting Date eg. MM/DD/YYYY');
+        var date2 = prompt('Ending Date eg. MM/DD/YYYY');
+        var curDate = new Date();
+        var daysFromDate1 = curDate.getTime() - date1.getTime();
+        var daysFromDate2 = curDate.getTime() - date2.getTime();
+        changeDate(daysFromDate1);
+           
     }
 
     function defaultChart() {
@@ -126,11 +140,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
     }
@@ -161,18 +175,19 @@
                 Chart.defaults.global.defaultFontFamily = 'inherit';
                 Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
                 Chart.defaults.global.defaultFontColor = '#777';
-                linechart = new Chart(myChart, {
-                    type:'line',
+                barchart = new Chart(myChart, {
+                    type:'bar',
                     data:{
-                        labels: {{ data.x_vals | tojson }},
+                        labels: {{ data.x_vals | tojson }},                                         //X VALS TO COMMUNICATE WITH CHART
                         datasets:[{
                             label:'Liquid Level',
                             data:{{ data.y_vals }},
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
-                            borderColor:'black',
-                            hoverBorderWidth:3,
-                            hoverBorderColor:'#000'
+                            borderColor:'white',
+                            hoverBorderWidth:1,
+                            hoverBorderColor:'white',
+                            barThickness:15
                         }]
                     },
                     options:{
@@ -233,11 +248,12 @@
 
             <!--- Chart timeframe selector --->
             <div style="width:100%; margin-right:10%">
-                <select onchange="new_range()" id="range_selector" style="width:100%;">
+                <select onchange="new_range()" id="range_selector" style="width:100%;">         
                     <option>Live</option>
                     <option>Past Day</option>
                     <option>Past Week</option>
                     <option>Past Month</option>
+                    <option>Custom</option>
                 </select>
                 <script>
                     //Default index to 0
@@ -361,7 +377,7 @@
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
-    
+
             <!--- Triangular Prism Parameters Menu --->
             <div id="triangular_prism_parameters_menu" style="display:none">
                 <p>For triangular prism tanks.</p>
@@ -400,7 +416,7 @@
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
-        
+
             <!--- Torus Parameters Menu --->
             <div id="torus_parameters_menu" style="display:none">
                 <p>For torus tanks.</p>
@@ -614,6 +630,9 @@
                 alert("Please enter numeric input in all fields: torus specifications");
                 return;
             }
+<<<<<<< HEAD
+        }
+=======
         //Replace spherical values if necessary
         } else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
@@ -628,6 +647,7 @@
                 return;
             }
         }  
+>>>>>>> 4587b745d4e50abf4291c843134b8ea175d8addd
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
@@ -772,7 +792,7 @@
         var liquidVolume = 0.5 * (base * length) * height;
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
-    } 
+    }
 
     function calculateTorusVolumeGals(majorRadius, minorRadius, sensorBottom, sensorTop) {
 
@@ -910,7 +930,7 @@
         document.getElementById("hemispherical_radius_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-    
+
     } else if('{{settings[1]}}' == "Triangular Prism Tank") {
         mts.selectedIndex = 4;
         document.getElementById("rectangular_height_field").value = 0;
