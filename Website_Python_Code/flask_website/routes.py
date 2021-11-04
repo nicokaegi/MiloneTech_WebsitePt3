@@ -275,13 +275,12 @@ def get_sensor_data_range_route():
 
     return chart_data
 
+
 # POST sensor  settings to the db
 @app.route("/sensors/sensor-settings/store", methods=["POST"])
 @login_required
 def store_settings_route():
     request_data = request.json
-
-    logger.info("{}".format(request_data))
 
     if str(db.sensors.get_acc_id_by_sens_id(request_data["sensorID"])) != str(current_user.id):
         return "Unauthorized", 403
@@ -293,10 +292,7 @@ def store_settings_route():
             request_data["radius"],
             request_data["height"],
             request_data["sensorBottomHeight"],
-            request_data["sensorTopHeight"],
-            request_data["base"],
-            request_data["majorRadius"],
-            request_data["minorRadius"]]
+            request_data["sensorTopHeight"]]
 
     result = db.settings.store_sensor_settings(data)
     return {"result": result}
@@ -524,7 +520,10 @@ def account():
     return render_template('account.html', title='Account', form=form, sensorAccountForm=sensorAccountForm,
                            account_info=current_user.user_data, currentUser=current_user)
 
-def update_settings_form():
+
+@app.route("/settings", methods=['GET', 'POST'])
+@login_required
+def settings():
     form = SettingsForm()
     alerts = []
     for sensor in db.sensors.get_all_sensors(current_user.id):
@@ -537,12 +536,6 @@ def update_settings_form():
             if db.sensors.get_sensor_info(sensor)[0][6] not in form.sensorGroup.choices:
                 form.sensorGroup.choices.append(
                     (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
-    return form, alerts
-
-@app.route("/settings", methods=['GET', 'POST'])
-@login_required
-def settings():
-    form, alerts = update_settings_form()
     alerts.sort()
 
     for alert in alerts:
@@ -570,8 +563,6 @@ def settings():
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
                 flash("Changed Current Sensor's Group to: " + form.newSensorGroup.data, 'success')
-        form, alerts = update_settings_form()
-
     return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
                            alerts=alerts)
 
@@ -598,6 +589,21 @@ def reset_request():
 
     return render_template('reset_request.html', title="Reset Password", form=form)
 
+
+@app.route("/confirm_account/<user_id>", methods=['GET', 'POST'])
+def confirm_account(user_id):
+    fname, lname = get_name_by_id(user_id)
+    form = LoginForm()
+    
+    if request.method == "POST":
+        output = list(request.form.values())[0]
+        if output == "Activate Account":
+            return redirect(url_for('home'))
+        else:
+            db.accounts.delete_account_by_id(user_id)
+            return "account deleted"
+
+    return render_template('confirm.html', title="confirm_account", user_id=user_id, form=form, fname=fname, lname=lname)
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):

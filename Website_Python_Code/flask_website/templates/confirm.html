@@ -1,0 +1,15 @@
+{% extends "layouts/base-for-login.html" %}
+{% block content %}
+    <div class="login-border">
+      Hi {{ fname }} {{ lname }} your account neededs to be actived.
+      <form method ="POST" action="/confirm_account/{{ user_id }}">
+        <input type="submit", class="btn btn-outline-success btn-lg", name="Activate Account" value="Activate Account">
+      </form>
+      <br>
+      <br>
+      If you belive there has been a mistake feel free to discard this account
+      <form method ="POST" action="/confirm_account/{{ user_id }}">
+        <input type="submit", class="btn btn-outline-success btn-lg", name="Discard Account" value="Discard Account">
+      </form>
+    </div>
+{% endblock content %}
