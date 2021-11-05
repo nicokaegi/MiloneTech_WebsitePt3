@@ -631,9 +631,8 @@
                 return;
             }
         }
-
         //Replace spherical values if necessary
-        } else if(mts.selectedIndex == 6) { //SPHERICAL
+         else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
             if(Number.isNaN(radius)) {
                 alert("Please enter numeric input in all fields: spherical specifications");
