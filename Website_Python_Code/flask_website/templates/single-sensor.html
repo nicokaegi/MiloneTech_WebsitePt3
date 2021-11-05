@@ -342,6 +342,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Rectangular Tank --->
+                    <div id="rectangular_image">
+                        <center><img src="https://cdn.inchcalculator.com/a/img/tank-volume/rectangle-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Rectangular Parameters Menu --->
@@ -366,6 +370,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Cylindrical Tank --->
+                     <div id="cylindrical_image">
+                         <center><img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/horizontal-cylinder-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                     </div>
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
@@ -401,6 +409,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Triangular Prism Tank --->
+                    <div id="triangular_prism_image">
+                        <center><img src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
@@ -424,6 +436,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Torus Tank --->
+                    <div id="torus_image">
+                        <center><img src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Torus Parameters Menu --->
@@ -439,6 +455,9 @@
                             in.
                         </div>
                     </div>
+                    <div id="spherical_image">
+                        <img src="https://cdn.inchcalculator.com/a/img/tank-volume/sphere-tank.png" style="position:relative; top:10px" width="125" height="120">
+                    </div>
                 </div>
             </div>
             <!--- End of Spherical Parameters Menu --->
@@ -453,6 +472,9 @@
                             <input id="hemispherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
+                    </div>
+                    <div id="hemispherical_image">
+                        <img src="https://i.stack.imgur.com/kIeFB.png" style="position:relative; top:10px" width="120" height="120">
                     </div>
                 </div>
             </div>
@@ -528,9 +550,6 @@
                                 document.getElementById("torus_parameters_menu"),
                                 document.getElementById("spherical_parameters_menu"),
                                 document.getElementById("hemispherical_parameters_menu")];
-
-    const updateMeasurementEvent = new Event('measurements_updated');
-
 
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
