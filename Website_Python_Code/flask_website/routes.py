@@ -4,6 +4,7 @@ import datetime
 import io
 import base64
 import json
+import sys
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
@@ -32,14 +33,28 @@ class alerts(db.db.Base):
 class sensors(db.db.Base):
     __tablename__ = "sensors"
     extend_existing=True
+    def is_accessible(self):
+        #print(current_user.email, file=sys.stderr)
+        return current_user.status == 5
 
 class accountsView(ModelView):
     page_size = 50
     column_exclude_list = ['passwordHash', ]
 
+    def is_accessible(self):
+        return current_user.status == 5
+
+class alertsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
+class sensorsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
 admin.add_view(accountsView(accounts, db.db.session))
-admin.add_view(ModelView(alerts, db.db.session))
-admin.add_view(ModelView(sensors, db.db.session))
+admin.add_view(alertsView(alerts, db.db.session))
+admin.add_view(sensorsView(sensors, db.db.session))
 admin.add_link(MenuLink(name='Return', category='', url='/'))
 
 # define a dictionary to store active sessions,
@@ -56,6 +71,7 @@ class User(UserMixin):
         self.id = userID
         self.email = db.accounts.get_email_by_id(userID)
         self.user_data = None
+        self.status = db.accounts.get_status_by_id(userID)
 
     def initialize_user_data(self):
         data = {}
