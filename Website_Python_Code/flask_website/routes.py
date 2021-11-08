@@ -8,7 +8,7 @@ import json
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
     RequestResetForm, ResetPasswordForm
-from flask_website import app, bcrypt, db, login_manager
+from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
@@ -17,6 +17,30 @@ from pprint import pprint
 
 from flask_website import socketio
 from flask_socketio import SocketIO, emit, send
+
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
+
+class accounts(db.db.Base):
+    __tablename__ = "accounts"
+    extend_existing=True
+
+class alerts(db.db.Base):
+    __tablename__ = "alerts"
+    extend_existing=True
+
+class sensors(db.db.Base):
+    __tablename__ = "sensors"
+    extend_existing=True
+
+class accountsView(ModelView):
+    page_size = 50
+    column_exclude_list = ['passwordHash', ]
+
+admin.add_view(accountsView(accounts, db.db.session))
+admin.add_view(ModelView(alerts, db.db.session))
+admin.add_view(ModelView(sensors, db.db.session))
+admin.add_link(MenuLink(name='Return', category='', url='/'))
 
 # define a dictionary to store active sessions,
 # key is SocketIO client ID, value is account ID
@@ -135,10 +159,10 @@ class User(UserMixin):
             return None
 
         return user_id
-    
+
     #Copied from get_reset_token
     '''
-    The confirmation token for the email for account registration. 
+    The confirmation token for the email for account registration.
     Accounts are made and then the confirmation token is sent.
     '''
     def get_confirmation_token(self, expires_sec=1800):
@@ -151,11 +175,11 @@ class User(UserMixin):
             user_id = s.loads(token)['user_id']
         except:
             return None
-        
+
         return user_id
 
 
-    
+
 
 
 @login_manager.user_loader
@@ -357,7 +381,7 @@ def register():
                 link that has been sent.', 'success')
 
         return redirect(url_for('login'))
-    
+
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/register/<token>', methods=['GET','POST'])
@@ -594,7 +618,7 @@ def reset_request():
 def confirm_account(user_id):
     fname, lname = get_name_by_id(user_id)
     form = LoginForm()
-    
+
     if request.method == "POST":
         output = list(request.form.values())[0]
         if output == "Activate Account":
