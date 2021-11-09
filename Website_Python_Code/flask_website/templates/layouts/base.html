@@ -35,6 +35,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin=""></script>
+  <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+
+
   <link rel="stylesheets" type="text/CSS" href="maps.css">
   <script type="text/javascript">
         var socket = io.connect();
@@ -42,7 +51,24 @@
 
 <script>
   // Initialize and add the map
+
   function initMap() {
+    var mymap = L.map('map').setView([39.87734, -75.06462], 13);
+
+    L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'your.mapbox.access.token'
+    }).addTo(mymap);
+
+    var heat = L.heatLayer([
+    	[39.87734, -75.06462, 5], // lat, lng, intensity39.87734, -75.06462 39.879844303638826, -75.04952944288354
+    	[39.879844303638826, -75.04952944288354, 5],
+    ], {radius: 25}).addTo(mymap);
+
+    /*
     // The location of Sewell, NJ
     const sewell = { lat: 39.76722220164422, lng: -75.1442380995168 };
     // The map, centered at Uluru
@@ -55,7 +81,13 @@
       position: sewell,
       map: map,
     });
+    */
   }
+
+
+
+
+
 </script>
 
   <!-- Specific Page CSS goes HERE  -->
