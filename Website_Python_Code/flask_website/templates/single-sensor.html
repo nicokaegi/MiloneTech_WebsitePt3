@@ -133,9 +133,7 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-
                 console.log(response);
-
                 barchart.data.labels = response["x_vals"];
                 barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
@@ -151,6 +149,7 @@
     function customDate(){
         var date1 = prompt('Ending Date (MM/DD/YYYY format)');
         var date2 = prompt('Starting Date (MM/DD/YYYY format)');
+        /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
         //var daysFromDate1 = curDate.getTime() - date1.getTime();
         //var daysFromDate2 = curDate.getTime() - date2.getTime();
