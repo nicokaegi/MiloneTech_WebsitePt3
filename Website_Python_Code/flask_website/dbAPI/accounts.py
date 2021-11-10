@@ -6,25 +6,6 @@ class Accounts(db.Base):
     __table__ = db.Base.metadata.tables['accounts']
 
 
-def get_id_by_email(acc_email):
-    try:
-        with db.engine.connect() as connection:
-            acc_id = []
-            result = connection.execute("select accountID "
-                                        "from accounts "
-                                        "where accountEmail = '{}'"
-                                        .format(acc_email))
-            for row in result:
-                # print(row)
-                acc_id.append(row[0])
-            if len(acc_id) > 0:
-                return acc_id[0]
-            else:
-                return False
-    except exc.SQLAlchemyError:
-        return False
-
-
 def get_email_by_id(account_id):
     try:
         with db.engine.connect() as connection:
@@ -35,6 +16,20 @@ def get_email_by_id(account_id):
                                         .format(account_id))
             for row in result:
                 email.append(row['accountEmail'])
+            return email[0]
+    except exc.SQLAlchemyError:
+        return False
+
+def get_status_by_id(account_id):
+    try:
+        with db.engine.connect() as connection:
+            status = []
+            result = connection.execute("select accountStatus "
+                                        "from accounts "
+                                        "where accountID = {}"
+                                        .format(account_id))
+            for row in result:
+                email.append(row['accountStatus'])
             return email[0]
     except exc.SQLAlchemyError:
         return False
