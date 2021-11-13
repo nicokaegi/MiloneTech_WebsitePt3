@@ -51,12 +51,14 @@
                 <p>Settings</p>
               </a>
             </li>
+            {% if current_user.status == 5 %}
             <li>
               <a href="/admin" >
                 <i class="fas fa-cog"></i>
                 <p>admin</p>
               </a>
             </li>
+            {% endif %}
           </ul>
 
         </div>
