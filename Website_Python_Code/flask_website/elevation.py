@@ -45,7 +45,7 @@ def get_surrounding_elevation(coordinate:list, bounds:int=10) -> list:
     offset = bounds/111111
     lat = coordinate[0]
     log = coordinate[1]
-    nw = [lat+offset,log-offset]
+    nw = [float(lat+offset),float(log-offset)]
     se = [lat-offset,log+offset]
     return [nw,se]
 
@@ -68,7 +68,8 @@ def convert_string_list(coordinate_list: list) -> str:
     tmp_format_list= ""
     for pair in coordinate_list:
         for x in pair:
-            tmp_format_list += x 
+            tmp_format_list += str(x) +","
+    tmp_format_list = tmp_format_list[:-1]
     return tmp_format_list
 
 
@@ -89,4 +90,4 @@ def get_point_elevations(coordinate_list:list) -> list:
 
 
 if __name__=="__main__":
-    get_carpet_elevation([[],[]])
+    print(get_carpet_elevation([49.9760329253738,14.128741875966284]))
