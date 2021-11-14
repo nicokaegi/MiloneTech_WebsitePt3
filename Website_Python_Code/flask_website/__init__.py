@@ -2,6 +2,7 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 import flask_website.dbAPI.app as db
 from flask_login import LoginManager
+import sys
 
 from flask_socketio import SocketIO
 # from flask_website import routes
@@ -12,6 +13,6 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 
 socketio = SocketIO(app, logger=False)
-
 from flask_website import routes
+
 
