@@ -73,7 +73,7 @@
     var cfg = {
     // radius should be small ONLY if scaleRadius is true (or small radius is intended)
     // if scaleRadius is false it will be the constant radius used in pixels
-    "radius": .0009,
+    "radius": .001,
     "maxOpacity": .5,
     // scales the radius based on map zoom
     "scaleRadius": true,
@@ -85,8 +85,7 @@
     blur : 0.9,
     gradient: {
       '.5': 'aqua',
-      '.8': 'aqua',
-      '.95': 'blue'
+      '.70': 'blue',
     },
     // which field name in your data represents the latitude - default "lat"
     latField: 'lat',
@@ -107,7 +106,7 @@
     layers: [base, heatmapLayer]
   });
 
-  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : .9, sensor_length : 50/(12*3.2808)},
+  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : 0, sensor_length : 50/(12*3.2808)},
                  {id : 'center of town', lat : 39.87734, lng : -75.06462, elevation : 23, water_level : .05, sensor_length : 50/(12*3.2808)}];
 
   highest_water_level = -1
