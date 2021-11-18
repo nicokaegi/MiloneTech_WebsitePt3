@@ -92,7 +92,7 @@
         } else if(si == 4){
             var UserInput = prompt('Select number of days range');
             changeDate(parseInt(UserInput));
-            
+
         }
     }
 
@@ -125,7 +125,7 @@
         var daysFromDate1 = curDate.getTime() - date1.getTime();
         var daysFromDate2 = curDate.getTime() - date2.getTime();
         changeDate(daysFromDate1);
-           
+
     }
 
     function defaultChart() {
@@ -248,7 +248,7 @@
 
             <!--- Chart timeframe selector --->
             <div style="width:100%; margin-right:10%">
-                <select onchange="new_range()" id="range_selector" style="width:100%;">         
+                <select onchange="new_range()" id="range_selector" style="width:100%;">
                     <option>Live</option>
                     <option>Past Day</option>
                     <option>Past Week</option>
@@ -630,11 +630,9 @@
                 alert("Please enter numeric input in all fields: torus specifications");
                 return;
             }
-<<<<<<< HEAD
         }
-=======
         //Replace spherical values if necessary
-        } else if(mts.selectedIndex == 6) { //SPHERICAL
+         else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
             if(Number.isNaN(radius)) {
                 alert("Please enter numeric input in all fields: spherical specifications");
@@ -646,8 +644,7 @@
                 alert("Please enter numeric input in all fields: hemispherical specifications");
                 return;
             }
-        }  
->>>>>>> 4587b745d4e50abf4291c843134b8ea175d8addd
+        }
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',

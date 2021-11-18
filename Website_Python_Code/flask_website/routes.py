@@ -4,11 +4,12 @@ import datetime
 import io
 import base64
 import json
+import sys
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
     RequestResetForm, ResetPasswordForm
-from flask_website import app, bcrypt, db, login_manager
+from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
@@ -17,6 +18,44 @@ from pprint import pprint
 
 from flask_website import socketio
 from flask_socketio import SocketIO, emit, send
+
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
+
+class accounts(db.db.Base):
+    __tablename__ = "accounts"
+    extend_existing=True
+
+class alerts(db.db.Base):
+    __tablename__ = "alerts"
+    extend_existing=True
+
+class sensors(db.db.Base):
+    __tablename__ = "sensors"
+    extend_existing=True
+    def is_accessible(self):
+        #print(current_user.email, file=sys.stderr)
+        return current_user.status == 5
+
+class accountsView(ModelView):
+    page_size = 50
+    column_exclude_list = ['passwordHash', ]
+
+    def is_accessible(self):
+        return current_user.status == 5
+
+class alertsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
+class sensorsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
+admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
+admin.add_view(alertsView(alerts, db.db.session, name='Alerts'))
+admin.add_view(sensorsView( sensors, db.db.session, name='Sensors'))
+admin.add_link(MenuLink(name='Return', category='', url='/'))
 
 # define a dictionary to store active sessions,
 # key is SocketIO client ID, value is account ID
@@ -32,6 +71,7 @@ class User(UserMixin):
         self.id = userID
         self.email = db.accounts.get_email_by_id(userID)
         self.user_data = None
+        self.status = db.accounts.get_status_by_id(userID)
 
     def initialize_user_data(self):
         data = {}
@@ -135,10 +175,10 @@ class User(UserMixin):
             return None
 
         return user_id
-    
+
     #Copied from get_reset_token
     '''
-    The confirmation token for the email for account registration. 
+    The confirmation token for the email for account registration.
     Accounts are made and then the confirmation token is sent.
     '''
     def get_confirmation_token(self, expires_sec=1800):
@@ -151,11 +191,11 @@ class User(UserMixin):
             user_id = s.loads(token)['user_id']
         except:
             return None
-        
+
         return user_id
 
 
-    
+
 
 
 @login_manager.user_loader
@@ -357,7 +397,7 @@ def register():
                 link that has been sent.', 'success')
 
         return redirect(url_for('login'))
-    
+
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/register/<token>', methods=['GET','POST'])
@@ -594,7 +634,7 @@ def reset_request():
 def confirm_account(user_id):
     fname, lname = get_name_by_id(user_id)
     form = LoginForm()
-    
+
     if request.method == "POST":
         output = list(request.form.values())[0]
         if output == "Activate Account":
