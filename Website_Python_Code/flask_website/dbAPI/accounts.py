@@ -20,19 +20,24 @@ def get_email_by_id(account_id):
     except exc.SQLAlchemyError:
         return False
 
-def get_id_by_email(accountEmail):
+def get_id_by_email(acc_email):
     try:
         with db.engine.connect() as connection:
-            id = []
-            result = connection.execute("select accountID"
+            acc_id = []
+            result = connection.execute("select accountID "
                                         "from accounts "
-                                        "where accountEmail = {}"
-                                        .format(accountEmail))
+                                        "where accountEmail = '{}'"
+                                        .format(acc_email))
             for row in result:
-                id.append(row['accountID'])
-            return id[0]
+                # print(row)
+                acc_id.append(row[0])
+            if len(acc_id) > 0:
+                return acc_id[0]
+            else:
+                return False
     except exc.SQLAlchemyError:
         return False
+
 
 def get_status_by_id(account_id):
     try:
