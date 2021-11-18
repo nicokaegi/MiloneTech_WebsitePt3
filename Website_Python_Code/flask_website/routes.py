@@ -52,9 +52,9 @@ class sensorsView(ModelView):
     def is_accessible(self):
         return current_user.status == 5
 
-admin.add_view(accountsView(accounts, db.db.session))
-admin.add_view(alertsView(alerts, db.db.session))
-admin.add_view(sensorsView(sensors, db.db.session))
+admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
+admin.add_view(alertsView(alerts, db.db.session, name='Alerts'))
+admin.add_view(sensorsView( sensors, db.db.session, name='Sensors'))
 admin.add_link(MenuLink(name='Return', category='', url='/'))
 
 # define a dictionary to store active sessions,
