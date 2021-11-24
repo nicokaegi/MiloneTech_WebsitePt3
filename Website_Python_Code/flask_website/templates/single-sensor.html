@@ -90,9 +90,9 @@
         } else if(si == 3) {
             changeDate(30);
         } else if(si == 4){
-            var UserInput = prompt('Select number of days range');
-            changeDate(parseInt(UserInput));
 
+            // var UserInput = prompt('Select an interval of dates');
+            customDate(); //Work here for user input
         }
     }
 
@@ -102,13 +102,14 @@
         var arr = {days: new_day, sensor_id: "{{sensorID}}"}
 
         $.ajax({
-            url: '/sensors/get-range',
+            url: '/sensors/get-date',
             type: 'POST',
             data: JSON.stringify(arr),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             async: false,
             success: function(response) {
+                console.log(response)
                 barchart.data.labels = response["x_vals"];
                 barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
@@ -118,13 +119,41 @@
         });
     }
 
+    // Nico's work. Use this function
+    function gate_date_range(first_date, second_date) {
+        chart_mode = first_date
+
+        var arr = {first_date: first_date, second_date: second_date, sensor_id: "{{sensorID}}"}
+
+        $.ajax({
+            url: '/sensors/get-date-range',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+                console.log(response);
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                barchart.update()
+
+            }
+        });
+    }
+
+    //gate_date_range('2021/10/31', '2021/10/27');
+
     function customDate(){
-        var date1 = prompt('Starting Date eg. MM/DD/YYYY');
-        var date2 = prompt('Ending Date eg. MM/DD/YYYY');
+        var date1 = prompt('Ending Date (MM/DD/YYYY format)');
+        var date2 = prompt('Starting Date (MM/DD/YYYY format)');
+        /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
-        var daysFromDate1 = curDate.getTime() - date1.getTime();
-        var daysFromDate2 = curDate.getTime() - date2.getTime();
-        changeDate(daysFromDate1);
+        //var daysFromDate1 = curDate.getTime() - date1.getTime();
+        //var daysFromDate2 = curDate.getTime() - date2.getTime();
+        gate_date_range(date1, date2);
 
     }
 
@@ -253,7 +282,7 @@
                     <option>Past Day</option>
                     <option>Past Week</option>
                     <option>Past Month</option>
-                    <option>Custom</option>
+                    <option>Custom Interval</option>
                 </select>
                 <script>
                     //Default index to 0
