@@ -9,7 +9,7 @@ import sys
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
     RequestResetForm, ResetPasswordForm
-from flask_website import app, bcrypt, db, login_manager
+from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
@@ -19,15 +19,60 @@ from pprint import pprint
 from flask_website import socketio
 from flask_socketio import SocketIO, emit, send
 
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
+
+class accounts(db.db.Base):
+    __tablename__ = "accounts"
+    extend_existing=True
+
+class alerts(db.db.Base):
+    __tablename__ = "alerts"
+    extend_existing=True
+
+class sensors(db.db.Base):
+    __tablename__ = "sensors"
+    extend_existing=True
+    def is_accessible(self):
+        #print(current_user.email, file=sys.stderr)
+        return current_user.status == 5
+
+class accountsView(ModelView):
+    page_size = 50
+    column_exclude_list = ['passwordHash', ]
+
+    def is_accessible(self):
+        return current_user.status == 5
+
+class alertsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
+class sensorsView(ModelView):
+    def is_accessible(self):
+        return current_user.status == 5
+
+admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
+admin.add_view(alertsView(alerts, db.db.session, name='Alerts'))
+admin.add_view(sensorsView( sensors, db.db.session, name='Sensors'))
+admin.add_link(MenuLink(name='Return', category='', url='/'))
+
 # define a dictionary to store active sessions,
 # key is SocketIO client ID, value is account ID
 sessions = {}
 
 
-# Creates an abomination of a data item in it's writer's on words:
+# Creates an abomination of a data item in it's writer's own words:
 # defines current_user.user_data. I would recommend just experimenting to see
 # what the structure is.
 class User(UserMixin):
+
+    def __init__(self, userID):
+        self.id = userID
+        self.email = db.accounts.get_email_by_id(userID)
+        self.user_data = None
+        self.status = db.accounts.get_status_by_id(userID)
+
     def initialize_user_data(self):
         data = {}
 
@@ -131,10 +176,26 @@ class User(UserMixin):
 
         return user_id
 
-    def __init__(self, userID):
-        self.id = userID
-        self.email = db.accounts.get_email_by_id(userID)
-        self.user_data = None
+    #Copied from get_reset_token
+    '''
+    The confirmation token for the email for account registration.
+    Accounts are made and then the confirmation token is sent.
+    '''
+    def get_confirmation_token(self, expires_sec=1800):
+        s = Serializer(app.config["SECRET_KEY"], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+    def verify_confirmation_token(token):
+        s = Serializer(app.config["SECRET_KEY"])
+
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+
+        return user_id
+
+
+
 
 
 @login_manager.user_loader
@@ -348,6 +409,10 @@ from the form in the registration template, hashing the chosen password
 and, then storing all relevant information into the database
 
 the form on the front end confirms password choice, and well as if the email is valid
+
+Added on 10-28-2021:
+Once the form is submitted,
+an email is generated and sent to the user to confirm registration
 '''
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -364,12 +429,27 @@ def register():
         lastname = fullname[-1]
 
         db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
+        user = db.accounts.get_id_by_email(form.email.data)
+        user_obj = User(user)
+        token = User.get_confirmation_token(user_obj)
+        email.send_confirmation_email(form.email.data, url_for('confirmation', token=token, _external=True))
 
-        flash(f'Your account has been Created! You may now Login', 'success')
+        flash(f'Your account has been Created! An account confirmation email has been sent to the submitted email. \
+                To move forward in account registration, please go to your registered email and click the confirmation \
+                link that has been sent.', 'success')
+
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Register', form=form)
 
+@app.route('/register/<token>', methods=['GET','POST'])
+def confirmation(token):
+    user = load_user(User.verify_confirmation_token(token))
+    if user is None:
+        print("no")
+    else:
+        return redirect(url_for('login'))
+    return redirect(url_for('register'))
 
 @app.route("/sensor", methods=['POST'])
 def sensor():
@@ -625,6 +705,12 @@ def reset_token(token):
         return redirect(url_for('login'))
 
     return render_template('reset_token.html', title="Reset Password", form=form)
+
+
+#@app.route("/confirm_")
+
+
+
 
 
 # Catch users connecting, store the (session id):(user id) pair in the sessions dictionary

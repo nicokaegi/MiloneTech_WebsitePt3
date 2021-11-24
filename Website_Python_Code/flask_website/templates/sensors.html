@@ -13,7 +13,7 @@
         {% endfor %}
     </div>
   </div>
-{% if account_info.payment_tier == 1 %}
+{% if account_info.payment_tier == 1 or account_info.payment_tier == 5 %}
             <script>
 
             //an object of key/value pairs of form sensor ID/canvas ID
@@ -109,8 +109,8 @@
                                   data:{{ sensor.y_vals }},
                                   backgroundColor: gradient,
                                   borderWidth:1, //Effects plotted line on chart
-                                  borderColor:'black',
-                                  hoverBorderWidth:3,
+                                  borderColor:'whiite',
+                                  hoverBorderWidth:1,
                                   hoverBorderColor:'white',
                                   barThickness:15
                                 }]
