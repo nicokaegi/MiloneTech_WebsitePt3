@@ -629,7 +629,7 @@ def reset_request():
 
     return render_template('reset_request.html', title="Reset Password", form=form)
 
-
+'''
 @app.route("/confirm_account/<user_id>", methods=['GET', 'POST'])
 def confirm_account(user_id):
     fname, lname = get_name_by_id(user_id)
@@ -644,7 +644,7 @@ def confirm_account(user_id):
             return "account deleted"
 
     return render_template('confirm.html', title="confirm_account", user_id=user_id, form=form, fname=fname, lname=lname)
-
+'''
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
     user = load_user(User.verify_reset_token(token))
