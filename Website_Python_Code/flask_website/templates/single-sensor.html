@@ -90,8 +90,13 @@
         } else if(si == 3) {
             changeDate(30);
         } else if(si == 4){
+<<<<<<< HEAD
             // var UserInput = prompt('Select an interval of dates');
             customDate(); //Work here for user input
+=======
+            var UserInput = prompt('Select number of days range');
+            changeDate(parseInt(UserInput));
+>>>>>>> 5719e991dc9a3214a63a84d20c2f02064841cf48
 
         }
     }
@@ -151,9 +156,15 @@
         var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
         /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
+<<<<<<< HEAD
         //var daysFromDate1 = curDate.getTime() - date1.getTime();
         //var daysFromDate2 = curDate.getTime() - date2.getTime();
         gate_date_range(date1, date2);
+=======
+        var daysFromDate1 = curDate.getTime() - date1.getTime();
+        var daysFromDate2 = curDate.getTime() - date2.getTime();
+        changeDate(daysFromDate1);
+>>>>>>> 5719e991dc9a3214a63a84d20c2f02064841cf48
 
     }
 
@@ -214,8 +225,7 @@
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
-                            radius:0, // To remove the dots, remove this entire line to see data points
-                            hoverBorderWidth:3,
+                            hoverBorderWidth:1,
                             hoverBorderColor:'white',
                             barThickness:15
                         }]
@@ -372,6 +382,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Rectangular Tank --->
+                    <div id="rectangular_image">
+                        <center><img src="https://cdn.inchcalculator.com/a/img/tank-volume/rectangle-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Rectangular Parameters Menu --->
@@ -396,6 +410,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Cylindrical Tank --->
+                     <div id="cylindrical_image">
+                         <center><img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/horizontal-cylinder-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                     </div>
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
@@ -431,6 +449,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Triangular Prism Tank --->
+                    <div id="triangular_prism_image">
+                        <center><img src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
@@ -454,6 +476,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Torus Tank --->
+                    <div id="torus_image">
+                        <center><img src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Torus Parameters Menu --->
@@ -469,6 +495,9 @@
                             in.
                         </div>
                     </div>
+                    <div id="spherical_image">
+                        <img src="https://cdn.inchcalculator.com/a/img/tank-volume/sphere-tank.png" style="position:relative; top:10px" width="125" height="120">
+                    </div>
                 </div>
             </div>
             <!--- End of Spherical Parameters Menu --->
@@ -483,6 +512,9 @@
                             <input id="hemispherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
+                    </div>
+                    <div id="hemispherical_image">
+                        <img src="https://i.stack.imgur.com/kIeFB.png" style="position:relative; top:10px" width="120" height="120">
                     </div>
                 </div>
             </div>
@@ -558,9 +590,6 @@
                                 document.getElementById("torus_parameters_menu"),
                                 document.getElementById("spherical_parameters_menu"),
                                 document.getElementById("hemispherical_parameters_menu")];
-
-    const updateMeasurementEvent = new Event('measurements_updated');
-
 
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
@@ -641,8 +670,9 @@
                 alert("Please enter numeric input in all fields: torus specifications");
                 return;
             }
+        }
         //Replace spherical values if necessary
-        } else if(mts.selectedIndex == 6) { //SPHERICAL
+         else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
             if(Number.isNaN(radius)) {
                 alert("Please enter numeric input in all fields: spherical specifications");
