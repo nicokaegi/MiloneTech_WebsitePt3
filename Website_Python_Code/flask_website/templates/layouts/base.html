@@ -96,9 +96,12 @@
   };
   var heatmapLayer = new HeatmapOverlay(cfg);
 
-  var base = L.esri.Vector.vectorBasemapLayer('ArcGIS:Topographic', {
-    apikey: 'AAPKa8c22ae1c3d843489e8a84d2299139ebU2h5luEnb67djNVz5JOl5yCcuN0BBzalZiEWRsuKq5C474v8iAnXA5Iu_MZmY-qh' // Replace with your API key - https://developers.arcgis.com
-  })
+
+  var base = L.esri.tiledMapLayer({
+    url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer',
+
+  });
+  
 
   var map = new L.Map('map', {
     center: new L.LatLng(39.87734,-75.06462),
@@ -106,7 +109,7 @@
     layers: [base, heatmapLayer]
   });
 
-  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : 0, sensor_length : 50/(12*3.2808)},
+  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : .2, sensor_length : 50/(12*3.2808)},
                  {id : 'center of town', lat : 39.87734, lng : -75.06462, elevation : 23, water_level : .05, sensor_length : 50/(12*3.2808)}];
 
   highest_water_level = -1
@@ -191,7 +194,6 @@
     </div>
 
   </div>
-
 
 
   {% include 'includes/scripts.html' %}
