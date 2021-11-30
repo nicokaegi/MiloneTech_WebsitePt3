@@ -90,13 +90,8 @@
         } else if(si == 3) {
             changeDate(30);
         } else if(si == 4){
-<<<<<<< HEAD
             // var UserInput = prompt('Select an interval of dates');
             customDate(); //Work here for user input
-=======
-            var UserInput = prompt('Select number of days range');
-            changeDate(parseInt(UserInput));
->>>>>>> 5719e991dc9a3214a63a84d20c2f02064841cf48
 
         }
     }
@@ -156,15 +151,9 @@
         var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
         /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
-<<<<<<< HEAD
         //var daysFromDate1 = curDate.getTime() - date1.getTime();
         //var daysFromDate2 = curDate.getTime() - date2.getTime();
         gate_date_range(date1, date2);
-=======
-        var daysFromDate1 = curDate.getTime() - date1.getTime();
-        var daysFromDate2 = curDate.getTime() - date2.getTime();
-        changeDate(daysFromDate1);
->>>>>>> 5719e991dc9a3214a63a84d20c2f02064841cf48
 
     }
 
