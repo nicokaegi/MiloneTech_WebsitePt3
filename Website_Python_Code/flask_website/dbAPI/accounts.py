@@ -6,6 +6,20 @@ class Accounts(db.Base):
     __table__ = db.Base.metadata.tables['accounts']
 
 
+def get_email_by_id(account_id):
+    try:
+        with db.engine.connect() as connection:
+            email = []
+            result = connection.execute("select accountEmail "
+                                        "from accounts "
+                                        "where accountID = {}"
+                                        .format(account_id))
+            for row in result:
+                email.append(row['accountEmail'])
+            return email[0]
+    except exc.SQLAlchemyError:
+        return False
+
 def get_id_by_email(acc_email):
     try:
         with db.engine.connect() as connection:
@@ -25,16 +39,16 @@ def get_id_by_email(acc_email):
         return False
 
 
-def get_email_by_id(account_id):
+def get_status_by_id(account_id):
     try:
         with db.engine.connect() as connection:
-            email = []
-            result = connection.execute("select accountEmail "
+            status = []
+            result = connection.execute("select accountStatus "
                                         "from accounts "
                                         "where accountID = {}"
                                         .format(account_id))
             for row in result:
-                email.append(row['accountEmail'])
+                email.append(row['accountStatus'])
             return email[0]
     except exc.SQLAlchemyError:
         return False
@@ -127,6 +141,15 @@ def create_account(email, first_name, last_name, pass_hash):
     except exc.SQLAlchemyError:
         return False
 
+def delete_account_by_id(user_id):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("DELETE FROM accounts "
+                               "WHERE accountID = {}"
+                               .format(user_id))
+            return True
+    except exc.SQLAlchemyError:
+        return False
 
 def set_account_email(old_email, new_email):
     try:

@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var linechart
+    var barchart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -37,9 +37,9 @@
             liquidLevel = datapoint["Liquid %"];
 
             //This is Chart.js standard, push the datapoint label, then the datapoint in
-            linechart.data.labels.push(datapoint["Time Stamp"]);
-            linechart.data.labels.splice(0, 1);
-            linechart.data.datasets.forEach((dataset) => {
+            barchart.data.labels.push(datapoint["Time Stamp"]);
+            barchart.data.labels.splice(0, 1);
+            barchart.data.datasets.forEach((dataset) => {
                 dataset.data.push(datapoint["Liquid %"]);
                 dataset.data.splice(0, 1);
             });
@@ -52,7 +52,7 @@
             //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
             //batteryBar.style.textalign = "center";
 
-            linechart.update();
+            barchart.update();
 
 
             //Measurement changes
@@ -67,6 +67,12 @@
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
             } else if('{{settings[1]}}' == 'Torus Tank') {
                 document.getElementById("liquid_volume").innerHTML = calculateTorusVolumeGals({{settings[9]}}, {{settings[10]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+                document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+            } else if('{{settings[1]}}' == 'Spherical Tank') {
+                document.getElementById("liquid_volume").innerHTML = calculateSphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+                document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+            } else if('{{settings[1]}}' == 'Hemispherical Tank') {
+                document.getElementById("liquid_volume").innerHTML = calculateHemisphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
             }
     }
@@ -83,6 +89,10 @@
             changeDate(7);
         } else if(si == 3) {
             changeDate(30);
+        } else if(si == 4){
+            // var UserInput = prompt('Select an interval of dates');
+            customDate(); //Work here for user input
+
         }
     }
 
@@ -92,20 +102,59 @@
         var arr = {days: new_day, sensor_id: "{{sensorID}}"}
 
         $.ajax({
-            url: '/sensors/get-range',
+            url: '/sensors/get-date',
             type: 'POST',
             data: JSON.stringify(arr),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                console.log(response)
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
+    }
+
+    // Nico's work. Use this function
+    function gate_date_range(first_date, second_date) {
+        chart_mode = first_date
+
+        var arr = {first_date: first_date, second_date: second_date, sensor_id: "{{sensorID}}"}
+
+        $.ajax({
+            url: '/sensors/get-date-range',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+                console.log(response);
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                barchart.update()
+
+            }
+        });
+    }
+
+    //gate_date_range('2021/10/31', '2021/10/27');
+
+    function customDate(){
+        var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
+        var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
+        /* switching dates, going out of scope, when user puts in invalid date */
+        var curDate = new Date();
+        //var daysFromDate1 = curDate.getTime() - date1.getTime();
+        //var daysFromDate2 = curDate.getTime() - date2.getTime();
+        gate_date_range(date1, date2);
+
     }
 
     function defaultChart() {
@@ -120,11 +169,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                linechart.update()
+                barchart.update()
             }
         });
     }
@@ -155,19 +204,25 @@
                 Chart.defaults.global.defaultFontFamily = 'inherit';
                 Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
                 Chart.defaults.global.defaultFontColor = '#777';
-                linechart = new Chart(myChart, {
-                    type:'line',
+                barchart = new Chart(myChart, {
+                    type:'bar',
                     data:{
-                        labels: {{ data.x_vals | tojson }},
+                        labels: {{ data.x_vals | tojson }},                                         //X VALS TO COMMUNICATE WITH CHART
                         datasets:[{
                             label:'Liquid Level',
                             data:{{ data.y_vals }},
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
+<<<<<<< HEAD
                             hoverBorderWidth:3,
                             hoverBorderColor:'#000',
                             barThickness: 15
+=======
+                            hoverBorderWidth:1,
+                            hoverBorderColor:'white',
+                            barThickness:15
+>>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
                         }]
                     },
                     options:{
@@ -233,6 +288,7 @@
                     <option>Past Day</option>
                     <option>Past Week</option>
                     <option>Past Month</option>
+                    <option>Custom Interval</option>
                 </select>
                 <script>
                     //Default index to 0
@@ -250,13 +306,15 @@
             <div class="form-group form-inline">
                 <div style="width:50%; margin-right:10%">
                     <label for="measurement_type_selector" style="float:left"><strong>Measurement Type</strong></label><br>
-                    <select id="measurement_type_selector" style="width:100%">
+                    <select id="measurement_type_selector" style="width:100%" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
                         <option>None</option>
                         <option>Height Only</option>
                         <option>Rectangular Tank</option>
                         <option>Cylindrical Tank</option>
 		        <option>Triangular Prism Tank</option>
 		        <option>Torus Tank</option>
+                        <option>Spherical Tank</option>
+                        <option>Hemispherical Tank</option>
                     </select>
                     <script>
                         var mts = document.getElementById("measurement_type_selector");
@@ -319,6 +377,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Rectangular Tank --->
+                    <div id="rectangular_image">
+                        <center><img src="https://cdn.inchcalculator.com/a/img/tank-volume/rectangle-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Rectangular Parameters Menu --->
@@ -343,6 +405,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Cylindrical Tank --->
+                     <div id="cylindrical_image">
+                         <center><img align="bottom" src="https://cdn.inchcalculator.com/a/img/tank-volume/horizontal-cylinder-tank.png" style="position:relative; top:10px;" width="130" height="120"></center>
+                     </div>
                 </div>
             </div>
             <!--- End of Cylindrical Parameters Menu --->
@@ -378,6 +444,10 @@
                             in.
                         </div>
                     </div>
+                    <!--- Triangular Prism Tank --->
+                    <div id="triangular_prism_image">
+                        <center><img src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Triangular Prism Parameters Menu --->
@@ -401,9 +471,49 @@
                             in.
                         </div>
                     </div>
+                    <!--- Torus Tank --->
+                    <div id="torus_image">
+                        <center><img src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                    </div>
                 </div>
             </div>
             <!--- End of Torus Parameters Menu --->
+
+            <!--- Spherical Parameters Menu --->
+            <div id="spherical_parameters_menu" style="display:none">
+                <p>For spherical tanks.</p>
+                <div class="form-group form-inline">
+                    <div style="width:40%">
+                        <label for="spherical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="spherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                    <div id="spherical_image">
+                        <img src="https://cdn.inchcalculator.com/a/img/tank-volume/sphere-tank.png" style="position:relative; top:10px" width="125" height="120">
+                    </div>
+                </div>
+            </div>
+            <!--- End of Spherical Parameters Menu --->
+
+            <!--- Hemispherical Parameters Menu --->
+            <div id="hemispherical_parameters_menu" style="display:none">
+                <p>For hemispherical tanks.</p>
+                <div class="form-group form-inline">
+                    <div style="width:40%">
+                        <label for="hemispherical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
+                        <div class="form-group form-inline">
+                            <input id="hemispherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            in.
+                        </div>
+                    </div>
+                    <div id="hemispherical_image">
+                        <img src="https://i.stack.imgur.com/kIeFB.png" style="position:relative; top:10px" width="120" height="120">
+                    </div>
+                </div>
+            </div>
+            <!--- End of Hemispherical Parameters Menu --->
 
             <br>
 
@@ -472,10 +582,9 @@
                                 document.getElementById("rectangular_parameters_menu"),
                                 document.getElementById("cylindrical_parameters_menu"),
                                 document.getElementById("triangular_prism_parameters_menu"),
-                                document.getElementById("torus_parameters_menu")];
-
-    const updateMeasurementEvent = new Event('measurements_updated');
-
+                                document.getElementById("torus_parameters_menu"),
+                                document.getElementById("spherical_parameters_menu"),
+                                document.getElementById("hemispherical_parameters_menu")];
 
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
@@ -548,6 +657,7 @@
                 alert("Please enter numeric input in all fields: triangular prism specifications");
                 return;
             }
+        //Replace torus values if necessary
         } else if(mts.selectedIndex == 5) { //TORUS
             majorRadius = parseInt(document.getElementById("torus_major_radius_field").value);
             minorRadius = parseInt(document.getElementById("torus_minor_radius_field").value);
@@ -556,6 +666,23 @@
                 return;
             }
         }
+<<<<<<< HEAD
+=======
+        //Replace spherical values if necessary
+         else if(mts.selectedIndex == 6) { //SPHERICAL
+            radius = parseInt(document.getElementById("spherical_radius_field").value);
+            if(Number.isNaN(radius)) {
+                alert("Please enter numeric input in all fields: spherical specifications");
+                return;
+            }
+        } else if(mts.selectedIndex == 7) { //HEMISPHERICAL
+            radius = parseInt(document.getElementById("hemispherical_radius_field").value);
+            if(Number.isNaN(radius)) {
+                alert("Please enter numeric input in all fields: hemispherical specifications");
+                return;
+            }
+        }
+>>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
@@ -736,10 +863,77 @@
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
+    function calculateSphericalVolumeGals(radius, sensorBottom, sensorTop) {
+
+        if(liquidLevel == 0) {
+            if(sensorBottom == 0) {
+                return "Empty";
+            } else {
+                return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
+            }
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = (1.3333 * 3.1415 * radius * radius * radius);
+
+        return (liquidVolume / 231).toFixed(2) + " gal";
+    }
+
+    function calculateSphericalVolumeLiters(radius, sensorBottom, sensorTop, liquidLevel) {
+
+        if(liquidLevel == 0 && sensorBottom > 0) {
+                return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
+            }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = (1.3333 * 3.1415 * radius * radius * radius);
+
+        return (liquidVolume / 61.024).toFixed(2) + "L";
+    }
+
+    function calculateHemisphericalVolumeGals(radius, sensorBottom, sensorTop) {
+
+        if(liquidLevel == 0) {
+            if(sensorBottom == 0) {
+                return "Empty";
+            } else {
+                return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
+            }
+        }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = (2 * 3.1415 * (radius * radius * radius/3));
+
+        return (liquidVolume / 231).toFixed(2) + " gal";
+    }
+
+    function calculateHemisphericalVolumeLiters(radius, sensorBottom, sensorTop, liquidLevel) {
+
+        if(liquidLevel == 0 && sensorBottom > 0) {
+                return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
+            }
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
+
+        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+
+        var liquidVolume = (2 * 3.1415 * (radius * radius * radius/3));
+
+        return (liquidVolume / 61.024).toFixed(2) + "L";
+    }
+
 
     //Setting measurement field default values to those stored in the db, this should execute on document load
     document.getElementById("rectangular_width_field").value = {{settings[2]}};
-    document.getElementById("cylindrical_radius_field").value = {{settings[4]}};
     document.getElementById("triangular_prism_base_field").value = {{settings[8]}};
     document.getElementById("torus_major_radius_field").value = {{settings[9]}};
     document.getElementById("torus_minor_radius_field").value = {{settings[10]}};
@@ -766,6 +960,9 @@
         document.getElementById("rectangular_height_field").value = 0;
         document.getElementById("cylindrical_height_field").value = {{settings[5]}};
         document.getElementById("triangular_prism_height_field").value = 0;
+        document.getElementById("cylindrical_radius_field").value = {{settings[4]}};
+        document.getElementById("spherical_radius_field").value = 0;
+        document.getElementById("hemispherical_radius_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
 
@@ -783,6 +980,22 @@
         mts.selectedIndex = 5;
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
         document.getElementById("liquid_volume").innerHTML = calculateTorusVolumeGals({{settings[9]}}, {{settings[10]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+
+    } else if('{{settings[1]}}' == "Spherical Tank") {
+        mts.selectedIndex = 6;
+        document.getElementById("cylindrical_radius_field").value = 0;
+        document.getElementById("hemispherical_radius_field").value = 0;
+        document.getElementById("spherical_radius_field").value = {{settings[4]}};
+        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+        document.getElementById("liquid_volume").innerHTML = calculateSphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+
+    } else if('{{settings[1]}}' == "Hemispherical Tank") {
+        mts.selectedIndex = 7;
+        document.getElementById("cylindrical_radius_field").value = 0;
+        document.getElementById("spherical_radius_field").value = 0;
+        document.getElementById("hemispherical_radius_field").value = {{settings[4]}};
+        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
+        document.getElementById("liquid_volume").innerHTML = calculateHemisphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
     }
 
     document.getElementById("sensor_bottom_height").value = {{settings[6]}}

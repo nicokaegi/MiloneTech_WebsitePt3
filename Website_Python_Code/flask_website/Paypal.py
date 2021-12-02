@@ -11,7 +11,7 @@ def ipn():
         for x, y in values.iteritems():
             arg += "&{x}={y}".format(x=x, y=y)
 
-        validate_url = 'https://api-m.sandbox.paypal.com' \
+        validate_url = 'https://www.sandbox.paypal.com' \
                        '/cgi-bin/webscr?cmd=_notify-validate{arg}' \
             .format(arg=arg)
         r = requests.get(validate_url)

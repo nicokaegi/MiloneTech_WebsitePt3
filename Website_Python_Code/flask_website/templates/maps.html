@@ -1,16 +1,26 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Maps {% endblock %} 
+{% block title %} Maps {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
+
 {% block stylesheets %}{% endblock stylesheets %}
 
 
 {% block content %}
 
+  <body>
 <h1>Maps</h1>
 <!--The div element for the map -->
 <div id="map"></div>
+
+    <div style="width: 23%; height: 300px; border: solid black 2px;">Set Points</div>
+    <form>
+      <input type="text">
+      <input type="submit" value="submit">
+    </form>
+
+    <button type="button">Default</button>
 
 <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
 <script
@@ -25,5 +35,3 @@
 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSClPi4WlCV38A2MafigdfMPKQL7RwLnY&callback=initMap">
 </script>
 {% endblock javascripts%}
-
-
