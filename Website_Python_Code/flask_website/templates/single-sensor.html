@@ -119,6 +119,7 @@
         });
     }
 
+
     // Nico's work. Use this function
     function gate_date_range(first_date, second_date) {
         chart_mode = first_date
@@ -145,6 +146,42 @@
     }
 
     //gate_date_range('2021/10/31', '2021/10/27');
+
+    function get_sensor_group(group_number){
+        var arr = {"number": group_number}
+        value = null
+        $.ajax({
+            url: '/sensors/get-group',
+            type:"GET",
+            data: arr,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async:false,
+            success: function(response){
+                value = response
+            }
+        })
+        return value
+    }
+
+    function get_point_elevations(list_of_locations){
+        data_to_send = {'data': list_of_locations}
+        value = null
+        $.ajax({
+            url: '/sensors/get-elevations',
+            type:"GET",
+            data: data_to_send,
+            contentType: 'text; charset=utf-8',
+            dataType: 'json',
+            async:false,
+            success: function(response){
+                value = response
+            }
+        })
+        return value
+    }
+
+
 
     function customDate(){
         var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
@@ -214,15 +251,10 @@
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
-<<<<<<< HEAD
                             hoverBorderWidth:3,
                             hoverBorderColor:'#000',
                             barThickness: 15
-=======
-                            hoverBorderWidth:1,
-                            hoverBorderColor:'white',
-                            barThickness:15
->>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
+
                         }]
                     },
                     options:{
@@ -563,6 +595,7 @@
         <div class="form-group form-inline">
             <div style="width:30; margin-right:5%;">
                 <h4>Current Liquid Volume: <b id="liquid_volume">--</b></h4>
+                <button onclick="get_point_elevations([39.70179236136183, -75.12333012077949])">Test</button>
             </div>
             <div style="width:30">
                 <h4>Current Liquid Height: <b id="liquid_height">--</b></h4>
@@ -666,8 +699,6 @@
                 return;
             }
         }
-<<<<<<< HEAD
-=======
         //Replace spherical values if necessary
          else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
@@ -682,7 +713,7 @@
                 return;
             }
         }
->>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
+
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
