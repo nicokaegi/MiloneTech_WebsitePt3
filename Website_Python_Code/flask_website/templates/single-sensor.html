@@ -118,6 +118,41 @@
         });
     }
 
+    function get_sensor_group(group_number){
+        var arr = {"number": group_number}
+        value = null
+        $.ajax({
+            url: '/sensors/get-group',
+            type:"GET",
+            data: arr,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async:false,
+            success: function(response){
+                value = response
+            }
+        })
+        return value
+    }
+
+    function get_point_elevations(list_of_locations){
+        data_to_send = {'data': list_of_locations}
+        value = null
+        $.ajax({
+            url: '/sensors/get-elevations',
+            type:"GET",
+            data: data_to_send,
+            contentType: 'text; charset=utf-8',
+            dataType: 'json',
+            async:false,
+            success: function(response){
+                value = response
+            }
+        })
+        return value
+    }
+
+
     function customDate(){
         var date1 = prompt('Starting Date eg. MM/DD/YYYY');
         var date2 = prompt('Ending Date eg. MM/DD/YYYY');
@@ -528,6 +563,7 @@
         <div class="form-group form-inline">
             <div style="width:30; margin-right:5%;">
                 <h4>Current Liquid Volume: <b id="liquid_volume">--</b></h4>
+                <button onclick="get_point_elevations([39.70179236136183, -75.12333012077949])">Test</button>
             </div>
             <div style="width:30">
                 <h4>Current Liquid Height: <b id="liquid_height">--</b></h4>
