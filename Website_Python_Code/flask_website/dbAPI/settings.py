@@ -60,7 +60,7 @@ def store_sensor_settings(new_settings):
         measurement_type = new_settings[1]
         width = new_settings[2]
         length = new_settings[3]
-        radius = new_settings[4]
+        diameter = new_settings[4]
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
@@ -68,7 +68,7 @@ def store_sensor_settings(new_settings):
             result = connection.execute("insert into sensor_settings "
                                         "values ('{}', '{}', {}, {}, {}, "
                                         "{}, {}, {})"
-                                        .format(sensor_id, measurement_type, width, length, radius,
+                                        .format(sensor_id, measurement_type, width, length, diameter,
                                                 height, sensor_bottom_height, sensor_top_height))
         return True
     except exc.SQLAlchemyError as e:
@@ -82,7 +82,7 @@ def update_sensor_settings(new_settings):
         measurement_type = new_settings[1]
         width = new_settings[2]
         length = new_settings[3]
-        radius = new_settings[4]
+        diameter = new_settings[4]
         height = new_settings[5]
         sensor_bottom_height = new_settings[6]
         sensor_top_height = new_settings[7]
@@ -92,12 +92,12 @@ def update_sensor_settings(new_settings):
                                         "measurementType = '{}', "
                                         "width = {}, "
                                         "length = {}, "
-                                        "radius = {}, "
+                                        "diameter = {}, "
                                         "height = {}, "
                                         "sensorBottomHeight = {}, "
                                         "sensorTopHeight = {} "
                                         "where sensorID = '{}'"
-                                        .format(measurement_type, width, length, radius,
+                                        .format(measurement_type, width, length, diameter,
                                                 height, sensor_bottom_height, sensor_top_height, sensor_id))
             return True
     except exc.SQLAlchemyError as e:
