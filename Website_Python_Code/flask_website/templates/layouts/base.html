@@ -114,13 +114,18 @@
     url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer',
 
   });
-
-
+  
   var map = new L.Map('map', {
     center: new L.LatLng(39.87734,-75.06462),
     zoom: 15,
     layers: [base, heatmapLayer]
   });
+
+  var overlayMaps = {
+      "heat map": heatmapLayer
+  };
+
+  L.control.layers(null, overlayMaps).addTo(map)
 
   var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : .2, sensor_length : 50/(12*3.2808)},
                  {id : 'center of town', lat : 39.87734, lng : -75.06462, elevation : 23, water_level : .05, sensor_length : 50/(12*3.2808)}];
@@ -143,7 +148,7 @@
     temp_elvs = []
     long = bottom_corner[1]
     for(let sip = 0; sip < test_elevations[hip].length; sip += 3){
-      new_latlang = new L.LatLng(lat,long, test_elevations[hip][sip])
+      new_latlang = new L.LatLng(lat,long)
       temp_elvs.push(new_latlang)
       long += step[1]*3
     }
