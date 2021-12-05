@@ -1,5 +1,5 @@
 from flask import render_template, url_for, flash, redirect, Response, request
-
+from elevation import get_point_elevations
 import datetime
 import io
 import base64
@@ -251,6 +251,33 @@ def sensors():
 def sensor_group_route(sensor_group):
     current_user.initialize_user_data()
     return render_template('sensor-group.html', account_info=current_user.user_data, groupFilter=sensor_group)
+
+#function to use with ajax to grab the sensors within a specific user
+#will return an giant json of the sensors
+@app.route("/sensors/get-group", methods=["GET"])
+@login_required
+def provide_group_of_sensors():
+    val = request.args.to_dict()['number']
+    current_user.initialize_user_data()
+    
+    group = current_user.user_data["sensor_data"][val]
+    return group
+
+
+#function to get elevation points
+#Awkward workaround to be able to send lists
+@app.route("/sensors/get-elevations", methods=["GET"])
+@login_required
+def point_elevations():
+    data = request.args.getlist('data[]')
+    values = []
+    for element in data:
+        values.append(float(element))
+    values = get_point_elevations(data)
+    return {'data[]':values}
+
+    
+    
 
 
 # Returns the html page for a single sensor, where measurement can be configured
@@ -705,6 +732,15 @@ def reset_token(token):
         return redirect(url_for('login'))
 
     return render_template('reset_token.html', title="Reset Password", form=form)
+
+
+#Client side request function in order to get the elevations of the passed in sensors
+#author: Dylan Perry
+@app.route("/elevations", methods=["GET"])
+def elevations():
+
+    pass
+
 
 
 #@app.route("/confirm_")
