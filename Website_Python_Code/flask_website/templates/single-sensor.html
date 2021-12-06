@@ -612,7 +612,7 @@
                 alert("Please enter numeric input in all fields: spherical specifications");
                 return;
             }
-        } 
+        }
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
@@ -663,7 +663,7 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
@@ -731,7 +731,7 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
@@ -766,11 +766,11 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2));
+        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2)));
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
@@ -785,7 +785,7 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2));
+        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2)));
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
@@ -800,7 +800,8 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
@@ -837,10 +838,10 @@
     } else if('{{settings[1]}}' == "Rectangular Tank") {
         mts.selectedIndex = 2;
         document.getElementById("rectangular_width_field").value = {{settings[2]}};
-	document.getElementById("rectangular_length_field").value = {{settings[3]}};
+	      document.getElementById("rectangular_length_field").value = {{settings[3]}};
         document.getElementById("rectangular_height_field").value = {{settings[5]}};
         document.getElementById("cylindrical_height_field").value = 0;
-	document.getElementById("vertical_oval_height_field").value = 0;
+	      document.getElementById("vertical_oval_height_field").value = 0;
         document.getElementById("vertical_oval_length_field").value = 0;
         document.getElementById("vertical_capsule_length_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
