@@ -1,5 +1,6 @@
 from sqlalchemy import exc
 from . import db
+import traceback
 
 
 def get_acc_id_by_sens_id(sens_id):
@@ -134,4 +135,20 @@ def set_sensor_group(sens_id, sens_group):
                                .format(sens_group, sens_id))
             return True
     except exc.SQLAlchemyError:
+        return False
+
+
+def get_coordinates(sens_id):
+    try:
+        with db.engine.connect() as connection:
+            sens = []
+            result = connection.execute("select latitude, longitude "
+                                        "from sensor_location " #not sure if this needs to be changed
+                                        "where sensorID = '{}'" # This is the code from sens_id
+                                        .format(sens_id))
+            for row in result:
+                sens.append(row)
+            return sens
+    except  exc.SQLAlchemyError: 
+        traceback.print_exc()
         return False

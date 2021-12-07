@@ -18,5 +18,4 @@ admin = Admin(app, name='MiloneTech Admin Page', template_mode='bootstrap4')
 
 
 socketio = SocketIO(app, logger=False)
-
 from flask_website import routes

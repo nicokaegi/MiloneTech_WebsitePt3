@@ -272,14 +272,16 @@ def single_sensor_page_route(sensor_id):
 
     sensor_settings = db.settings.get_sensor_settings(sensor_id)
 
+    print(sensor_id, sensor_settings, file=sys.stdout)
+
     return render_template('single-sensor.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings)
 
 
 # Send POST requests to here to receive data points within a certain timeframe
 # See below for details on the contents of the POST
-@app.route("/sensors/get-range", methods=["POST"])
+@app.route("/sensors/get-date", methods=["POST"])
 @login_required
-def get_sensor_data_range_route():
+def get_sensor_date_route():
     # A JSON should have been passed via the post with items "start_date" and "end_date", whose
     # elements are the lower and upper time bounds of the sensor readings we wish to query, in
     # datetime format: 'YYYY-MM-DD HH:MM:SS'
@@ -315,6 +317,46 @@ def get_sensor_data_range_route():
 
     return chart_data
 
+@app.route("/sensors/get-date-range", methods=["POST"])
+@login_required
+def get_sensor_date_range_route():
+    # A JSON should have been passed via the post with items "start_date" and "end_date", whose
+    # elements are the lower and upper time bounds of the sensor readings we wish to query, in
+    # datetime format: 'YYYY-MM-DD HH:MM:SS'
+    data = request.json
+    first_date = datetime.datetime.strptime(data['first_date'], "%b %d %Y %I:%M%p")
+    second_date = datetime.datetime.strptime(data['second_date'], "%b %d %Y %I:%M%p")
+    time_delta = first_date - second_date
+    #start_date.replace(hour=0, minute=0, second=0)
+    sensor_id = data["sensor_id"]
+
+    # Dynamically determine number of datapoints to display
+
+    num_datapoints = 0
+    if time_delta.days >= 30:
+        num_datapoints = 60
+    elif time_delta.days >= 7:
+        num_datapoints = 24
+    else:
+        num_datapoints = 24
+
+    # Ensure that only the owner of the sensor can view this data
+    # Comment the following if-statement out if you need send test requests from an outside source like Reqbin
+    # TODO: this 403 should be bypassed if current_user is an admin
+    if str(db.sensors.get_acc_id_by_sens_id(sensor_id)) != str(current_user.id):
+        return "Unauthorized", 403
+
+    # Grab the data using the appropriate database function. Adjust the max_size argument to the number
+    # of data points you think this function should return, or remove it for all of them (potentially thousands)
+    data = db.sensor_readings.get_sensor_data_points_by_date(sensor_id, second_date, end_date=first_date, max_size=num_datapoints)
+    # Then parse it into a new JSON, chart_data, for a more usable form in the chart on the clientside
+
+    chart_data = {"x_vals": [], "y_vals": []}
+    for datapoint in data:
+        chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
+        chart_data["y_vals"].append(datapoint[1])
+
+    return chart_data
 
 # POST sensor  settings to the db
 @app.route("/sensors/sensor-settings/store", methods=["POST"])
@@ -629,7 +671,7 @@ def reset_request():
 
     return render_template('reset_request.html', title="Reset Password", form=form)
 
-
+'''
 @app.route("/confirm_account/<user_id>", methods=['GET', 'POST'])
 def confirm_account(user_id):
     fname, lname = get_name_by_id(user_id)
@@ -644,7 +686,7 @@ def confirm_account(user_id):
             return "account deleted"
 
     return render_template('confirm.html', title="confirm_account", user_id=user_id, form=form, fname=fname, lname=lname)
-
+'''
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
     user = load_user(User.verify_reset_token(token))
