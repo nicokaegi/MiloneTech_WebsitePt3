@@ -17,7 +17,7 @@
             <script>
 
             //an object of key/value pairs of form sensor ID/canvas ID
-            var barcharts = {};
+            var linecharts = {};
 
             //Catches and responds to SocketIO messages (mostly for debug)
             socket.on('message', function(msg) {
@@ -36,7 +36,7 @@
                 var datapoint = new_data[1];
 
                 //grab the chart we're updating
-                var chart = barcharts[sid];
+                var chart = linecharts[sid];
 
 
 
@@ -61,7 +61,7 @@
 
             function get_chart_by_sid(sid) {
             //Returns the Chart.js object associated with a sensor by ID
-                return barcharts[sid];
+                return linecharts[sid];
             }
 
             </script>
@@ -100,8 +100,8 @@
                             Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
                             Chart.defaults.global.defaultFontColor = '#777';
 
-                            var barchart{{sensorID}} = new Chart(myChart{{sensorID}}, {
-                              type:'bar',
+                            var linechart{{sensorID}} = new Chart(myChart{{sensorID}}, {
+                              type:'line',
                               data:{
                                 labels: {{ sensor.x_vals | tojson }},
                                 datasets:[{
@@ -111,8 +111,7 @@
                                   borderWidth:1, //Effects plotted line on chart
                                   borderColor:'whiite',
                                   hoverBorderWidth:1,
-                                  hoverBorderColor:'white',
-                                  barThickness:15
+                                  hoverBorderColor:'white'
                                 }]
                               },
                               options:{
@@ -159,7 +158,7 @@
                             });
 
                           //add to manual tracking
-                          barcharts['{{sensorID}}'] = barchart{{sensorID}};
+                          linecharts['{{sensorID}}'] = linechart{{sensorID}};
                           </script>
 
 
