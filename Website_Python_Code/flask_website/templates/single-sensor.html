@@ -62,17 +62,14 @@
             } else if('{{settings[1]}}' == 'Cylindrical Tank') {
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
                 document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
-            } else if('{{settings[1]}}' == 'Triangular Prism Tank') {
-                document.getElementById("liquid_volume").innerHTML = calculateTriangularPrismVolumeGals({{settings[8]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+            } else if('{{settings[1]}}' == 'Vertical Oval Tank') {
+                document.getElementById("liquid_volume").innerHTML = calculateVerticalOvalVolumeGals({{settings[3]}}, {{settings[2]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-            } else if('{{settings[1]}}' == 'Torus Tank') {
-                document.getElementById("liquid_volume").innerHTML = calculateTorusVolumeGals({{settings[9]}}, {{settings[10]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+            } else if('{{settings[1]}}' == 'Vertical Capsule Tank') {
+                document.getElementById("liquid_volume").innerHTML = calculateVerticalCapsuleVolumeGals({{settings[3]}}, {{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
             } else if('{{settings[1]}}' == 'Spherical Tank') {
                 document.getElementById("liquid_volume").innerHTML = calculateSphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
-                document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-            } else if('{{settings[1]}}' == 'Hemispherical Tank') {
-                document.getElementById("liquid_volume").innerHTML = calculateHemisphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
                 document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
             }
     }
@@ -305,10 +302,9 @@
                         <option>Height Only</option>
                         <option>Rectangular Tank</option>
                         <option>Cylindrical Tank</option>
-		        <option>Triangular Prism Tank</option>
-		        <option>Torus Tank</option>
+		        <option>Vertical Oval Tank</option>
+		        <option>Vertical Capsule Tank</option>
                         <option>Spherical Tank</option>
-                        <option>Hemispherical Tank</option>
                     </select>
                     <script>
                         var mts = document.getElementById("measurement_type_selector");
@@ -393,9 +389,9 @@
                         </div>
                     </div>
                     <div style="width:40%">
-                        <label for="cylindrical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
+                        <label for="cylindrical_diameter_field" style="float:left;"><strong>Tank Diameter</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="cylindrical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            <input id="cylindrical_diameter_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
                     </div>
@@ -407,80 +403,80 @@
             </div>
             <!--- End of Cylindrical Parameters Menu --->
 
-            <!--- Triangular Prism Parameters Menu --->
-            <div id="triangular_prism_parameters_menu" style="display:none">
-                <p>For triangular prism tanks.</p>
+            <!--- Vertical Oval Parameters Menu --->
+            <div id="vertical_oval_parameters_menu" style="display:none">
+                <p>For vertical oval tanks.</p>
 
                 <!--- Tank Parameter Fields --->
                 <div class="form-group form-inline">
-                    <!--- Base Field --->
+                    <!--- Length Field --->
                     <div style="width:30%">
-                        <label for="triangular_prism_base_field" style="float:left;"><strong>Tank Base</strong></label><br>
+                        <label for="vertical_oval_length_field" style="float:left;"><strong>Tank Length</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="triangular_prism_base_field"  name="Width" style="float:left; width:50%; margin-right:5px">
+                            <input id="vertical_oval_length_field"  name="Width" style="float:left; width:50%; margin-right:5px">
                             in.
                         </div>
                     </div>
-                    <!--- Length Field --->
+                    <!--- Width Field --->
                     <div style="width:30%">
-                        <label for="triangular_prism_length_field" style="float:left;"><strong>Tank Length</strong></label><br>
+                        <label for="vertical_oval_width_field" style="float:left;"><strong>Tank Width</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="triangular_prism_length_field" name="Width" style="float:left; width:50%; margin-right:5px">
+                            <input id="vertical_oval_width_field" name="Width" style="float:left; width:50%; margin-right:5px">
                             in.
                         </div>
                     </div>
 
                     <!--- Height Field --->
                     <div style="width:30%">
-                        <label for="triangular_prism_height_field" style="float:left;"><strong>Tank Height</strong></label><br>
+                        <label for="vertical_oval_height_field" style="float:left;"><strong>Tank Height</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="triangular_prism_height_field" name="Width" style="float:left; width:50%; margin-right:5px">
+                            <input id="vertical_oval_height_field" name="Width" style="float:left; width:50%; margin-right:5px">
                             in.
                         </div>
                     </div>
-                    <!--- Triangular Prism Tank --->
-                    <div id="triangular_prism_image">
+                    <!--- Vertical Oval Tank --->
+                    <div id="vertical_oval_image">
                         <center><img src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
                     </div>
                 </div>
             </div>
-            <!--- End of Triangular Prism Parameters Menu --->
+            <!--- End of Vertical Oval Parameters Menu --->
 
-            <!--- Torus Parameters Menu --->
-            <div id="torus_parameters_menu" style="display:none">
-                <p>For torus tanks.</p>
-                <!--- Major Radius Field --->
+            <!--- Vertical Capsule Parameters Menu --->
+            <div id="vertical_capsule_parameters_menu" style="display:none">
+                <p>For vertical capsule tanks.</p>
+                <!--- Side Length Field --->
                 <div class="form-group form-inline">
                     <div style="width:40%">
-                        <label for="torus_major_radius_field" style="float:left;"><strong>Tank Major Radius</strong></label><br>
+                        <label for="vertical_capsule_length_field" style="float:left;"><strong>Tank Side Length</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="torus_major_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            <input id="vertical_capsule_length_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
                     </div>
                     <div style="width:40%">
-                        <label for="torus_minor_radius_field" style="float:left;"><strong>Tank Minor Radius</strong></label><br>
+                        <label for="vertical_capsule_diameter_field" style="float:left;"><strong>Tank Diameter</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="torus_minor_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            <input id="vertical_capsule_diameter_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
                     </div>
-                    <!--- Torus Tank --->
-                    <div id="torus_image">
+                    <!--- Vertical Capsule Tank --->
+                    <div id="vertical_capsule_image">
                         <center><img src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
                     </div>
                 </div>
             </div>
-            <!--- End of Torus Parameters Menu --->
+            <!--- End of Vertical Capsule Parameters Menu --->
 
             <!--- Spherical Parameters Menu --->
             <div id="spherical_parameters_menu" style="display:none">
                 <p>For spherical tanks.</p>
                 <div class="form-group form-inline">
                     <div style="width:40%">
-                        <label for="spherical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
+                        <label for="spherical_diameter_field" style="float:left;"><strong>Tank Diameter</strong></label><br>
                         <div class="form-group form-inline">
-                            <input id="spherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
+                            <input id="spherical_diameter_field" name="Width" style="float:left; width:40%; margin-right:5px">
                             in.
                         </div>
                     </div>
@@ -490,24 +486,6 @@
                 </div>
             </div>
             <!--- End of Spherical Parameters Menu --->
-
-            <!--- Hemispherical Parameters Menu --->
-            <div id="hemispherical_parameters_menu" style="display:none">
-                <p>For hemispherical tanks.</p>
-                <div class="form-group form-inline">
-                    <div style="width:40%">
-                        <label for="hemispherical_radius_field" style="float:left;"><strong>Tank Radius</strong></label><br>
-                        <div class="form-group form-inline">
-                            <input id="hemispherical_radius_field" name="Width" style="float:left; width:40%; margin-right:5px">
-                            in.
-                        </div>
-                    </div>
-                    <div id="hemispherical_image">
-                        <img src="https://i.stack.imgur.com/kIeFB.png" style="position:relative; top:10px" width="120" height="120">
-                    </div>
-                </div>
-            </div>
-            <!--- End of Hemispherical Parameters Menu --->
 
             <br>
 
@@ -575,10 +553,9 @@
                                 document.getElementById("height_only_parameters_menu"),
                                 document.getElementById("rectangular_parameters_menu"),
                                 document.getElementById("cylindrical_parameters_menu"),
-                                document.getElementById("triangular_prism_parameters_menu"),
-                                document.getElementById("torus_parameters_menu"),
-                                document.getElementById("spherical_parameters_menu"),
-                                document.getElementById("hemispherical_parameters_menu")];
+                                document.getElementById("vertical_oval_parameters_menu"),
+                                document.getElementById("vertical_capsule_parameters_menu"),
+                                document.getElementById("spherical_parameters_menu")];
 
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
@@ -607,13 +584,10 @@
         //Initialize necessary values at 0
         var width = 0;
         var length = 0;
-        var radius = 0;
+        var diameter = 0;
         var height = 0;
         var sensorBottomHeight = 0;
         var sensorTopHeight = 0;
-        var base = 0;
-        var majorRadius = 0;
-        var minorRadius = 0;
 
         //Replace sensor top/bottom height values if necessary
         if(mts.selectedIndex > 0) {
@@ -636,41 +610,35 @@
             }
         //Replace cylindrical values if necessary
         } else if(mts.selectedIndex == 3) { //CYLINDRICAL
-            radius = parseInt(document.getElementById("cylindrical_radius_field").value);
+            diameter = parseInt(document.getElementById("cylindrical_diameter_field").value);
             height = parseInt(document.getElementById("cylindrical_height_field").value);
-            if(Number.isNaN(radius) || Number.isNaN(height)) {
+            if(Number.isNaN(diameter) || Number.isNaN(height)) {
                 alert("Please enter numeric input in all fields: cylindrical specifications");
                 return;
             }
-        //Replace triangular prism values if necessary
-        } else if(mts.selectedIndex == 4) { //TRIANGULAR PRISM
-            base = parseInt(document.getElementById("triangular_prism_base_field").value);
-            length = parseInt(document.getElementById("triangular_prism_length_field").value);
-            height = parseInt(document.getElementById("triangular_prism_height_field").value);
-            if(Number.isNaN(base) || Number.isNaN(length) || Number.isNaN(height)) {
-                alert("Please enter numeric input in all fields: triangular prism specifications");
+        //Replace vertical oval values if necessary
+        } else if(mts.selectedIndex == 4) { //VERTICAL OVAL
+            length = parseInt(document.getElementById("vertical_oval_length_field").value);
+            width = parseInt(document.getElementById("vertical_oval_width_field").value);
+            height = parseInt(document.getElementById("vertical_oval_height_field").value);
+            if(Number.isNaN(length) || Number.isNaN(width) || Number.isNaN(height)) {
+                alert("Please enter numeric input in all fields: vertical oval specifications");
                 return;
             }
-        //Replace torus values if necessary
-        } else if(mts.selectedIndex == 5) { //TORUS
-            majorRadius = parseInt(document.getElementById("torus_major_radius_field").value);
-            minorRadius = parseInt(document.getElementById("torus_minor_radius_field").value);
-            if(Number.isNaN(majorRadius) || Number.isNaN(minorRadius)) {
-                alert("Please enter numeric input in all fields: torus specifications");
+        //Replace vertical capsule values if necessary
+        } else if(mts.selectedIndex == 5) { //VERTICAL CAPSULE
+            length = parseInt(document.getElementById("vertical_capsule_length_field").value);
+            diameter = parseInt(document.getElementById("vertical_capsule_diameter_field").value);
+            if(Number.isNaN(length) || Number.isNaN(diameter)) {
+                alert("Please enter numeric input in all fields: vertical capsule specifications");
                 return;
             }
         }
         //Replace spherical values if necessary
          else if(mts.selectedIndex == 6) { //SPHERICAL
-            radius = parseInt(document.getElementById("spherical_radius_field").value);
-            if(Number.isNaN(radius)) {
+            diameter = parseInt(document.getElementById("spherical_diameter_field").value);
+            if(Number.isNaN(diameter)) {
                 alert("Please enter numeric input in all fields: spherical specifications");
-                return;
-            }
-        } else if(mts.selectedIndex == 7) { //HEMISPHERICAL
-            radius = parseInt(document.getElementById("hemispherical_radius_field").value);
-            if(Number.isNaN(radius)) {
-                alert("Please enter numeric input in all fields: hemispherical specifications");
                 return;
             }
         }
@@ -680,13 +648,10 @@
                         "measurementType": document.getElementById("measurement_type_selector").value,
                         "width": width,
                         "length": length,
-                        "radius": radius,
+                        "diameter": diameter,
                         "height": height,
                         "sensorBottomHeight": sensorBottomHeight,
                         "sensorTopHeight": sensorTopHeight,
-                        "base": base,
-                        "majorRadius": majorRadius,
-                        "minorRadius": minorRadius,
                         };
 
         //Define a request, open as post, delineate that we're sending JSON
@@ -727,7 +692,7 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
@@ -756,7 +721,7 @@
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateCylindricalVolumeGals(radius, height, sensorBottom, sensorTop, liquidLevel) {
+    function calculateCylindricalVolumeGals(diameter, height, sensorBottom, sensorTop, liquidLevel) {
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
                 return "Empty";
@@ -767,24 +732,24 @@
 
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-        var liquidVolume = 3.1415 * radius * radius * height;
+        var liquidVolume = 3.1415 * (diameter/2) * (diameter/2) * height;
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
-    function calculateCylindricalVolumeLiters(radius, height, sensorBottom, sensorTop, liquidLevel) {
+    function calculateCylindricalVolumeLiters(diameter, height, sensorBottom, sensorTop, liquidLevel) {
         if(liquidLevel == 0 && sensorBottom > 0) {
                 return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
         }
 
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-        var liquidVolume = 3.1415 * radius * radius * height;
+        var liquidVolume = 3.1415 * (diameter/2) * (diameter/2) * height;
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateTriangularPrismVolumeGals(base, length, height, sensorBottom, sensorTop) {
+    function calculateVerticalOvalVolumeGals(length, width, height, sensorBottom, sensorTop) {
         //The height of the liquid relative to the sensor
 
         if(liquidLevel == 0) {
@@ -795,16 +760,16 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = 0.5 * (base * length) * height;
+        var liquidVolume = (((height - width) * width) + (3.1415 * ((width/2) * (width/2)))) * length;
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
-    function calculateTriangularPrismVolumeLiters(base, length, height, sensorBottom, sensorTop, liquidLevel) {
+    function calculateVerticalOvalVolumeLiters(length, width, height, sensorBottom, sensorTop, liquidLevel) {
         //The height of the liquid relative to the sensor
 
         if(liquidLevel == 0 && sensorBottom > 0) {
@@ -815,12 +780,12 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = 0.5 * (base * length) * height;
+        var liquidVolume = (((height - width) * width) + (3.1415 * ((width/2) * (width/2)))) * length;
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateTorusVolumeGals(majorRadius, minorRadius, sensorBottom, sensorTop) {
+    function calculateVerticalCapsuleVolumeGals(length, diameter, sensorBottom, sensorTop) {
 
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
@@ -830,16 +795,16 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (3.1415 * minorRadius * minorRadius) * (2 * 3.1415 * majorRadius);
+        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2)));
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
-    function calculateTorusVolumeLiters(majorRadius, minorRadius, sensorBottom, sensorTop, liquidLevel) {
+    function calculateVerticalCapsuleVolumeLiters(length, diameter, sensorBottom, sensorTop, liquidLevel) {
 
         if(liquidLevel == 0 && sensorBottom > 0) {
                 return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
@@ -849,12 +814,12 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (3.1415 * minorRadius * minorRadius) * (2 * 3.1415 * majorRadius);
+        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2)));
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateSphericalVolumeGals(radius, sensorBottom, sensorTop) {
+    function calculateSphericalVolumeGals(diameter, sensorBottom, sensorTop) {
 
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
@@ -864,16 +829,17 @@
             }
         }
 
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
+
+        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (1.3333 * 3.1415 * radius * radius * radius);
+        var liquidVolume = (1.3333 * 3.1415 * (diameter/2) * (diameter/2) * (diameter/2));
 
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
-    function calculateSphericalVolumeLiters(radius, sensorBottom, sensorTop, liquidLevel) {
+    function calculateSphericalVolumeLiters(diameter, sensorBottom, sensorTop, liquidLevel) {
 
         if(liquidLevel == 0 && sensorBottom > 0) {
                 return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
@@ -883,51 +849,13 @@
 
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (1.3333 * 3.1415 * radius * radius * radius);
-
-        return (liquidVolume / 61.024).toFixed(2) + "L";
-    }
-
-    function calculateHemisphericalVolumeGals(radius, sensorBottom, sensorTop) {
-
-        if(liquidLevel == 0) {
-            if(sensorBottom == 0) {
-                return "Empty";
-            } else {
-                return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
-            }
-        }
-
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100)
-
-        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-
-        var liquidVolume = (2 * 3.1415 * (radius * radius * radius/3));
-
-        return (liquidVolume / 231).toFixed(2) + " gal";
-    }
-
-    function calculateHemisphericalVolumeLiters(radius, sensorBottom, sensorTop, liquidLevel) {
-
-        if(liquidLevel == 0 && sensorBottom > 0) {
-                return "<" + ((width * length * sensorBottom)  / 61.024).toFixed(2) + "L";
-            }
-
-        var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
-
-        var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-
-        var liquidVolume = (2 * 3.1415 * (radius * radius * radius/3));
+        var liquidVolume = (1.3333 * 3.1415 * (diameter/2) * (diameter/2) * (diameter/2));
 
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
 
     //Setting measurement field default values to those stored in the db, this should execute on document load
-    document.getElementById("rectangular_width_field").value = {{settings[2]}};
-    document.getElementById("triangular_prism_base_field").value = {{settings[8]}};
-    document.getElementById("torus_major_radius_field").value = {{settings[9]}};
-    document.getElementById("torus_minor_radius_field").value = {{settings[10]}};
 
     if('{{settings[1]}}' == "None") {
         mts.selectedIndex = 0;
@@ -938,55 +866,60 @@
 
     } else if('{{settings[1]}}' == "Rectangular Tank") {
         mts.selectedIndex = 2;
-	document.getElementById("rectangular_length_field").value = {{settings[3]}};
+        document.getElementById("rectangular_width_field").value = {{settings[2]}};
+	      document.getElementById("rectangular_length_field").value = {{settings[3]}};
         document.getElementById("rectangular_height_field").value = {{settings[5]}};
         document.getElementById("cylindrical_height_field").value = 0;
-        document.getElementById("triangular_prism_height_field").value = 0;
-	document.getElementById("triangular_prism_length_field").value = 0;
+	      document.getElementById("vertical_oval_height_field").value = 0;
+        document.getElementById("vertical_oval_length_field").value = 0;
+        document.getElementById("vertical_capsule_length_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
 
     } else if('{{settings[1]}}' == "Cylindrical Tank") {
         mts.selectedIndex = 3;
-        document.getElementById("rectangular_height_field").value = 0;
         document.getElementById("cylindrical_height_field").value = {{settings[5]}};
-        document.getElementById("triangular_prism_height_field").value = 0;
-        document.getElementById("cylindrical_radius_field").value = {{settings[4]}};
-        document.getElementById("spherical_radius_field").value = 0;
-        document.getElementById("hemispherical_radius_field").value = 0;
+        document.getElementById("rectangular_height_field").value = 0;
+        document.getElementById("vertical_oval_height_field").value = 0;
+        document.getElementById("cylindrical_diameter_field").value = {{settings[4]}};
+        document.getElementById("vertical_capsule_diameter_field").value = 0;
+        document.getElementById("spherical_diameter_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateCylindricalVolumeGals({{settings[4]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
 
-    } else if('{{settings[1]}}' == "Triangular Prism Tank") {
+    } else if('{{settings[1]}}' == "Vertical Oval Tank") {
         mts.selectedIndex = 4;
         document.getElementById("rectangular_height_field").value = 0;
         document.getElementById("cylindrical_height_field").value = 0;
-        document.getElementById("triangular_prism_height_field").value = {{settings[5]}};
+        document.getElementById("vertical_oval_height_field").value = {{settings[5]}};
+        document.getElementById("cylindrical_height_field").value = 0;
+        document.getElementById("vertical_capsule_length_field").value = 0;
         document.getElementById("rectangular_length_field").value = 0;
-        document.getElementById("triangular_prism_length_field").value = {{settings[3]}};
-        document.getElementById("liquid_volume").innerHTML = calculateTriangularPrismVolumeGals({{settings[8]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+        document.getElementById("vertical_oval_length_field").value = {{settings[3]}};
+        document.getElementById("vertical_oval_width_field").value = {{settings[2]}};
+        document.getElementById("rectangular_width_field").value = 0;
+        document.getElementById("liquid_volume").innerHTML = calculateVerticalOvalVolumeGals({{settings[3]}}, {{settings[2]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
 
-    } else if('{{settings[1]}}' == "Torus Tank") {
+    } else if('{{settings[1]}}' == "Vertical Capsule Tank") {
         mts.selectedIndex = 5;
+        document.getElementById("vertical_oval_length_field").value = 0;
+        document.getElementById("rectangular_length_field").value = 0;
+        document.getElementById("vertical_capsule_length_field").value = {{settings[3]}};
+        document.getElementById("vertical_capsule_diameter_field").value = {{settings[4]}};
+        document.getElementById("cylindrical_diameter_field").value = 0;
+        document.getElementById("spherical_diameter_field").value = 0;
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-        document.getElementById("liquid_volume").innerHTML = calculateTorusVolumeGals({{settings[9]}}, {{settings[10]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
+        document.getElementById("liquid_volume").innerHTML = calculateVerticalCapsuleVolumeGals({{settings[3]}}, {{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
 
     } else if('{{settings[1]}}' == "Spherical Tank") {
         mts.selectedIndex = 6;
-        document.getElementById("cylindrical_radius_field").value = 0;
-        document.getElementById("hemispherical_radius_field").value = 0;
-        document.getElementById("spherical_radius_field").value = {{settings[4]}};
+        document.getElementById("vertical_capsule_diameter_field").value = 0;
+        document.getElementById("cylindrical_diameter_field").value = 0;
+        document.getElementById("spherical_diameter_field").value = {{settings[4]}};
         document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
         document.getElementById("liquid_volume").innerHTML = calculateSphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
 
-    } else if('{{settings[1]}}' == "Hemispherical Tank") {
-        mts.selectedIndex = 7;
-        document.getElementById("cylindrical_radius_field").value = 0;
-        document.getElementById("spherical_radius_field").value = 0;
-        document.getElementById("hemispherical_radius_field").value = {{settings[4]}};
-        document.getElementById("liquid_height").innerHTML = calculateLiquidHeight({{settings[6]}}, {{settings[7]}});
-        document.getElementById("liquid_volume").innerHTML = calculateHemisphericalVolumeGals({{settings[4]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
     }
 
     document.getElementById("sensor_bottom_height").value = {{settings[6]}}

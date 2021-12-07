@@ -371,7 +371,7 @@ def store_settings_route():
             request_data["measurementType"],
             request_data["width"],
             request_data["length"],
-            request_data["radius"],
+            request_data["diameter"],
             request_data["height"],
             request_data["sensorBottomHeight"],
             request_data["sensorTopHeight"]]
