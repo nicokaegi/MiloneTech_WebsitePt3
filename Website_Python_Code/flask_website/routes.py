@@ -1,10 +1,11 @@
 from flask import render_template, url_for, flash, redirect, Response, request
-from elevation import get_point_elevations
+#from elevation import get_point_elevations
 import datetime
 import io
 import base64
 import json
 import sys
+import requests
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
@@ -13,6 +14,8 @@ from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
+import json
+
 
 from pprint import pprint
 
@@ -259,25 +262,55 @@ def sensor_group_route(sensor_group):
 def provide_group_of_sensors():
     val = request.args.to_dict()['number']
     current_user.initialize_user_data()
-    
+
     group = current_user.user_data["sensor_data"][val]
     return group
 
+elevation_key = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxON1d
+                6emtZZlhBUk1YUHVlYXZPWXFUSzlib0pYIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxXNE1
+                Md1lxSXptd2dBelNwR1dZeDRGcEVXQU5PIiwib3JnYW5pemF0aW9uX2lkIjoiZGV2ZWxvcGVyfEs3d25
+                FT1dVeXB6bmJvc21wNzh2M3M4N0p4OEIiLCJpYXQiOjE2MzY0NjQ4MTB9.ohWcYRyqTGxZ1kqg2t3sCe
+                N6H1gibd143ezKnuWTcxs"""
+
+content_type = "Content-Type: application/json; charset=utf-8"
+
+carpet_request_url = "https://api.airmap.com/elevation/v1/ele/carpet"
+
+point_request_url =  "https://api.airmap.com/elevation/v1/ele"
+
+def convert_string_list(coordinate_list: list) -> str:
+    tmp_format_list= ""
+    for pair in coordinate_list:
+        for x in pair:
+            tmp_format_list += str(x) +","
+    tmp_format_list = tmp_format_list[:-1]
+    return tmp_format_list
+
+def add_param(building_url:str, param_name: str, param_data :object) -> list:
+    new_url = building_url+param_name+"="+param_data
+    return new_url
+
+def get_point_elevations(coordinate_list:list) -> list:
+    #coordinate_list = pairs(coordinate_list)
+    building_url = point_request_url + "?"
+    building_url = add_param(building_url, "points", convert_string_list(coordinate_list))
+    building_url = add_param(building_url, "X-API-Key", elevation_key)
+    building_url = add_param(building_url, "Content_Type", content_type)
+    response = requests.get(building_url)
+    extracted_data = json.loads(response.content)
+    return(extracted_data["data"])
 
 #function to get elevation points
 #Awkward workaround to be able to send lists
-@app.route("/sensors/get-elevations", methods=["GET"])
+@app.route("/sensors/get-elevations", methods=["POST"])
 @login_required
 def point_elevations():
-    data = request.args.getlist('data[]')
-    values = []
-    for element in data:
-        values.append(float(element))
+    data = json.loads(request.data.decode("utf-8"))["data"]
     values = get_point_elevations(data)
-    return {'data[]':values}
+    return {'data':values}
 
-    
-    
+
+
 
 
 # Returns the html page for a single sensor, where measurement can be configured

@@ -116,40 +116,6 @@
         });
     }
 
-    function get_sensor_group(group_number){
-        var arr = {"number": group_number}
-        value = null
-        $.ajax({
-            url: '/sensors/get-group',
-            type:"GET",
-            data: arr,
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            async:false,
-            success: function(response){
-                value = response
-            }
-        })
-        return value
-    }
-
-    function get_point_elevations(list_of_locations){
-        data_to_send = {'data': list_of_locations}
-        value = null
-        $.ajax({
-            url: '/sensors/get-elevations',
-            type:"GET",
-            data: data_to_send,
-            contentType: 'text; charset=utf-8',
-            dataType: 'json',
-            async:false,
-            success: function(response){
-                value = response
-            }
-        })
-        return value
-    }
-
 
     function customDate(){
         var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
