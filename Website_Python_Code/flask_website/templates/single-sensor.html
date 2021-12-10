@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var barchart
+    var linechart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -37,9 +37,9 @@
             liquidLevel = datapoint["Liquid %"];
 
             //This is Chart.js standard, push the datapoint label, then the datapoint in
-            barchart.data.labels.push(datapoint["Time Stamp"]);
-            barchart.data.labels.splice(0, 1);
-            barchart.data.datasets.forEach((dataset) => {
+            linechart.data.labels.push(datapoint["Time Stamp"]);
+            linechart.data.labels.splice(0, 1);
+            linechart.data.datasets.forEach((dataset) => {
                 dataset.data.push(datapoint["Liquid %"]);
                 dataset.data.splice(0, 1);
             });
@@ -52,7 +52,7 @@
             //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
             //batteryBar.style.textalign = "center";
 
-            barchart.update();
+            linechart.update();
 
 
             //Measurement changes
@@ -110,11 +110,11 @@
             async: false,
             success: function(response) {
                 console.log(response)
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                barchart.update()
+                linechart.update()
             }
         });
     }
@@ -134,11 +134,11 @@
             async: false,
             success: function(response) {
                 console.log(response);
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                barchart.update()
+                linechart.update()
 
             }
         });
@@ -169,11 +169,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                barchart.update()
+                linechart.update()
             }
         });
     }
@@ -204,8 +204,8 @@
                 Chart.defaults.global.defaultFontFamily = 'inherit';
                 Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
                 Chart.defaults.global.defaultFontColor = '#777';
-                barchart = new Chart(myChart, {
-                    type:'bar',
+                linechart = new Chart(myChart, {
+                    type:'line',
                     data:{
                         labels: {{ data.x_vals | tojson }},                                         //X VALS TO COMMUNICATE WITH CHART
                         datasets:[{
@@ -216,12 +216,10 @@
                             borderColor:'white',
 <<<<<<< HEAD
                             hoverBorderWidth:3,
-                            hoverBorderColor:'#000',
-                            barThickness: 15
+                            hoverBorderColor:'#000'
 =======
                             hoverBorderWidth:1,
-                            hoverBorderColor:'white',
-                            barThickness:15
+                            hoverBorderColor:'white'
 >>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
                         }]
                     },
