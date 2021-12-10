@@ -36,23 +36,34 @@ class alerts(db.db.Base):
 class sensors(db.db.Base):
     __tablename__ = "sensors"
     extend_existing=True
-    def is_accessible(self):
-        #print(current_user.email, file=sys.stderr)
-        return current_user.status == 5
 
 class accountsView(ModelView):
     page_size = 50
     column_exclude_list = ['passwordHash', ]
 
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.db.session.flush()
+            db.session.rollback()
         return current_user.status == 5
 
 class alertsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.commit()
+        except:
+            db.session.session.rollback()
         return current_user.status == 5
 
 class sensorsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.commit()
+        except:
+            db.session.rollback()
         return current_user.status == 5
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
