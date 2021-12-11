@@ -36,6 +36,8 @@
   <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
 
 
+
+  <!-- Load Leaflet from CDN -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
@@ -55,6 +57,17 @@
   <script src="https://cdn.jsdelivr.net/npm/heatmapjs@2.0.2/heatmap.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap@1.0.0/leaflet-heatmap.js"></script>
 
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@3.0.3/dist/esri-leaflet.js"
+  integrity="sha512-kuYkbOFCV/SsxrpmaCRMEFmqU08n6vc+TfAVlIKjR1BPVgt75pmtU9nbQll+4M9PN2tmZSAgD1kGUCKL88CscA=="
+  crossorigin=""></script>
+
+  <script src="https://unpkg.com/esri-leaflet-vector@3.1.1/dist/esri-leaflet-vector.js"
+    integrity="sha512-7rLAors9em7cR3/583gZSvu1mxwPBUjWjdFJ000pc4Wpu+fq84lXF1l4dbG4ShiPQ4pSBUTb4e9xaO6xtMZIlA=="
+    crossorigin=""></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/heatmapjs@2.0.2/heatmap.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap@1.0.0/leaflet-heatmap.js"></script>
 
   <link rel="stylesheets" type="text/CSS" href="maps.css">
   <script type="text/javascript">
@@ -84,7 +97,8 @@
     blur : 0.9,
     gradient: {
       '.5': 'aqua',
-      '.70': 'blue',
+      '.8': 'aqua',
+      '.95': 'blue'
     },
     // which field name in your data represents the latitude - default "lat"
     latField: 'lat',
@@ -100,7 +114,7 @@
     url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer',
 
   });
-  
+
 
   var map = new L.Map('map', {
     center: new L.LatLng(39.87734,-75.06462),
@@ -165,6 +179,24 @@
 
   }
 
+  L.rectangle([[39.887941, -75.033274], [39.875097, -75.067863]]).addTo(map);
+
+  var testData = {
+    data : temp_data
+  };
+  console.log(temp_data);
+  heatmapLayer.setData(testData);
+
+  new_latlang = new L.LatLng(39.879844303638826,-75.04952944288354,25)
+  console.log(highest_sensor)
+  for(let pos = 0; pos < sensors.length; pos++){
+    sensors[pos]
+    latlang = new L.LatLng(sensors[pos]['lat'],sensors[pos]['lng'])
+    L.marker(latlang).addTo(map).bindPopup("id : " + sensors[pos]['id'] + " : water level : " + sensors[pos]['water_level'] + " : elevation : " + sensors[pos]['elevation'] +'m').openPopup();
+
+  }
+
+  }
 
 
 </script>
