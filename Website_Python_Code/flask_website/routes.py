@@ -309,7 +309,21 @@ def point_elevations():
     data = request.data.decode("utf-8")
     data = json.loads(data)["data"]
     print(data, file=sys.stderr)
-    values = get_point_elevations(data)
+    remaning = data
+    out_elevatons = []
+
+    while(len(remaning) > 0):
+        if(len(remaning) <= 1000):
+            out_elevatons.extend(get_point_elevations(remaning))
+            remaning = []
+        else:
+            temp = remaning[:1000]
+            out_elevatons.extend(get_point_elevations(temp))
+            remaning = remaning[1000:]
+
+    print(out_elevatons)
+
+    values = out_elevatons
     return {'data':values}
 
 
