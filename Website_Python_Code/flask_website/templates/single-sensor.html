@@ -116,32 +116,6 @@
         });
     }
 
-    // Nico's work. Use this function
-    function gate_date_range(first_date, second_date) {
-        chart_mode = first_date
-
-        var arr = {first_date: first_date, second_date: second_date, sensor_id: "{{sensorID}}"}
-
-        $.ajax({
-            url: '/sensors/get-date-range',
-            type: 'POST',
-            data: JSON.stringify(arr),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            async: false,
-            success: function(response) {
-                console.log(response);
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
-                    dataset.data = response["y_vals"];
-                });
-                barchart.update()
-
-            }
-        });
-    }
-
-    //gate_date_range('2021/10/31', '2021/10/27');
 
     function customDate(){
         var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
@@ -535,6 +509,7 @@
         <div class="form-group form-inline">
             <div style="width:30; margin-right:5%;">
                 <h4>Current Liquid Volume: <b id="liquid_volume">--</b></h4>
+                <button onclick="get_point_elevations([39.70179236136183, -75.12333012077949])">Test</button>
             </div>
             <div style="width:30">
                 <h4>Current Liquid Height: <b id="liquid_height">--</b></h4>
