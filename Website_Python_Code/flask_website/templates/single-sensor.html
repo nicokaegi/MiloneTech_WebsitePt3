@@ -96,7 +96,7 @@
     function changeDate(new_day) {
         chart_mode = new_day
 
-        var arr = {first_date: new_day, second_date : ,sensor_id: "{{sensorID}}"}
+        var arr = {days: new_day, sensor_id: "{{sensorID}}"}
 
         $.ajax({
             url: '/sensors/get-date',
