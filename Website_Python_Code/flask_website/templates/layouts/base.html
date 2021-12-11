@@ -101,6 +101,7 @@
   function get_point_elevations(list_of_locations){
       data_to_send = {'data': list_of_locations}
       value = null
+      console.log(data_to_send)
       $.ajax({
           url: '/sensors/get-elevations',
           type:"POST",
@@ -109,7 +110,7 @@
           dataType: 'json',
           async:false,
           success: function(response){
-              value = response
+              value = response['data']
           }
       })
       return value
@@ -120,7 +121,7 @@
     var cfg = {
     // radius should be small ONLY if scaleRadius is true (or small radius is intended)
     // if scaleRadius is false it will be the constant radius used in pixels
-    "radius": .0009,
+    "radius": .001,
     "maxOpacity": .5,
     // scales the radius based on map zoom
     "scaleRadius": true,
@@ -131,8 +132,8 @@
 
     blur : 0.9,
     gradient: {
-      '.5': 'aqua',
-      '.8': 'aqua',
+      '.6': 'aqua',
+      '.8': 'blue',
       '.95': 'blue'
     },
     // which field name in your data represents the latitude - default "lat"
@@ -161,11 +162,14 @@
       "heat map": heatmapLayer
   };
 
+  map.on('click', function(e) {
+    alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+  });
+
 
   //L.control.layers(null, overlayMaps).addTo(map)
-
-  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 25, water_level : .2, sensor_length : 50/(12*3.2808)},
-                 {id : 'center of town', lat : 39.87734, lng : -75.06462, elevation : 23, water_level : .05, sensor_length : 50/(12*3.2808)}];
+  var sensors = [{id : 'my house', lat : 39.879844303638826, lng : -75.04942944288354, elevation : 95, water_level : .2, sensor_length : 50/(12*3.2808)}];
+                 //{id : 'center of town', lat : 39.87734, lng : -75.06462, elevation : 23, water_level : .05, sensor_length : 50/(12*3.2808)}];
 
   highest_water_level = -1
   highest_sensor = 'place_holder'
@@ -180,44 +184,33 @@
   var points = []
 
   step = [0.0001661636363636567,0.00028012727272733233]
-  bottom_corner = [39.875031, -75.067477]
-  lat = bottom_corner[0]
-  new_elevations = []
+  bottom_corner = [39.99050341978453, -75.38007259368898]
+  top_corner = [ 40.001813076966904, -75.36290645599367]
+  elevations = []
   points = []
-  for(let hip = 0; hip < test_elevations.length; hip += 5){
-    temp_points = []
-    long = bottom_corner[1]
-    for(let sip = 0; sip < test_elevations[hip].length; sip += 3){
-      //new_latlang = new L.LatLng(lat,long);
-      //temp_elvs.push(new_latlang);
-      temp_points.push([lat,long]);
-      long += step[1]*3;
+  count = 0
+  for(let lat = bottom_corner[0]; lat < top_corner[0]; lat += step[0]*7){
+    for(let long = bottom_corner[1]; long < top_corner[1]; long += step[1]*3){
+      points.push([lat,long]);
     }
-    lat += step[0]*5;
-    points.push(temp_points);
-    new_elevations.push(get_point_elevations(temp_points));
   }
-
-  //console.log(points);
-  //console.log(get_point_elevations(points));
-
+  elevations = get_point_elevations(points)
+  console.log(elevations)
   temp_data = []
-  for(let hip = 0; hip < new_elevations.length; hip++){
-    for(let sip = 0; sip < new_elevations[hip].length; sip++){
-      if(new_elevations[hip][sip] <= highest_water_level){
-        temp_data.push({lat : points[hip][sip][0], lng : points[hip][sip][1], count : .5});
-      }
+  for(let pos = 0; pos < elevations.length; pos++){
+    if(elevations[pos] <= highest_water_level){
+      temp_data.push({lat : points[pos][0], lng : points[pos][1], count : .735});
     }
   }
-
-  //L.rectangle([[39.887941, -75.033274], [39.875097, -75.067863]]).addTo(map);
 
   var testData = {
     data : temp_data
   };
-  //console.log(temp_data);
+  console.log();
+  console.log(temp_data);
   heatmapLayer.setData(testData);
 
+  L.rectangle([[39.893209165276026, -75.03499031066896], [39.87226476386981, -75.08005142211915]]).addTo(map);
   new_latlang = new L.LatLng(39.879844303638826,-75.04952944288354,25)
   console.log(highest_sensor)
   for(let pos = 0; pos < sensors.length; pos++){
@@ -226,6 +219,7 @@
     L.marker(latlang).addTo(map).bindPopup("id : " + sensors[pos]['id'] + " : water level : " + sensors[pos]['water_level'] + " : elevation : " + sensors[pos]['elevation'] +'m').openPopup();
 
   }
+
 
   }
 

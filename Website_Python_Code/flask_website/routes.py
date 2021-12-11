@@ -297,6 +297,7 @@ def get_point_elevations(coordinate_list:list) -> list:
     building_url = add_param(building_url, "X-API-Key", elevation_key)
     building_url = add_param(building_url, "Content_Type", content_type)
     response = requests.get(building_url)
+    print(response.content)
     extracted_data = json.loads(response.content)
     return(extracted_data["data"])
 
@@ -305,7 +306,9 @@ def get_point_elevations(coordinate_list:list) -> list:
 @app.route("/sensors/get-elevations", methods=["POST"])
 @login_required
 def point_elevations():
-    data = json.loads(request.data.decode("utf-8"))["data"]
+    data = request.data.decode("utf-8")
+    data = json.loads(data)["data"]
+    print(data, file=sys.stderr)
     values = get_point_elevations(data)
     return {'data':values}
 
