@@ -14,23 +14,245 @@
 <!--The div element for the map -->
 <div id="map"></div>
 
-    <div style="width: 23%; height: 300px; border: solid black 2px;">Set Points</div>
-    <form>
-      <input type="text">
-      <input type="submit" value="submit">
-    </form>
-  </body>
+  <select id="group_area_options" onchange="change_area()" id="group_selector" style="width:100%;">
+
+  </select>
+
+
+</body>
 
 <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
-<script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSClPi4WlCV38A2MafigdfMPKQL7RwLnY&callback=initMap&libraries=&v=weekly"
-  async
-></script>
 
 {% endblock content %}
 
 {% block javascripts %}
-<script async
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSClPi4WlCV38A2MafigdfMPKQL7RwLnY&callback=initMap">
+<script>
+
+    var cfg = {
+    // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+    // if scaleRadius is false it will be the constant radius used in pixels
+    "radius": .001,
+    "maxOpacity": .5,
+    // scales the radius based on map zoom
+    "scaleRadius": true,
+    // if set to false the heatmap uses the global maximum for colorization
+    // if activated: uses the data maximum within the current map boundaries
+    //   (there will always be a red spot with useLocalExtremas true)
+    "useLocalExtrema": false,
+
+    blur : 0.9,
+    gradient: {
+      '.5': 'aqua',
+      '.8': 'blue',
+      '.95': 'blue'
+    },
+    // which field name in your data represents the latitude - default "lat"
+    latField: 'lat',
+    // which field name in your data represents the longitude - default "lng"
+    lngField: 'lng',
+    // which field name in your data represents the data value - default "value"
+    valueField: 'count'
+  };
+  var heatmapLayer = new HeatmapOverlay(cfg);
+
+
+  var base = L.esri.tiledMapLayer({
+    url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer',
+
+  });
+
+  var rect_group = L.layerGroup();
+  var point_group = L.layerGroup();
+
+
+  var map = new L.Map('map', {
+    center: new L.LatLng(39.923593511960775, -75.38934230804445),
+    zoom: 15,
+    layers: [base, rect_group, point_group, heatmapLayer]
+  });
+
+  var overlayMaps = {
+      "heat map": heatmapLayer
+  };
+
+  map.on('dblclick', function(e) {
+    alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+  });
+
+  areas = get_group_areas()
+  group_selector = document.getElementById('group_area_options')
+  var option = document.createElement("option");
+  option.innerHTML = "None";
+  option.value = 0;
+  group_selector.appendChild(option);
+  index = 1;
+  for(var count = 0; count < areas.length; count++){
+   var option = document.createElement("option");
+   option.value= index;
+   option.innerHTML = areas[count][1];
+   group_selector.appendChild(option);
+   index++;
+ }
+
+ function change_area(){
+
+   var area_selection = document.getElementById("group_area_options");
+   var index = area_selection.selectedIndex
+   rect_group.clearLayers();
+   point_group.clearLayers();
+
+   if(index != 0){
+     area = areas[index - 1]
+
+     bottom_corner = [area[2], area[3]]
+     top_corner = [area[4], area[5]]
+     L.rectangle([top_corner, bottom_corner]).addTo(rect_group);
+     map.setView(new L.LatLng( (area[2] + area[4])/2, (area[3] + area[5])/2))
+     sensors = get_sensor_group(area[1])
+     place_points(sensors)
+     highest_data = get_highest_water_level(sensors)
+     points = gen_points(top_corner, bottom_corner)
+     elevation_data = get_point_elevations(points)
+     lower_elevations = filter_elevations(elevation_data, points, highest_data)
+     heatmapLayer.setData(lower_elevations);
+
+
+   }
+
+ }
+
+  function get_group_areas(){
+
+      $.ajax({
+          url: '/sensors/get-group-areas',
+          type:"GET",
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          async:false,
+          success: function(response){
+              value = response['group-areas']
+          }
+      })
+      return value
+  }
+
+  function get_sensor_group(group_name){
+      var arr = {"group_name": group_name}
+      value = null
+      $.ajax({
+          url: '/sensors/get-group',
+          type:"GET",
+          data: arr,
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json',
+          async:false,
+          success: function(response){
+              value = response
+          }
+      })
+      return value
+  }
+
+  function get_point_elevations(list_of_locations){
+      data_to_send = {'data': list_of_locations}
+      value = null
+      console.log(data_to_send)
+      $.ajax({
+          url: '/sensors/get-elevations',
+          type:"POST",
+          data: JSON.stringify(data_to_send),
+          contentType: 'text; charset=utf-8',
+          dataType: 'json',
+          async:false,
+          success: function(response){
+              value = response['data']
+          }
+      })
+      return value
+  }
+
+  function place_points(sensors){
+
+    for(id in sensors){
+      sensors[id]
+      latlang = new L.LatLng(sensors[id]['latitude'],sensors[id]['longitude'])
+      L.marker(latlang).addTo(point_group).bindPopup("id : " + id + " : water level : " + sensors[id]['water_level'] + " : elevation : " + sensors[id]['elevation'] +'m').openPopup();
+
+    }
+
+  }
+
+  function get_highest_water_level(sensors){
+
+      highest_water_level = -1
+      highest_sensor = 'place_holder'
+
+      for (id in sensors){
+        water_level = sensors[id]['elevation'] + sensors[id]['sensor_length']*sensors[id]['water_level']
+        if((highest_water_level < water_level || water_level == -1) && sensors[id]['water_level'] != 0){
+          highest_water_level = water_level
+          highest_sensor = sensors[id]
+        }
+      }
+
+      return highest_water_level
+
+    }
+
+  function gen_points(top_corner,bottom_corner){
+
+    var points = []
+
+    step = [0.0001661636363636567,0.00028012727272733233]
+    //bottom_corner = [39.99050341978453, -75.38007259368898]
+    //top_corner = [ 40.001813076966904, -75.36290645599367]
+    elevations = []
+    points = []
+    count = 0
+    for(let lat = bottom_corner[0]; lat < top_corner[0]; lat += step[0]*6){
+      for(let long = bottom_corner[1]; long < top_corner[1]; long += step[1]*3){
+        points.push([lat,long]);
+      }
+    }
+
+    return points
+
+  }
+
+  function filter_elevations(elevations, points, highest_water_level){
+
+    temp_data = []
+    for(let pos = 0; pos < elevations.length; pos++){
+      if(elevations[pos] <= highest_water_level){
+        temp_data.push({lat : points[pos][0], lng : points[pos][1], count : .735});
+      }
+    }
+
+    return testData = {
+      data : temp_data
+    };
+
+  }
+
+  /*
+  function initMap() {
+
+
+    new_latlang = new L.LatLng(39.879844303638826,-75.04952944288354,25)
+    for(let pos = 0; pos < sensors.length; pos++){
+      sensors[pos]
+      latlang = new L.LatLng(sensors[pos]['lat'],sensors[pos]['lng'])
+      L.marker(latlang).addTo(map).bindPopup("id : " + sensors[pos]['id'] + " : water level : " + sensors[pos]['water_level'] + " : elevation : " + sensors[pos]['elevation'] +'m').openPopup();
+
+    }
+
+    var testData = {
+      data : temp_data
+    };
+    heatmapLayer.setData(testData);
+
+
+  }
+  */
 </script>
 {% endblock javascripts%}

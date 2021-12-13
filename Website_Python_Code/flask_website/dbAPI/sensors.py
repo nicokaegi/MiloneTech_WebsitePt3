@@ -2,6 +2,37 @@ from sqlalchemy import exc
 from . import db
 import traceback
 
+def get_sensor_location(sens_id):
+    try:
+        with db.engine.connect() as connection:
+            acc = []
+            result = connection.execute("select latitude, longitude, elevation "
+                                        "from sensor_location "
+                                        "where sensorID = '{}'"
+                                        .format(sens_id))
+            for row in result:
+                acc.append(row)
+
+            return acc[0]
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+def get_sensor_groups(accountID):
+    try:
+        with db.engine.connect() as connection:
+            acc = []
+            result = connection.execute("select * "
+                                        "from sensor_group_area "
+                                        "where accountID = {}"
+                                        .format(accountID))
+            for row in result:
+                acc.append(list(row))
+
+            return acc
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
 
 def get_acc_id_by_sens_id(sens_id):
     try:
@@ -149,6 +180,6 @@ def get_coordinates(sens_id):
             for row in result:
                 sens.append(row)
             return sens
-    except  exc.SQLAlchemyError: 
+    except  exc.SQLAlchemyError:
         traceback.print_exc()
         return False

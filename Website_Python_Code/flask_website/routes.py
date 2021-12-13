@@ -257,14 +257,29 @@ def sensor_group_route(sensor_group):
 
 #function to use with ajax to grab the sensors within a specific user
 #will return an giant json of the sensors
+
 @app.route("/sensors/get-group", methods=["GET"])
 @login_required
 def provide_group_of_sensors():
-    val = request.args.to_dict()['number']
+    val = request.args.to_dict()['group_name']
     current_user.initialize_user_data()
 
     group = current_user.user_data["sensor_data"][val]
-    return group
+    output = {}
+    for item in group:
+
+        location_data = db.sensors.get_sensor_location(item)
+        sensor_info = db.sensors.get_sensor_info(item)
+        print(item, file=sys.stderr)
+        output[item] = { 'name' : group[item]['name'],
+                         'water_level' : group[item]['y_vals'][-1]/100,
+                         'latitude' :  location_data[0],
+                         'longitude' : location_data[1],
+                         'elevation' : location_data[2],
+                         'sensor_length' : sensor_info[0]['sensorSize']}
+
+    return output
+
 
 elevation_key = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxON1d
                 6emtZZlhBUk1YUHVlYXZPWXFUSzlib0pYIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxXNE1
@@ -297,7 +312,6 @@ def get_point_elevations(coordinate_list:list) -> list:
     building_url = add_param(building_url, "X-API-Key", elevation_key)
     building_url = add_param(building_url, "Content_Type", content_type)
     response = requests.get(building_url)
-    print(response.content)
     extracted_data = json.loads(response.content)
     return(extracted_data["data"])
 
@@ -308,7 +322,6 @@ def get_point_elevations(coordinate_list:list) -> list:
 def point_elevations():
     data = request.data.decode("utf-8")
     data = json.loads(data)["data"]
-    print(data, file=sys.stderr)
     remaning = data
     out_elevatons = []
 
@@ -320,8 +333,6 @@ def point_elevations():
             temp = remaning[:1000]
             out_elevatons.extend(get_point_elevations(temp))
             remaning = remaning[1000:]
-
-    print(out_elevatons)
 
     values = out_elevatons
     return {'data':values}
@@ -457,6 +468,13 @@ def store_settings_route():
     return {"result": result}
 
 
+@app.route("/sensors/get-group-areas", methods=["GET"])
+@login_required
+def provide_group_areas():
+    groups_areas = { 'group-areas' : db.sensors.get_sensor_groups(current_user.id) }
+    print(groups_areas, file=sys.stderr)
+    return groups_areas
+
 @app.route("/profile")
 @login_required
 def profile():
@@ -472,8 +490,8 @@ def notifications():
 @app.route("/maps")
 @login_required
 def maps():
-    return render_template('maps.html')
 
+    return render_template('maps.html')
 
 @app.route("/support")
 def support():
