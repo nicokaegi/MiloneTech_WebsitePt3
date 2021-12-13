@@ -1,0 +1,23 @@
+{%block title%}
+Select a sensor
+{% endblock%}
+
+
+{%block content %}
+    <!--
+        <form action="/action_page.php" method="get">
+            <label for="browser">Choose your browser from the list:</label>
+            <input list="browsers" name="browser" id="browser">
+            <datalist id="browsers">
+              {%for secret in secrets%}
+              <option value={{sensor}}>
+              {% endfor%}
+            </datalist>
+            <input type="submit">
+          </form>
+        -->
+    {%for sensor in sensors%}
+    <a href="/admin-sensor/{{sensor}}">{{sensor}}</a>
+    {% endfor %}
+
+{% endblock %}
