@@ -20824,3 +20824,40 @@ rgba(0, 128, 0, 0.3);
 #sensorGroup, #changeGroup {
   margin-top: 0%;
 }
+
+.water{
+  y:150;
+  height:0px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .water {
+    animation: filling 3s;
+  }
+  .water{
+    height: 130px;
+    y:20;
+  }
+}
+@keyframes filling {
+  from {
+    height: 0px;
+    y: 150;
+  }
+  to {
+    height: 130px;
+    y:20;
+  }
+}
+
+#rectangular_image{
+ padding-top: 0px;
+ padding-bottom: 0px;
+}
+/*
+.rectangle{
+  height: 100%;
+  width: 100%;
+}
+
+*/
