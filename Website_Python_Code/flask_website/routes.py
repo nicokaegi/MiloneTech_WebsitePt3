@@ -242,6 +242,9 @@ def home():
 @login_required
 def sensors():
     current_user.initialize_user_data()
+    if current_user.status== 5:
+
+        return redirect(url_for('admin_initial_page'))
     return render_template('sensors.html', account_info=current_user.user_data)
 
 
@@ -252,6 +255,52 @@ def sensor_group_route(sensor_group):
     current_user.initialize_user_data()
     return render_template('sensor-group.html', account_info=current_user.user_data, groupFilter=sensor_group)
 
+#function to use with ajax to grab the sensors within a specific user
+#will return an giant json of the sensors
+@app.route("/sensors/get-group", methods=["GET"])
+@login_required
+def provide_group_of_sensors():
+    val = request.args.to_dict()['number']
+    current_user.initialize_user_data()
+    
+    group = current_user.user_data["sensor_data"][val]
+    return group
+
+
+#function to get elevation points
+#Awkward workaround to be able to send lists
+@app.route("/sensors/get-elevations", methods=["GET"])
+@login_required
+def point_elevations():
+    data = request.args.getlist('data[]')
+    values = []
+    for element in data:
+        values.append(float(element))
+    values = get_point_elevations(data)
+    return {'data[]':values}
+
+
+@app.route('/admin-sensor')
+@login_required
+def admin_initial_page(): 
+    if current_user.status==5:
+        print(db.sensors.get_all_sensors(current_user.id))
+        return render_template('admin_sensor_select.html', sensors=db.sensors.get_all_sensors(current_user.id))
+    else:
+        return 403
+
+@app.route('/admin-sensor/<sensor_id>')
+@login_required
+def admin_sensor_page(sensor_id):
+    if current_user.status==5:
+        data = db.sensor_readings.get_n_sensor_data_points(sensor_id, 20)
+        chart_data = {"x_vals": [], "y_vals": []}
+        for datapoint in data:
+            chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
+            chart_data["y_vals"].append(datapoint[1])
+
+        sensor_settings = db.settings.get_sensor_settings(sensor_id)
+        return render_template('admin-sensors.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings, sensors=db.sensors.get_all_sensors(current_user.id))
 
 # Returns the html page for a single sensor, where measurement can be configured
 @app.route("/sensors/<sensor_id>")
@@ -259,7 +308,7 @@ def sensor_group_route(sensor_group):
 def single_sensor_page_route(sensor_id):
     try:
         auth_id = db.sensors.get_acc_id_by_sens_id(sensor_id)
-        if not (str(auth_id) == str(current_user.id)):
+        if not (str(auth_id) == str(current_user.id)) and not current_user.status==5:
             return "Sensor not found", 404
     except:
         return "Sensor not found", 404
@@ -401,7 +450,6 @@ def maps():
 @app.route("/support")
 def support():
     return render_template('support.html')
-
 
 '''
 register : this handles the intial user generation, by taking in info
