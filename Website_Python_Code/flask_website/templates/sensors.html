@@ -97,7 +97,7 @@
 
                             // Global Options
                             Chart.defaults.global.defaultFontFamily = 'inherit';
-                            Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
+                            Chart.defaults.global.defaultFontSize = 14; //Effects x and y's number font size
                             Chart.defaults.global.defaultFontColor = '#777';
 
                             var linechart{{sensorID}} = new Chart(myChart{{sensorID}}, {
@@ -107,11 +107,13 @@
                                 datasets:[{
                                   label:'Liquid Level',
                                   data:{{ sensor.y_vals }},
-                                  backgroundColor: gradient,
+                                  // backgroundColor: gradient,
                                   borderWidth:1, //Effects plotted line on chart
-                                  borderColor:'whiite',
+                                  borderColor:'white',
                                   hoverBorderWidth:1,
-                                  hoverBorderColor:'white'
+                                  hoverBorderColor:'black',
+                                  pointBackgroundColor: 'blue',
+                                  showLine: false
                                 }]
                               },
                               options:{
@@ -138,7 +140,7 @@
                                             ticks: {
                                                 autoSkip: true,
                                                 padding: 4,
-                                                fontSize: 12
+                                                fontSize: 10
                                             }
                                         }]
                                     },
