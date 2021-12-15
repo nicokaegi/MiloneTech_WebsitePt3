@@ -46,21 +46,22 @@ class accountsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.db.session.flush()
             db.session.rollback()
         return current_user.status == 5
 
 class alertsView(ModelView):
     def is_accessible(self):
         try:
+            db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.session.rollback()
+            db.session.rollback()
         return current_user.status == 5
 
 class sensorsView(ModelView):
     def is_accessible(self):
         try:
+            db.db.session.flush()
             db.db.session.commit()
         except:
             db.session.rollback()
