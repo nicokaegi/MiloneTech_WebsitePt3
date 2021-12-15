@@ -1,6 +1,7 @@
 from sqlalchemy import exc
 from . import db
 import traceback
+import sys
 
 def get_sensor_location(sens_id):
     try:
@@ -14,6 +15,63 @@ def get_sensor_location(sens_id):
                 acc.append(row)
 
             return acc[0]
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+def set_sensors_with_areas():
+    try:
+        with db.engine.connect() as connection:
+            acc = []
+            result = connection.execute("select sensorGroup"
+                                        "from sensor_group_area ")
+            for row in result:
+                acc.append(row)
+
+            return acc
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+'''
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+'''
+
+def new_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("insert into sensor_group_area "
+                               "values ({},'{}',{},{},{},{})".format(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long))
+
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+def set_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("update sensor_group_area "
+                               "set bot_lat = {}, bot_long = {}, top_lat = {}, top_log = {} "
+                               "where accountID = {} and sensorGroup = '{}'".format(bot_lat, bot_long, top_lat, top_long, accountID, sensorGroup))
+
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+
+def get_sensor_groups_with_areas(account_id):
+    try:
+        with db.engine.connect() as connection:
+            acc = []
+            result = connection.execute("select sensorGroup "
+                                        "from sensor_group_area "
+                                        "where accountID = {}".format(account_id))
+            for row in result:
+                acc.append(row)
+
+            return acc
     except exc.SQLAlchemyError:
         traceback.print_exc()
         return False

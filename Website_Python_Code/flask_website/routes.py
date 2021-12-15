@@ -29,6 +29,7 @@ class accounts(db.db.Base):
     __tablename__ = "accounts"
     extend_existing=True
 
+
 class alerts(db.db.Base):
     __tablename__ = "alerts"
     extend_existing=True
@@ -42,7 +43,6 @@ class sensors(db.db.Base):
 
 class accountsView(ModelView):
     page_size = 50
-    column_exclude_list = ['passwordHash', ]
 
     def is_accessible(self):
         return current_user.status == 5
@@ -713,6 +713,9 @@ def settings():
             if db.sensors.get_sensor_info(sensor)[0][6] not in form.sensorGroup.choices:
                 form.sensorGroup.choices.append(
                     (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+                form.sensorGroup_2.choices.append(
+                    (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+
     alerts.sort()
 
     for alert in alerts:
@@ -736,6 +739,18 @@ def settings():
         if not form.sensorGroup.data == '':
             db.sensors.set_sensor_group(form.sensorID.data, form.sensorGroup.data)
             flash("Changed Current Sensor's Group to: " + form.sensorGroup.data, 'success')
+
+        if (not form.sensorGroup_2.data == '') and (not form.newBottomLat.data == '') and (not  form.newBottomLong.data == '') and (not  form.newTopLat.data == '') and (not  form.newTopLong.data == ''):
+
+            groups_with_areas = db.sensors.get_sensor_groups_with_areas(current_user.id)
+            print(groups_with_areas, file=sys.stderr)
+            if(form.sensorGroup_2.data in groups_with_areas):
+                db.sensors.set_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+                print(form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, file=sys.stderr)
+
+            else:
+                db.sensors.new_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+
         else:
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
