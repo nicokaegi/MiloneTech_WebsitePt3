@@ -39,6 +39,20 @@ def get_acc_id_by_sens_id(sens_id):
         print(e)
         return False
 
+def get_every_sensor():
+    try:
+        with db.engine.connect() as connection:
+            acc = []
+            result = connection.execute("select sensorID "
+                                        "from sensors "
+                                    )
+            for row in result:
+                acc.append(row["sensorID"])
+            return acc
+    except exc.SQLAlchemyError as e:
+        print(e)
+        return False
+
 
 def add_sensor(sens_id, sens_size = 10, sens_type = 'norm', sens_time = 60):
     try:
@@ -73,9 +87,7 @@ def get_all_sensors(acc_id):
                                         "from sensors "
                                         "where accountID = {}"
                                         .format(acc_id))
-            print(result)
             for row in result:
-                print(row)
                 sens.append(row['sensorID'])
             return sens
     except exc.SQLAlchemyError:

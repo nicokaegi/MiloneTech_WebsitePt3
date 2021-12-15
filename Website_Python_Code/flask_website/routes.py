@@ -284,8 +284,7 @@ def point_elevations():
 @login_required
 def admin_initial_page(): 
     if current_user.status==5:
-        print(db.sensors.get_all_sensors(current_user.id))
-        return render_template('admin_sensor_select.html', sensors=db.sensors.get_all_sensors(current_user.id))
+        return render_template('admin_sensor_select.html', sensors=db.sensors.get_every_sensor())
     else:
         return 403
 
@@ -300,7 +299,7 @@ def admin_sensor_page(sensor_id):
             chart_data["y_vals"].append(datapoint[1])
 
         sensor_settings = db.settings.get_sensor_settings(sensor_id)
-        return render_template('admin_sensors.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings, sensors=db.sensors.get_all_sensors(current_user.id))
+        return render_template('admin_sensors.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings, sensors=db.sensors.get_every_sensor())
 
 # Returns the html page for a single sensor, where measurement can be configured
 @app.route("/sensors/<sensor_id>")
