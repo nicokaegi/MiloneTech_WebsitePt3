@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var barchart
+    var linechart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -37,9 +37,9 @@
             liquidLevel = datapoint["Liquid %"];
 
             //This is Chart.js standard, push the datapoint label, then the datapoint in
-            barchart.data.labels.push(datapoint["Time Stamp"]);
-            barchart.data.labels.splice(0, 1);
-            barchart.data.datasets.forEach((dataset) => {
+            linechart.data.labels.push(datapoint["Time Stamp"]);
+            linechart.data.labels.splice(0, 1);
+            linechart.data.datasets.forEach((dataset) => {
                 dataset.data.push(datapoint["Liquid %"]);
                 dataset.data.splice(0, 1);
             });
@@ -52,7 +52,7 @@
             //batteryBar.style.background = get_color_by_batt(datapoint["Battery %"]);
             //batteryBar.style.textalign = "center";
 
-            barchart.update();
+            linechart.update();
 
 
             //Measurement changes
@@ -107,11 +107,11 @@
             async: false,
             success: function(response) {
                 console.log(response)
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                barchart.update()
+                linechart.update()
             }
         });
     }
@@ -140,11 +140,11 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
+                linechart.data.labels = response["x_vals"];
+                linechart.data.datasets.forEach((dataset) => {
                     dataset.data = response["y_vals"];
                 });
-                barchart.update()
+                linechart.update()
             }
         });
     }
@@ -173,21 +173,22 @@
 
                 // Global Options
                 Chart.defaults.global.defaultFontFamily = 'inherit';
-                Chart.defaults.global.defaultFontSize = 18; //Effects x and y's number font size
+                Chart.defaults.global.defaultFontSize = 14; //Effects x and y's number font size
                 Chart.defaults.global.defaultFontColor = '#777';
-                barchart = new Chart(myChart, {
-                    type:'bar',
+                linechart = new Chart(myChart, {
+                    type:'line',
                     data:{
                         labels: {{ data.x_vals | tojson }},                                         //X VALS TO COMMUNICATE WITH CHART
                         datasets:[{
                             label:'Liquid Level',
                             data:{{ data.y_vals }},
-                            backgroundColor: gradient,
+                            // backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
                             hoverBorderWidth:1,
-                            hoverBorderColor:'white',
-                            barThickness:15
+                            hoverBorderColor:'black',
+                            pointBackgroundColor: '#34aeeb',
+                            showLine: false
                         }]
                     },
                     options:{
@@ -196,7 +197,8 @@
                             display:true,
                             position:'right',
                             labels:{
-                                fontColor:'#000'
+                                fontColor:'#000',
+                                color: '#34aeeb'
                             }
                         },
                         scales: {
@@ -214,7 +216,7 @@
                         ticks: {
                             autoSkip: true,
                             padding: 4,
-                            fontSize: 12
+                            fontSize: 10
                         }
                     }]
                 },
