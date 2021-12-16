@@ -215,14 +215,9 @@
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
                             pointBackgroundColor: 'blue',
-                            showLine: false
-<<<<<<< HEAD
+                            showLine: false,
                             hoverBorderWidth:1,
                             hoverBorderColor:'#000'
-=======
-                            hoverBorderWidth:1,
-                            hoverBorderColor:'black'
->>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
                         }]
                     },
                     options:{
@@ -666,8 +661,7 @@
                 return;
             }
         }
-<<<<<<< HEAD
-=======
+
         //Replace spherical values if necessary
          else if(mts.selectedIndex == 6) { //SPHERICAL
             radius = parseInt(document.getElementById("spherical_radius_field").value);
@@ -682,7 +676,7 @@
                 return;
             }
         }
->>>>>>> 2fe12a4379af48cfabf39fd1c606ff4753ad5cc8
+
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
