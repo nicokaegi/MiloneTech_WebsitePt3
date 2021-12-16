@@ -479,7 +479,7 @@ def register():
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)
         token = User.get_confirmation_token(user_obj)
-        email.send_confirmation_email(form.email.data, url_for('confirmation', token=token, _external=True))
+        email.send_confirmation_email(form.email.data, "www.usersmilonetech.com/register/" + token )
 
         flash(f'Your account has been Created! An account confirmation email has been sent to the submitted email. \
                 To move forward in account registration, please go to your registered email and click the confirmation \
@@ -708,12 +708,12 @@ def reset_request():
     form = RequestResetForm()
 
     if form.validate_on_submit():
+        
         user = db.accounts.get_id_by_email(form.email.data)
         flash('An email has been sent with instructions on how to reset your password')
         user_obj = User(user)
         token = User.get_reset_token(user_obj)
-        email.send_password_request(form.email.data, url_for('reset_token', token=token, _external=True))
-
+        email.send_password_request(form.email.data, 'www.usersmilonetech.com/reset_password/' + token)
         return redirect(url_for('login'))
 
     return render_template('reset_request.html', title="Reset Password", form=form)
@@ -741,7 +741,7 @@ def reset_token(token):
     if user is None:
         flash('That is an Invalid/Expired Token', 'warning')
         return redirect(url_for('reset_request'))
-
+        
     form = ResetPasswordForm()
 
     if form.validate_on_submit():
