@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 import flask_website.dbAPI.app as db
 
-#Registration form 
+#Registration form
 class RegistrationForm(FlaskForm):
 
     email = StringField('Email',
@@ -42,12 +42,18 @@ class SettingsForm(FlaskForm):
     allSensorNames = SelectField('TODO: change in routes', choices = [('yes', 'no'), ('no', 'yes')])
     newSensorName = StringField('Enter Sensor\'s Name')
     sensorGroup = SelectField('ll', choices = [('', 'Choose Sensor Group')])
+    sensorGroup_2 = SelectField('ll', choices = [('', 'Choose Sensor Group')])
     newSensorGroup = StringField('Enter New Sensor Group')
     submit = SubmitField('Add Trigger')
     alerts = SelectField('', choices =[('', 'Choose an alert to remove')])
     removeAlert = SubmitField('Remove Alert')
     changeName = SubmitField('Change Name')
     changeGroup = SubmitField('Change Group')
+    modifyArea = SubmitField('Modify Area')
+    newBottomLat = FloatField('BottomLat')
+    newBottomLong = FloatField('BottomLong')
+    newTopLat = FloatField('TopLat')
+    newTopLong = FloatField('TopLong')
 
 
 class RequestResetForm(FlaskForm):

@@ -1,10 +1,13 @@
 from flask import render_template, url_for, flash, redirect, Response, request
-from elevation import get_point_elevations
+
+#from elevation import get_point_elevations
+
 import datetime
 import io
 import base64
 import json
 import sys
+import requests
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
@@ -13,6 +16,8 @@ from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
+import json
+
 
 from pprint import pprint
 
@@ -26,6 +31,7 @@ class accounts(db.db.Base):
     __tablename__ = "accounts"
     extend_existing=True
 
+
 class alerts(db.db.Base):
     __tablename__ = "alerts"
     extend_existing=True
@@ -33,23 +39,34 @@ class alerts(db.db.Base):
 class sensors(db.db.Base):
     __tablename__ = "sensors"
     extend_existing=True
-    def is_accessible(self):
-        #print(current_user.email, file=sys.stderr)
-        return current_user.status == 5
 
 class accountsView(ModelView):
     page_size = 50
-    column_exclude_list = ['passwordHash', ]
 
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.session.rollback()
         return current_user.status == 5
 
 class alertsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.session.rollback()
         return current_user.status == 5
 
 class sensorsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.session.rollback()
         return current_user.status == 5
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
@@ -257,49 +274,90 @@ def sensor_group_route(sensor_group):
 
 #function to use with ajax to grab the sensors within a specific user
 #will return an giant json of the sensors
+
 @app.route("/sensors/get-group", methods=["GET"])
 @login_required
 def provide_group_of_sensors():
-    val = request.args.to_dict()['number']
+    val = request.args.to_dict()['group_name']
     current_user.initialize_user_data()
-    
-    group = current_user.user_data["sensor_data"][val]
-    return group
 
+    group = current_user.user_data["sensor_data"][val]
+    output = {}
+    for item in group:
+
+        location_data = db.sensors.get_sensor_location(item)
+        sensor_info = db.sensors.get_sensor_info(item)
+        print(item, file=sys.stderr)
+        output[item] = { 'name' : group[item]['name'],
+                         'water_level' : group[item]['y_vals'][-1]/100,
+                         'latitude' :  location_data[0],
+                         'longitude' : location_data[1],
+                         'elevation' : location_data[2],
+                         'sensor_length' : sensor_info[0]['sensorSize']}
+
+    return output
+
+
+elevation_key = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxON1d
+                6emtZZlhBUk1YUHVlYXZPWXFUSzlib0pYIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxXNE1
+                Md1lxSXptd2dBelNwR1dZeDRGcEVXQU5PIiwib3JnYW5pemF0aW9uX2lkIjoiZGV2ZWxvcGVyfEs3d25
+                FT1dVeXB6bmJvc21wNzh2M3M4N0p4OEIiLCJpYXQiOjE2MzY0NjQ4MTB9.ohWcYRyqTGxZ1kqg2t3sCe
+                N6H1gibd143ezKnuWTcxs"""
+
+content_type = "Content-Type: application/json; charset=utf-8"
+
+carpet_request_url = "https://api.airmap.com/elevation/v1/ele/carpet"
+
+point_request_url =  "https://api.airmap.com/elevation/v1/ele"
+
+def convert_string_list(coordinate_list: list) -> str:
+    tmp_format_list= ""
+    for pair in coordinate_list:
+        for x in pair:
+            tmp_format_list += str(x) +","
+    tmp_format_list = tmp_format_list[:-1]
+    return tmp_format_list
+
+def add_param(building_url:str, param_name: str, param_data :object) -> list:
+    new_url = building_url+param_name+"="+param_data
+    return new_url
+
+def get_point_elevations(coordinate_list:list) -> list:
+    #coordinate_list = pairs(coordinate_list)
+    building_url = point_request_url + "?"
+    building_url = add_param(building_url, "points", convert_string_list(coordinate_list))
+    building_url = add_param(building_url, "X-API-Key", elevation_key)
+    building_url = add_param(building_url, "Content_Type", content_type)
+    response = requests.get(building_url)
+    extracted_data = json.loads(response.content)
+    return(extracted_data["data"])
 
 #function to get elevation points
 #Awkward workaround to be able to send lists
-@app.route("/sensors/get-elevations", methods=["GET"])
+@app.route("/sensors/get-elevations", methods=["POST"])
 @login_required
 def point_elevations():
-    data = request.args.getlist('data[]')
-    values = []
-    for element in data:
-        values.append(float(element))
-    values = get_point_elevations(data)
-    return {'data[]':values}
+    data = request.data.decode("utf-8")
+    data = json.loads(data)["data"]
+    remaning = data
+    out_elevatons = []
+
+    while(len(remaning) > 0):
+        if(len(remaning) <= 1000):
+            out_elevatons.extend(get_point_elevations(remaning))
+            remaning = []
+        else:
+            temp = remaning[:1000]
+            out_elevatons.extend(get_point_elevations(temp))
+            remaning = remaning[1000:]
+
+    values = out_elevatons
+    return {'data':values}
 
 
-@app.route('/admin-sensor')
-@login_required
-def admin_initial_page(): 
-    if current_user.status==5:
-        return render_template('admin_sensor_select.html', sensors=db.sensors.get_every_sensor())
-    else:
-        return 403
 
-@app.route('/admin-sensor/<sensor_id>')
-@login_required
-def admin_sensor_page(sensor_id):
-    if current_user.status==5:
-        data = db.sensor_readings.get_n_sensor_data_points(sensor_id, 20)
-        chart_data = {"x_vals": [], "y_vals": []}
-        for datapoint in data:
-            chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
-            chart_data["y_vals"].append(datapoint[1])
 
-        sensor_settings = db.settings.get_sensor_settings(sensor_id)
-        return render_template('admin_sensors.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings, sensors=db.sensors.get_every_sensor())
+
 
 # Returns the html page for a single sensor, where measurement can be configured
 @app.route("/sensors/<sensor_id>")
@@ -419,7 +477,7 @@ def store_settings_route():
             request_data["measurementType"],
             request_data["width"],
             request_data["length"],
-            request_data["radius"],
+            request_data["diameter"],
             request_data["height"],
             request_data["sensorBottomHeight"],
             request_data["sensorTopHeight"]]
@@ -427,6 +485,13 @@ def store_settings_route():
     result = db.settings.store_sensor_settings(data)
     return {"result": result}
 
+
+@app.route("/sensors/get-group-areas", methods=["GET"])
+@login_required
+def provide_group_areas():
+    groups_areas = { 'group-areas' : db.sensors.get_sensor_groups(current_user.id) }
+    print(groups_areas, file=sys.stderr)
+    return groups_areas
 
 @app.route("/profile")
 @login_required
@@ -443,8 +508,8 @@ def notifications():
 @app.route("/maps")
 @login_required
 def maps():
-    return render_template('maps.html')
 
+    return render_template('maps.html')
 
 @app.route("/support")
 def support():
@@ -665,6 +730,9 @@ def settings():
             if db.sensors.get_sensor_info(sensor)[0][6] not in form.sensorGroup.choices:
                 form.sensorGroup.choices.append(
                     (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+                form.sensorGroup_2.choices.append(
+                    (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+
     alerts.sort()
 
     for alert in alerts:
@@ -688,6 +756,17 @@ def settings():
         if not form.sensorGroup.data == '':
             db.sensors.set_sensor_group(form.sensorID.data, form.sensorGroup.data)
             flash("Changed Current Sensor's Group to: " + form.sensorGroup.data, 'success')
+
+        if (not form.sensorGroup_2.data == '') and (not form.newBottomLat.data == '') and (not  form.newBottomLong.data == '') and (not  form.newTopLat.data == '') and (not  form.newTopLong.data == ''):
+
+            groups_with_areas = db.sensors.get_sensor_groups_with_areas(current_user.id)
+            groups_with_areas = set([item[0] for item in groups_with_areas])
+            if(form.sensorGroup_2.data in groups_with_areas):
+                db.sensors.update_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+
+            else:
+                db.sensors.new_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+
         else:
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)

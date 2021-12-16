@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% block stylesheets %}<link rel="stylesheet" href="/static/assets/css/livesensors.css">{% endblock stylesheets %}
-{% block title %}Sensors{% endblock %} 
+{% block title %}Sensors{% endblock %}
 
 <script>
     var colorsDarker = {    'red' : 'red',
@@ -47,7 +47,7 @@
 <br/>
 <br/>
 
-    {% if account_info.payment_tier == 1 %}
+    {% if account_info.payment_tier == 1 or account_info.payment_tier == 5 %}
             <script>
 
             //an object of key/value pairs of form sensor ID/canvas ID
@@ -210,7 +210,7 @@
                 </div>
             {% endif %}
     {% endfor %}
-      
+
 
             Times are represented in EST
     {% else %}
@@ -256,7 +256,7 @@
     {% endif %}
 
 
-   
+
 
 
 {% endblock content %}
