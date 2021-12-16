@@ -43,14 +43,17 @@ class accountsView(ModelView):
 
     def is_accessible(self):
         return current_user.status == 5
+    column_labels = dict(lname = 'Last Name', fname= 'First Name', phoneNumber='Phone Number', accountStatus = 'Account Status', accountEmail ='Account Email' )
 
 class alertsView(ModelView):
     def is_accessible(self):
         return current_user.status == 5
+    column_labels = dict(triggerLevel = 'Trigger Level', alertPhone= 'Alert Phone', alertEmail='Alert Email' )
 
 class sensorsView(ModelView):
     def is_accessible(self):
         return current_user.status == 5
+    column_labels = dict(accountID = 'Account ID', sensorSize= 'Sensor Size', sensorType='Sensor Type', sensorName = 'Sensor Name', timeBetweenReadings ='Time Between Readings', sensorGroup='Sensor Group' )
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
 admin.add_view(alertsView(alerts, db.db.session, name='Alerts'))
