@@ -1,5 +1,7 @@
 from flask import render_template, url_for, flash, redirect, Response, request
+
 #from elevation import get_point_elevations
+
 import datetime
 import io
 import base64
@@ -257,6 +259,9 @@ def home():
 @login_required
 def sensors():
     current_user.initialize_user_data()
+    if current_user.status== 5:
+
+        return redirect(url_for('admin_initial_page'))
     return render_template('sensors.html', account_info=current_user.user_data)
 
 
@@ -353,13 +358,14 @@ def point_elevations():
 
 
 
+
 # Returns the html page for a single sensor, where measurement can be configured
 @app.route("/sensors/<sensor_id>")
 @login_required
 def single_sensor_page_route(sensor_id):
     try:
         auth_id = db.sensors.get_acc_id_by_sens_id(sensor_id)
-        if not (str(auth_id) == str(current_user.id)):
+        if not (str(auth_id) == str(current_user.id)) and not current_user.status==5:
             return "Sensor not found", 404
     except:
         return "Sensor not found", 404
@@ -509,7 +515,6 @@ def maps():
 def support():
     return render_template('support.html')
 
-
 '''
 register : this handles the intial user generation, by taking in info
 from the form in the registration template, hashing the chosen password
@@ -539,7 +544,7 @@ def register():
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)
         token = User.get_confirmation_token(user_obj)
-        email.send_confirmation_email(form.email.data, url_for('confirmation', token=token, _external=True))
+        email.send_confirmation_email(form.email.data, "www.usersmilonetech.com/register/" + token )
 
         flash(f'Your account has been Created! An account confirmation email has been sent to the submitted email. \
                 To move forward in account registration, please go to your registered email and click the confirmation \
@@ -782,12 +787,12 @@ def reset_request():
     form = RequestResetForm()
 
     if form.validate_on_submit():
+        
         user = db.accounts.get_id_by_email(form.email.data)
         flash('An email has been sent with instructions on how to reset your password')
         user_obj = User(user)
         token = User.get_reset_token(user_obj)
-        email.send_password_request(form.email.data, url_for('reset_token', token=token, _external=True))
-
+        email.send_password_request(form.email.data, 'www.usersmilonetech.com/reset_password/' + token)
         return redirect(url_for('login'))
 
     return render_template('reset_request.html', title="Reset Password", form=form)
@@ -815,7 +820,7 @@ def reset_token(token):
     if user is None:
         flash('That is an Invalid/Expired Token', 'warning')
         return redirect(url_for('reset_request'))
-
+        
     form = ResetPasswordForm()
 
     if form.validate_on_submit():

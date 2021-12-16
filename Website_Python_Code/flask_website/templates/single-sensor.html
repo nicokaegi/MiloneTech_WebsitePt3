@@ -117,6 +117,32 @@
     }
 
 
+
+    // Nico's work. Use this function
+    function gate_date_range(first_date, second_date) {
+        chart_mode = first_date
+
+        var arr = {first_date: first_date, second_date: second_date, sensor_id: "{{sensorID}}"}
+
+        $.ajax({
+            url: '/sensors/get-date-range',
+            type: 'POST',
+            data: JSON.stringify(arr),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success: function(response) {
+                console.log(response);
+                barchart.data.labels = response["x_vals"];
+                barchart.data.datasets.forEach((dataset) => {
+                    dataset.data = response["y_vals"];
+                });
+                barchart.update()
+
+            }
+        });
+    }
+
     function customDate(){
         var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
         var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
@@ -185,9 +211,10 @@
                             backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
                             borderColor:'white',
-                            hoverBorderWidth:1,
-                            hoverBorderColor:'white',
-                            barThickness:15
+                            hoverBorderWidth:3,
+                            hoverBorderColor:'#000',
+                            barThickness: 15
+
                         }]
                     },
                     options:{
@@ -617,6 +644,7 @@
                 return;
             }
         }
+
 
         //Create a JSON with all of the data we want to end up in the settings table of the database
         var sendData = {"sensorID": '{{sensorID}}',
