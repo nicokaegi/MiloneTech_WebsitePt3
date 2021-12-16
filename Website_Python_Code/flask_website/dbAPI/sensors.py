@@ -33,11 +33,6 @@ def set_sensors_with_areas():
         traceback.print_exc()
         return False
 
-'''
-UPDATE table_name
-SET column1 = value1, column2 = value2, ...
-WHERE condition;
-'''
 
 def new_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long):
     try:
@@ -49,11 +44,11 @@ def new_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, to
         traceback.print_exc()
         return False
 
-def set_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long):
+def update_sensor_group_area(accountID, sensorGroup, bot_lat, bot_long, top_lat, top_long):
     try:
         with db.engine.connect() as connection:
             connection.execute("update sensor_group_area "
-                               "set bot_lat = {}, bot_long = {}, top_lat = {}, top_log = {} "
+                               "set bot_lat = {}, bot_long = {}, top_lat = {}, top_long = {} "
                                "where accountID = {} and sensorGroup = '{}'".format(bot_lat, bot_long, top_lat, top_long, accountID, sensorGroup))
 
     except exc.SQLAlchemyError:

@@ -743,10 +743,9 @@ def settings():
         if (not form.sensorGroup_2.data == '') and (not form.newBottomLat.data == '') and (not  form.newBottomLong.data == '') and (not  form.newTopLat.data == '') and (not  form.newTopLong.data == ''):
 
             groups_with_areas = db.sensors.get_sensor_groups_with_areas(current_user.id)
-            print(groups_with_areas, file=sys.stderr)
+            groups_with_areas = set([item[0] for item in groups_with_areas])
             if(form.sensorGroup_2.data in groups_with_areas):
-                db.sensors.set_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
-                print(form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, file=sys.stderr)
+                db.sensors.update_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
 
             else:
                 db.sensors.new_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
