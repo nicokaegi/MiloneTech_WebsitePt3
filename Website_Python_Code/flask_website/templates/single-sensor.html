@@ -580,9 +580,12 @@
         console.log(tank_height)
         console.log('here :' + liquid_height/total_height)
         console.log(new_height)
-
+        document.getElementsByClassName('water')[0].setAttribute("y", String(new_height));
+        document.getElementsByClassName('water')[0].setAttribute("height", String(tank_bottom_y-new_height ));
+        /*
         document.getElementById('water_fill').setAttribute('y', String(new_height))
         document.getElementById('water_fill').setAttribute('height', String(tank_bottom_y-new_height ))
+        */
     }
 
     //Changes the measurement fields shown based on measurement type
