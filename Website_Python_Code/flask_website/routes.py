@@ -48,7 +48,7 @@ class accountsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
 
 class alertsView(ModelView):
@@ -57,7 +57,7 @@ class alertsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
 
 class sensorsView(ModelView):
@@ -66,7 +66,7 @@ class sensorsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
@@ -787,7 +787,7 @@ def reset_request():
     form = RequestResetForm()
 
     if form.validate_on_submit():
-        
+
         user = db.accounts.get_id_by_email(form.email.data)
         flash('An email has been sent with instructions on how to reset your password')
         user_obj = User(user)
@@ -820,7 +820,7 @@ def reset_token(token):
     if user is None:
         flash('That is an Invalid/Expired Token', 'warning')
         return redirect(url_for('reset_request'))
-        
+
     form = ResetPasswordForm()
 
     if form.validate_on_submit():
