@@ -180,7 +180,7 @@
                     data:{
                         labels: {{ data.x_vals | tojson }},                                         //X VALS TO COMMUNICATE WITH CHART
                         datasets:[{
-                            label:'Liquid Level',
+                            label:'Liquid Level %',
                             data:{{ data.y_vals }},
                             // backgroundColor: gradient,
                             borderWidth:1, //Effects plotted line on chart
@@ -216,7 +216,8 @@
                         ticks: {
                             autoSkip: true,
                             padding: 4,
-                            fontSize: 10
+                            fontSize: 10,
+                            display: false
                         }
                     }]
                 },

@@ -105,7 +105,7 @@
                               data:{
                                 labels: {{ sensor.x_vals | tojson }},
                                 datasets:[{
-                                  label:'Liquid Level',
+                                  label:'Liquid Level %',
                                   data:{{ sensor.y_vals }},
                                   // backgroundColor: gradient,
                                   borderWidth:1, //Effects plotted line on chart
@@ -141,7 +141,8 @@
                                             ticks: {
                                                 autoSkip: true,
                                                 padding: 4,
-                                                fontSize: 10
+                                                fontSize: 10,
+                                                display: false
                                             }
                                         }]
                                     },
