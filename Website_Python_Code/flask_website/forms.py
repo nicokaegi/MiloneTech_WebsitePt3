@@ -54,6 +54,11 @@ class SettingsForm(FlaskForm):
     newBottomLong = FloatField('BottomLong')
     newTopLat = FloatField('TopLat')
     newTopLong = FloatField('TopLong')
+    add_sensor= SubmitField('Add Sensor')
+    sensor_add_value = StringField(label='serial')
+    sensor_add_latitude = FloatField(label='add_latitude')
+    sensor_add_longitude = FloatField(label='add_longitude')
+    sensor_elevation = FloatField(label='elevation')
 
 
 class RequestResetForm(FlaskForm):

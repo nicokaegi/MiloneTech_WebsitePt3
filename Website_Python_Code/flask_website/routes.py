@@ -8,6 +8,7 @@ import base64
 import json
 import sys
 import requests
+from flask_website.dbAPI.sensors import add_sensor, add_sensor_location, add_sensor_to_account
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
@@ -260,7 +261,6 @@ def home():
 def sensors():
     current_user.initialize_user_data()
     if current_user.status== 5:
-
         return redirect(url_for('admin_initial_page'))
     return render_template('sensors.html', account_info=current_user.user_data)
 
@@ -296,6 +296,28 @@ def provide_group_of_sensors():
                          'sensor_length' : sensor_info[0]['sensorSize']}
 
     return output
+
+
+@app.route('/admin-sensor')
+@login_required
+def admin_initial_page(): 
+    if current_user.status==5:
+        return render_template('admin_sensor_select.html', sensors=db.sensors.get_every_sensor())
+    else:
+        return 403
+
+@app.route('/admin-sensor/<sensor_id>')
+@login_required
+def admin_sensor_page(sensor_id):
+    if current_user.status==5:
+        data = db.sensor_readings.get_n_sensor_data_points(sensor_id, 20)
+        chart_data = {"x_vals": [], "y_vals": []}
+        for datapoint in data:
+            chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
+            chart_data["y_vals"].append(datapoint[1])
+
+        sensor_settings = db.settings.get_sensor_settings(sensor_id)
+        return render_template('admin_sensors.html', data=chart_data, sensorID=sensor_id, settings=sensor_settings, sensors=db.sensors.get_every_sensor())
 
 
 elevation_key = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxON1d
@@ -771,6 +793,17 @@ def settings():
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
                 flash("Changed Current Sensor's Group to: " + form.newSensorGroup.data, 'success')
+
+
+        if (not form.sensor_add_value.data == "" ):
+            latitude = form.sensor_add_latitude.data
+            longitude = form.sensor_add_longitude.data
+            name = form.sensor_add_value.data
+            elevation = form.sensor_elevation.data
+            add_sensor(name)
+            add_sensor_to_account(name, current_user.email)
+            add_sensor_location(name, latitude,longitude,elevation)            
+
     return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
                            alerts=alerts)
 
