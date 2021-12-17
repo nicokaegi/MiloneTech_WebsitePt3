@@ -1,5 +1,7 @@
 from flask import render_template, url_for, flash, redirect, Response, request
+
 #from elevation import get_point_elevations
+
 import datetime
 import io
 import base64
@@ -29,6 +31,7 @@ class accounts(db.db.Base):
     __tablename__ = "accounts"
     extend_existing=True
 
+
 class alerts(db.db.Base):
     __tablename__ = "alerts"
     extend_existing=True
@@ -36,23 +39,34 @@ class alerts(db.db.Base):
 class sensors(db.db.Base):
     __tablename__ = "sensors"
     extend_existing=True
-    def is_accessible(self):
-        #print(current_user.email, file=sys.stderr)
-        return current_user.status == 5
 
 class accountsView(ModelView):
     page_size = 50
-    column_exclude_list = ['passwordHash', ]
 
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.db.session.rollback()
         return current_user.status == 5
 
 class alertsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.db.session.rollback()
         return current_user.status == 5
 
 class sensorsView(ModelView):
     def is_accessible(self):
+        try:
+            db.db.session.flush()
+            db.db.session.commit()
+        except:
+            db.db.session.rollback()
         return current_user.status == 5
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
@@ -245,6 +259,9 @@ def home():
 @login_required
 def sensors():
     current_user.initialize_user_data()
+    if current_user.status== 5:
+
+        return redirect(url_for('admin_initial_page'))
     return render_template('sensors.html', account_info=current_user.user_data)
 
 
@@ -257,14 +274,29 @@ def sensor_group_route(sensor_group):
 
 #function to use with ajax to grab the sensors within a specific user
 #will return an giant json of the sensors
+
 @app.route("/sensors/get-group", methods=["GET"])
 @login_required
 def provide_group_of_sensors():
-    val = request.args.to_dict()['number']
+    val = request.args.to_dict()['group_name']
     current_user.initialize_user_data()
 
     group = current_user.user_data["sensor_data"][val]
-    return group
+    output = {}
+    for item in group:
+
+        location_data = db.sensors.get_sensor_location(item)
+        sensor_info = db.sensors.get_sensor_info(item)
+        print(item, file=sys.stderr)
+        output[item] = { 'name' : group[item]['name'],
+                         'water_level' : group[item]['y_vals'][-1]/100,
+                         'latitude' :  location_data[0],
+                         'longitude' : location_data[1],
+                         'elevation' : location_data[2],
+                         'sensor_length' : sensor_info[0]['sensorSize']}
+
+    return output
+
 
 elevation_key = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxON1d
                 6emtZZlhBUk1YUHVlYXZPWXFUSzlib0pYIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxXNE1
@@ -297,7 +329,6 @@ def get_point_elevations(coordinate_list:list) -> list:
     building_url = add_param(building_url, "X-API-Key", elevation_key)
     building_url = add_param(building_url, "Content_Type", content_type)
     response = requests.get(building_url)
-    print(response.content)
     extracted_data = json.loads(response.content)
     return(extracted_data["data"])
 
@@ -308,7 +339,6 @@ def get_point_elevations(coordinate_list:list) -> list:
 def point_elevations():
     data = request.data.decode("utf-8")
     data = json.loads(data)["data"]
-    print(data, file=sys.stderr)
     remaning = data
     out_elevatons = []
 
@@ -321,10 +351,9 @@ def point_elevations():
             out_elevatons.extend(get_point_elevations(temp))
             remaning = remaning[1000:]
 
-    print(out_elevatons)
-
     values = out_elevatons
     return {'data':values}
+
 
 
 
@@ -336,7 +365,7 @@ def point_elevations():
 def single_sensor_page_route(sensor_id):
     try:
         auth_id = db.sensors.get_acc_id_by_sens_id(sensor_id)
-        if not (str(auth_id) == str(current_user.id)):
+        if not (str(auth_id) == str(current_user.id)) and not current_user.status==5:
             return "Sensor not found", 404
     except:
         return "Sensor not found", 404
@@ -457,6 +486,13 @@ def store_settings_route():
     return {"result": result}
 
 
+@app.route("/sensors/get-group-areas", methods=["GET"])
+@login_required
+def provide_group_areas():
+    groups_areas = { 'group-areas' : db.sensors.get_sensor_groups(current_user.id) }
+    print(groups_areas, file=sys.stderr)
+    return groups_areas
+
 @app.route("/profile")
 @login_required
 def profile():
@@ -472,13 +508,12 @@ def notifications():
 @app.route("/maps")
 @login_required
 def maps():
-    return render_template('maps.html')
 
+    return render_template('maps.html')
 
 @app.route("/support")
 def support():
     return render_template('support.html')
-
 
 '''
 register : this handles the intial user generation, by taking in info
@@ -509,7 +544,7 @@ def register():
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)
         token = User.get_confirmation_token(user_obj)
-        email.send_confirmation_email(form.email.data, url_for('confirmation', token=token, _external=True))
+        email.send_confirmation_email(form.email.data, "www.usersmilonetech.com/register/" + token )
 
         flash(f'Your account has been Created! An account confirmation email has been sent to the submitted email. \
                 To move forward in account registration, please go to your registered email and click the confirmation \
@@ -695,6 +730,9 @@ def settings():
             if db.sensors.get_sensor_info(sensor)[0][6] not in form.sensorGroup.choices:
                 form.sensorGroup.choices.append(
                     (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+                form.sensorGroup_2.choices.append(
+                    (db.sensors.get_sensor_info(sensor)[0][6], db.sensors.get_sensor_info(sensor)[0][6]))
+
     alerts.sort()
 
     for alert in alerts:
@@ -718,6 +756,17 @@ def settings():
         if not form.sensorGroup.data == '':
             db.sensors.set_sensor_group(form.sensorID.data, form.sensorGroup.data)
             flash("Changed Current Sensor's Group to: " + form.sensorGroup.data, 'success')
+
+        if (not form.sensorGroup_2.data == '') and (not form.newBottomLat.data == '') and (not  form.newBottomLong.data == '') and (not  form.newTopLat.data == '') and (not  form.newTopLong.data == ''):
+
+            groups_with_areas = db.sensors.get_sensor_groups_with_areas(current_user.id)
+            groups_with_areas = set([item[0] for item in groups_with_areas])
+            if(form.sensorGroup_2.data in groups_with_areas):
+                db.sensors.update_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+
+            else:
+                db.sensors.new_sensor_group_area(current_user.id, form.sensorGroup_2.data, form.newBottomLat.data, form.newBottomLong.data, form.newTopLat.data, form.newTopLong.data)
+
         else:
             if not form.newSensorGroup.data == '':
                 db.sensors.set_sensor_group(form.sensorID.data, form.newSensorGroup.data)
@@ -738,12 +787,12 @@ def reset_request():
     form = RequestResetForm()
 
     if form.validate_on_submit():
+
         user = db.accounts.get_id_by_email(form.email.data)
         flash('An email has been sent with instructions on how to reset your password')
         user_obj = User(user)
         token = User.get_reset_token(user_obj)
-        email.send_password_request(form.email.data, url_for('reset_token', token=token, _external=True))
-
+        email.send_password_request(form.email.data, 'www.usersmilonetech.com/reset_password/' + token)
         return redirect(url_for('login'))
 
     return render_template('reset_request.html', title="Reset Password", form=form)
