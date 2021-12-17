@@ -370,8 +370,8 @@
                     <!--- Rectangular Tank --->
                     <div id="rectangular_image">
                         <body>
-                            <svg height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-                                <rect class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                            <svg id='tank' height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+                                <rect id='water_fill' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
                                   <title>Water</title>
                                 </rect>
                                 <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
@@ -565,6 +565,26 @@
                                 document.getElementById("vertical_capsule_parameters_menu"),
                                 document.getElementById("spherical_parameters_menu")];
 
+    //Changes fill level of the svg
+    function change_svg_height(liquid_height, total_height){
+        console.log(document.getElementById('water_fill').getAttribute('y'))
+        console.log(document.getElementById('tank').getAttribute('height'))
+        tank_bottom_y = 150
+        tank_height = parseInt(document.getElementById('tank').getAttribute('height'))
+        water_height = document.getElementById('water_fill').getAttribute('y')
+        new_height = tank_bottom_y - (liquid_height/total_height * tank_height)
+        
+
+        console.log(liquid_height)
+        console.log(total_height)
+        console.log(tank_height)
+        console.log('here :' + liquid_height/total_height)
+        console.log(new_height)
+
+        document.getElementById('water_fill').setAttribute('y', String(new_height))
+        document.getElementById('water_fill').setAttribute('height', String(tank_bottom_y-new_height ))
+    }
+
     //Changes the measurement fields shown based on measurement type
     function changeShownMenu(index) {
         //First hide all the menus
@@ -705,7 +725,7 @@
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
         var liquidVolume = width * length * absoluteLiquidHeight;
-
+        change_svg_height(liquidVolume, width*length*height);
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 

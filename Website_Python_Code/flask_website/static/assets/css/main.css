@@ -20824,10 +20824,10 @@ rgba(0, 128, 0, 0.3);
 #sensorGroup, #changeGroup {
   margin-top: 0%;
 }
-
+/*
 .water{
-  y:150;
-  height:0px;
+  y:110;
+  height:40px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -20849,6 +20849,7 @@ rgba(0, 128, 0, 0.3);
     y:20;
   }
 }
+*/
 
 #rectangular_image{
  padding-top: 0px;
