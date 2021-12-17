@@ -3,6 +3,16 @@ from . import db
 import traceback
 import sys
 
+def add_sensor_location(sens_id, lat, long, elevation):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("insert into sensor_location "
+                               "values ('{}', {}, {}, {})"
+                               .format(sens_id, lat, long, elevation))
+            return True
+    except exc.SQLAlchemyError:
+        return False
+
 def get_sensor_location(sens_id):
     try:
         with db.engine.connect() as connection:
