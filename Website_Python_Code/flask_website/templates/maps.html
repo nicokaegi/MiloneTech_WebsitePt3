@@ -176,7 +176,7 @@
     for(id in sensors){
       sensors[id]
       latlang = new L.LatLng(sensors[id]['latitude'],sensors[id]['longitude'])
-      L.marker(latlang).addTo(point_group).bindPopup("id : " + id + " : water level : " + sensors[id]['water_level'] + " : elevation : " + sensors[id]['elevation'] +'m').openPopup();
+      L.marker(latlang).addTo(point_group).bindPopup("id : " + id + " : water level : " + sensors[id]['water_level'] + " : elevation : " + (sensors[id]['elevation']*3.28084).toFixed(2) +'ft').openPopup();
 
     }
 
@@ -233,6 +233,6 @@
     };
 
   }
-  
+
 </script>
 {% endblock javascripts%}
