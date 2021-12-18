@@ -205,10 +205,14 @@
 		                        	{{ form.sensorGroup_2(class="btn btn-outline-success btn-lg") }}
 					</div>
 					<div class="col-3 mr-0 ml-0">
-		                        	{{ form.newBottomLat(class="form-control form-control-lg", placeholder=" Enter a new group", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Enter a new group'") }}
-															{{ form.newBottomLong(class="form-control form-control-lg", placeholder=" Enter a new group", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Enter a new group'") }}
-															{{ form.newTopLat(class="form-control form-control-lg", placeholder=" Enter a new group", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Enter a new group'") }}
-															{{ form.newTopLong(class="form-control form-control-lg", placeholder=" Enter a new group", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Enter a new group'") }}
+															bottom corner coordinate
+		                        	{{ form.newBottomLat(class="form-control form-control-lg", placeholder=" enter latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter latitude'") }}
+															{{ form.newBottomLong(class="form-control form-control-lg", placeholder=" enter longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter longitude'") }}
+
+															top corner coordinate
+															{{ form.newTopLat(class="form-control form-control-lg", placeholder=" enter latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter latitude'") }}
+															{{ form.newTopLong(class="form-control form-control-lg", placeholder=" enter longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter longitude'") }}
+
 	                        </div>
 	                        <div class="col-1">
 	                                {{ form.modifyArea(class="btn btn-outline-warning btn-lg", style="text-align: center") }}

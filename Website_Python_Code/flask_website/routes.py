@@ -49,8 +49,9 @@ class accountsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
+    column_labels = dict(lname = 'Last Name', fname= 'First Name', phoneNumber='Phone Number', accountStatus = 'Account Status', accountEmail ='Account Email' )
 
 class alertsView(ModelView):
     def is_accessible(self):
@@ -58,8 +59,9 @@ class alertsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
+    column_labels = dict(triggerLevel = 'Trigger Level', alertPhone= 'Alert Phone', alertEmail='Alert Email' )
 
 class sensorsView(ModelView):
     def is_accessible(self):
@@ -67,8 +69,9 @@ class sensorsView(ModelView):
             db.db.session.flush()
             db.db.session.commit()
         except:
-            db.session.rollback()
+            db.db.session.rollback()
         return current_user.status == 5
+    column_labels = dict(accountID = 'Account ID', sensorSize= 'Sensor Size', sensorType='Sensor Type', sensorName = 'Sensor Name', timeBetweenReadings ='Time Between Readings', sensorGroup='Sensor Group' )
 
 admin.add_view(accountsView(accounts, db.db.session, name='Accounts'))
 admin.add_view(alertsView(alerts, db.db.session, name='Alerts'))
@@ -820,7 +823,7 @@ def reset_request():
     form = RequestResetForm()
 
     if form.validate_on_submit():
-        
+
         user = db.accounts.get_id_by_email(form.email.data)
         flash('An email has been sent with instructions on how to reset your password')
         user_obj = User(user)
@@ -853,7 +856,7 @@ def reset_token(token):
     if user is None:
         flash('That is an Invalid/Expired Token', 'warning')
         return redirect(url_for('reset_request'))
-        
+
     form = ResetPasswordForm()
 
     if form.validate_on_submit():
