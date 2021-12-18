@@ -1,6 +1,5 @@
 import requests
 import json
-import sys
 
 '''
 Interaction with elevation API
@@ -36,7 +35,7 @@ def get_carpet_elevation(coordinate_point:list) -> list:
     response = requests.get(building_url)
     extracted_data = json.loads(response.content)
     return (extracted_data['data']['carpet'])
-
+    
 '''
 Returns the NW and SE corners of the desired coordinate points
 param: The coordinates and the bounds.
@@ -77,9 +76,10 @@ def convert_string_list(coordinate_list: list) -> str:
 
 '''
 Takes in any amount of coordinate points (Lat,Long pairs) as a list of 2-element lists
-and returns elevations for those points
+and returns elevations for those points 
 '''
 def get_point_elevations(coordinate_list:list) -> list:
+    coordinate_list = pairs(coordinate_list)
     building_url = point_request_url + "?"
     building_url = add_param(building_url, "points", convert_string_list(coordinate_list))
     building_url = add_param(building_url, "X-API-Key", elevation_key)
@@ -101,5 +101,4 @@ def pairs(coordinates):
 
 
 if __name__=="__main__":
-    print(get_point_elevations([[39.70179236136183, -75.12333012077949], [39.70179236136183, -75.12333012077949], [39.70179236136183, -75.12333012077949]]))
-
+    print(get_point_elevations([[39.70179236136183, -75.12333012077949]]))
