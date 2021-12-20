@@ -20825,9 +20825,16 @@ rgba(0, 128, 0, 0.3);
   margin-top: 0%;
 }
 
+/*
+.water{
+  y:110;
+  height:40px;
+
+
 .water{
   y:150;
   height:0px;
+
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -20849,6 +20856,9 @@ rgba(0, 128, 0, 0.3);
     y:20;
   }
 }
+
+*/
+
 
 #rectangular_image{
  padding-top: 0px;
@@ -20910,6 +20920,11 @@ rgba(0, 128, 0, 0.3);
   display: block;
 }
 
-.dropdown a:hover {background-color: #ddd;}
+.dropdown a:hover {
+  background-color: #ddd;
+}
 
-.show {display: block;}
+.show {
+  display: block;
+}
+
