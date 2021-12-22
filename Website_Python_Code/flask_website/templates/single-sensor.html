@@ -221,7 +221,8 @@
                     },
                     options:{
 
-                        plugins:{
+                        //For when chartjs zoom plugin works
+                        /* plugins:{
                           zoom:{
                             pan:{
                               enabled: true,
@@ -237,7 +238,7 @@
                               mode: 'x'
                             }
                           }
-                        },
+                        },*/
 
                         legend:{
                             display:true,
@@ -597,7 +598,7 @@
         tank_height = parseInt(document.getElementById('tank').getAttribute('height'))
         water_height = document.getElementById('water_fill').getAttribute('y')
         new_height = tank_bottom_y - (liquid_height/total_height * tank_height)
-        
+
 
         console.log(liquid_height)
         console.log(total_height)
