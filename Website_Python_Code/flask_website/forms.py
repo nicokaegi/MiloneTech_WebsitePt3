@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 import flask_website.dbAPI.app as db
+import re
+import sys
 
 #Registration form
 class RegistrationForm(FlaskForm):
@@ -72,6 +74,13 @@ class RequestResetForm(FlaskForm):
         print(user_email)
         if not user_email:
             raise ValidationError('That Email doesnt Exist. You must Regsiter First')
+
+class ProfileForm(FlaskForm):
+    first_name= StringField('Fast Name')
+    last_name = StringField('Last Name')
+    email = StringField('Email')
+    phone = StringField('Phone')
+    save = SubmitField('Save')
 
 class ResetPasswordForm(FlaskForm):
 

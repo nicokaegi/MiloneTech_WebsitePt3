@@ -1,5 +1,7 @@
 from sqlalchemy import exc
 from . import db
+import traceback
+
 
 
 class Accounts(db.Base):
@@ -22,7 +24,7 @@ def get_id_by_email(acc_email):
                 return False
     except exc.SQLAlchemyError:
         return False
-        
+
 def get_email_by_id(account_id):
     try:
         with db.engine.connect() as connection:
@@ -168,15 +170,16 @@ def delete_account_by_id(user_id):
     except exc.SQLAlchemyError:
         return False
 
-def set_account_email(old_email, new_email):
+def set_account_email(id, new_email):
     try:
         with db.engine.connect() as connection:
             connection.execute("update accounts "
                                "set accountEmail = '{}' "
-                               "where accountEmail = '{}'"
-                               .format(new_email, old_email))
+                               "where accountID = '{}'"
+                               .format(new_email, id))
             return True
     except exc.SQLAlchemyError:
+        traceback.print_exc()
         return False
 
 
@@ -185,7 +188,7 @@ def set_account_password(pass_hash, email):
         with db.engine.connect() as connection:
             connection.execute("update accounts "
                                "set passwordHash = '{}' "
-                               "where accountEmail = '{}'"
+                               "where accountEmail = {}"
                                .format(pass_hash, email))
             return True
     except exc.SQLAlchemyError:
@@ -204,13 +207,38 @@ def set_account_payment_tier(status, email):
         return False
 
 
-def set_account_phone(phone, email):
+def set_account_phone(id, phone):
     try:
         with db.engine.connect() as connection:
             connection.execute("update accounts "
                                "set phoneNumber = '{}' "
-                               "where accountEmail = '{}'"
-                               .format(email,phone))
+                               "where accountID = {}"
+                               .format(phone,id))
             return True
     except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+def set_account_lname(id, lname):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("update accounts "
+                               "set lname = '{}' "
+                               "where accountID = '{}'"
+                               .format(lname,id))
+            return True
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
+        return False
+
+def set_account_fname(id, fname):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("update accounts "
+                               "set fname = '{}' "
+                               "where accountID = '{}'"
+                               .format(fname,id))
+            return True
+    except exc.SQLAlchemyError:
+        traceback.print_exc()
         return False
