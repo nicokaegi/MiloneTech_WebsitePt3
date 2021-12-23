@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.fields.numeric import IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
 import flask_website.dbAPI.app as db
 
 #Registration form
@@ -13,6 +14,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    phone_number = StringField('Phone Number', validators=[Regexp("(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d"), Length(12,12)])
     submit = SubmitField('Sign Up')
 
 #Login form
