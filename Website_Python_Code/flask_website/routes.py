@@ -528,8 +528,7 @@ def profile():
     last_name = fullname[1]
     email = current_user.email
     phone = db.accounts.get_phone_by_id(current_user.id)
-
-    if form.is_submitted():
+    if form.is_submitted() and form.validate():
         phone_valid = True if re.search(r"(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d", form.phone.data) else False
         #print(form.first_name.data, fullname[0])
         if form.first_name.data != fullname[0] and form.first_name.data != None:
