@@ -12,13 +12,14 @@ from flask_website.dbAPI.sensors import add_sensor, add_sensor_location, add_sen
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
-    RequestResetForm, ResetPasswordForm
+    RequestResetForm, ResetPasswordForm, ProfileForm
 from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
 import json
-
+import copy
+import re
 
 from pprint import pprint
 
@@ -303,7 +304,7 @@ def provide_group_of_sensors():
 
 @app.route('/admin-sensor')
 @login_required
-def admin_initial_page(): 
+def admin_initial_page():
     if current_user.status==5:
         return render_template('admin_sensor_select.html', sensors=db.sensors.get_every_sensor())
     else:
@@ -518,10 +519,36 @@ def provide_group_areas():
     print(groups_areas, file=sys.stderr)
     return groups_areas
 
-@app.route("/profile")
+@app.route("/profile",  methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('page-user.html')
+    form = ProfileForm()
+    fullname = db.accounts.get_name_by_id(current_user.id)
+    first_name = fullname[0]
+    last_name = fullname[1]
+    email = current_user.email
+    phone = db.accounts.get_phone_by_id(current_user.id)
+    if form.is_submitted() and form.validate():
+        phone_valid = True if re.search(r"(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d", form.phone.data) else False
+        #print(form.first_name.data, fullname[0])
+        if form.first_name.data != fullname[0] and form.first_name.data != None:
+            db.accounts.set_account_fname(current_user.id, form.first_name.data)
+            first_name = form.first_name.data
+        if form.last_name.data != fullname[1] and form.last_name.data != None:
+            db.accounts.set_account_lname(current_user.id, form.last_name.data)
+            last_name = form.last_name.data
+        if form.email.data != email and form.email.data != None:
+            db.accounts.set_account_email(current_user.id, form.email.data)
+            email = form.email.data
+        if form.phone.data != phone and phone_valid and form.phone.data != None:
+            db.accounts.set_account_phone(current_user.id, form.phone.data)
+            phone = form.phone.data
+
+    form.first_name.data = first_name
+    form.last_name.data = last_name
+    form.email.data = email
+    form.phone.data = phone
+    return render_template('page-user.html', form=form)
 
 
 @app.route("/notifications")
@@ -805,7 +832,7 @@ def settings():
             elevation = form.sensor_elevation.data
             add_sensor(name)
             add_sensor_to_account(name, current_user.email)
-            add_sensor_location(name, latitude,longitude,elevation)            
+            add_sensor_location(name, latitude,longitude,elevation)
 
     return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
                            alerts=alerts)
