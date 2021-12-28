@@ -160,6 +160,16 @@ def create_account(email, first_name, last_name, pass_hash):
     except exc.SQLAlchemyError:
         return False
 
+def create_account(email, first_name, last_name, pass_hash, phone_number):
+    try:
+        with db.engine.connect() as connection:
+            connection.execute("insert into accounts "
+                               "values (default, '{}', '{}', '{}', '{}', '{}', 0)"
+                               .format(email, first_name, last_name, phone_number, pass_hash))
+            return True
+    except exc.SQLAlchemyError:
+        return False
+
 def delete_account_by_id(user_id):
     try:
         with db.engine.connect() as connection:

@@ -591,8 +591,10 @@ def register():
         fullname = form.name.data.split()
         firstname = fullname[0]
         lastname = fullname[-1]
-
-        db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
+        if not form.phone_number.data == '':
+            db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass, form.phone_number.data)
+        else: 
+            db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)
         token = User.get_confirmation_token(user_obj)

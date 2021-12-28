@@ -561,6 +561,7 @@
 
 <!--- Measurement Settings Functions --->
 <script>
+    
     //Declare global variable measurementConfigMenus, that correspond with the divs for each of their respective
     //  measurement field groups
     var measurementConfigMenus = [document.getElementById("none_parameters_menu"),
@@ -645,6 +646,7 @@
                 alert("Please enter numeric input in all fields: rectangular specifications");
                 return;
             }
+
         //Replace cylindrical values if necessary
         } else if(mts.selectedIndex == 3) { //CYLINDRICAL
             diameter = parseInt(document.getElementById("cylindrical_diameter_field").value);
