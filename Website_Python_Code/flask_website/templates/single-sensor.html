@@ -383,7 +383,7 @@
                                   <title>Tank</title>
                                 </rect>
                               </svg>
-                        </body>
+                       </body>
                     </div>
                 </div>
             </div>
@@ -523,7 +523,7 @@
                             <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
                               <title>Tank</title>
                             </rect>
-                          </svg>
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -985,10 +985,10 @@
     } else if('{{settings[1]}}' == "Rectangular Tank") {
         mts.selectedIndex = 2;
         document.getElementById("rectangular_width_field").value = {{settings[2]}};
-	      document.getElementById("rectangular_length_field").value = {{settings[3]}};
+	document.getElementById("rectangular_length_field").value = {{settings[3]}};
         document.getElementById("rectangular_height_field").value = {{settings[5]}};
         document.getElementById("cylindrical_height_field").value = 0;
-	      document.getElementById("vertical_oval_height_field").value = 0;
+	document.getElementById("vertical_oval_height_field").value = 0;
         document.getElementById("vertical_oval_length_field").value = 0;
         document.getElementById("vertical_capsule_length_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
