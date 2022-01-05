@@ -229,14 +229,28 @@
                 .range([ 0, width ]);
               svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x));
+                .call(d3.axisBottom(x))
+              // X-axis label
+              svg.append("text")
+                .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+                .style("text-anchor","middle")
+                .text("Date and Time");
+
 
               // Add Y axis
               var y = d3.scaleLinear()
-                .domain([0, 25])
+                .domain([0, 100])
                 .range([ height, 0 ]);
               svg.append("g")
-                .call(d3.axisLeft(y));
+                .call(d3.axisLeft(y))
+              // Y-axis label
+              svg.append("text")
+                .attr("transform","rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor","middle")
+                .text("Liquid Level %");
 
               // This allows to find the closest X index of the mouse:
               var bisect = d3.bisector(function(d) { return d.x; }).left;
@@ -247,7 +261,7 @@
                 .append('circle')
                   .style("fill", "none")
                   .attr("stroke", "black")
-                  .attr('r', 8.5)
+                  .attr('r', 4.5)
                   .style("opacity", 0)
 
               // Create the text that travels along the curve of chart
