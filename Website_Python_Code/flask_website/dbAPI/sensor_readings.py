@@ -1,6 +1,7 @@
 from sqlalchemy import exc
 from . import db
 from . import sensors
+import traceback
 
 
 class SensorReadings(db.Base):
@@ -132,10 +133,7 @@ def get_sensor_data_points_by_date(sens_id, start_date, end_date=None, max_size=
             return data
 
     except exc.SQLAlchemyError as e:
-        print("SQL Exception: " + str(e))
-        return False
-    except Exception as e:
-        print("Exception: " + str(e))
+        traceback.print_exception()
         return False
 
 

@@ -133,6 +133,7 @@
             async: false,
             success: function(response) {
                 console.log(response);
+                document.getElementById("chart").innerHTML = "";
                 build_chart(response['x_vals'], response['y_vals'])
 
             }
@@ -140,8 +141,8 @@
     }
 
     function customDate(){
-        var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
-        var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
+        var date1 = prompt('first date (Eg. Oct 1 2021 1:00PM)');
+        var date2 = prompt('second date (Eg. Nov 1 2021 10:00AM)');
         /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
         gate_date_range(date1, date2);
@@ -164,13 +165,6 @@
                 console.log( response["x_vals"]);
                 console.log( response["y_vals"]);
 
-                /*
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
-                    dataset.data = response["y_vals"];
-                });
-                linechart.update()
-                */
             }
         });
     }
@@ -239,7 +233,7 @@
 
               // Add Y axis
               var y = d3.scaleLinear()
-                .domain([0, 100])
+                .domain([20, 50 ])
                 .range([ height, 0 ]);
               svg.append("g")
                 .call(d3.axisLeft(y))
@@ -302,8 +296,10 @@
                 focusText.style("opacity",1)
               }
 
+              var format = d3.timeFormat('%Y-%m-%d %H:%M:%S');
+
               function mousemove() {
-                // recover coordinate we need
+                // recover coordinate we need selectedData.x
                 var x0 = x.invert(d3.mouse(this)[0]);
                 var i = bisect(data, x0, 1);
                 selectedData = data[i]
@@ -311,7 +307,7 @@
                   .attr("cx", x(selectedData.x))
                   .attr("cy", y(selectedData.y))
                 focusText
-                  .html("x:" + selectedData.x + "  -  " + "y:" + selectedData.y)
+                  .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
                   .attr("x", x(selectedData.x)+15)
                   .attr("y", y(selectedData.y))
                 }

@@ -460,7 +460,7 @@ def get_sensor_date_range_route():
     date1 = datetime.datetime.strptime(data['first_date'], "%Y-%m-%d %H:%M:%S")
     date2 = datetime.datetime.strptime(data['second_date'], "%Y-%m-%d %H:%M:%S")
 
-    if(date1 < date2):
+    if(date1 > date2):
         first_date = date1
         second_date = date2
 
