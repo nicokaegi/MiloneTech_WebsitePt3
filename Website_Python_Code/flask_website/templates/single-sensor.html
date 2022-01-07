@@ -233,7 +233,8 @@
 
               // Add Y axis
               var y = d3.scaleLinear()
-                .domain([20, 50 ])
+                .domain([0, 100 ])
+                //.domain([ 0 , d3.max(data)])      Supposed to scale y axis with data
                 .range([ height, 0 ]);
               svg.append("g")
                 .call(d3.axisLeft(y))
