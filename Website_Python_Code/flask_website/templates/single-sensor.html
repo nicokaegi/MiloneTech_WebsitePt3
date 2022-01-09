@@ -656,14 +656,15 @@
                     <div id="rectangular_image">
                         <body>
                             <svg id='tank' height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
-                                <rect id='water_fill' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                                <rect shape='rectangle' id='rectangle' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
                                   <title>Water</title>
                                 </rect>
                                 <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
                                   <title>Tank</title>
                                 </rect>
                               </svg>
-                        </body>
+                       </body> 
+                        <img src="/static/rectangle.jpg">
                     </div>
                 </div>
             </div>
@@ -691,6 +692,15 @@
                     </div>
                     <!--- Cylindrical Tank --->
                      <div id="cylindrical_image">
+                        <svg id='tank' height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+                            <rect shape='cylinder' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                              <title>Water</title>
+                            </rect>
+                            <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
+                              <title>Tank</title>
+                            </rect>
+                          </svg>
+                          <img src="/static/cylinder.jpg">
                      </div>
                 </div>
             </div>
@@ -729,7 +739,15 @@
                     </div>
                     <!--- Vertical Oval Tank --->
                     <div id="vertical_oval_image">
-                        <center><img src="http://2.bp.blogspot.com/-Up_en4xPVH0/U-oGeQxSEkI/AAAAAAAAnEw/ALGogNuY8FQ/s1600/picture2.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                        <svg height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+                            <rect shape='vertical_oval' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                              <title>Water</title>
+                            </rect>
+                            <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
+                              <title>Tank</title>
+                            </rect>
+                          </svg>
+                          <img src="/static/oval.jpg">
                     </div>
                 </div>
             </div>
@@ -756,7 +774,15 @@
                     </div>
                     <!--- Vertical Capsule Tank --->
                     <div id="vertical_capsule_image">
-                        <center><img src="https://www.petguide.com/wp-content/uploads/2015/09/torus-water-bowl.jpg" style="position:relative; top:10px;" width="120" height="120"></center>
+                        <svg height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+                            <rect shape='vertical_capsule' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                              <title>Water</title>
+                            </rect>
+                            <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
+                              <title>Tank</title>
+                            </rect>
+                          </svg>
+                          <img src="/static/capsule.jpg">
                     </div>
                 </div>
             </div>
@@ -774,7 +800,15 @@
                         </div>
                     </div>
                     <div id="spherical_image">
-                        <img src="https://cdn.inchcalculator.com/a/img/tank-volume/sphere-tank.png" style="position:relative; top:10px" width="125" height="120">
+                        <svg height='200px' width='200px' viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+                            <rect shape='spherical' class='water' y="150" width="200" height="0" style="stroke: rgb(0, 0, 0); fill: rgb(85, 172, 231);" bx:origin="0.5 -2.500053">
+                              <title>Water</title>
+                            </rect>
+                            <rect width="200" height="150" style="stroke: rgb(0, 0, 0); paint-order: fill; stroke-width: 2px; stroke-linejoin: round; fill: rgba(201, 201, 201, 0);" bx:origin="0.5 0.5">
+                              <title>Tank</title>
+                            </rect>
+                        </svg>
+                        <img src="/static/sphere.png">
                     </div>
                 </div>
             </div>
@@ -841,6 +875,7 @@
 
 <!--- Measurement Settings Functions --->
 <script>
+    
     //Declare global variable measurementConfigMenus, that correspond with the divs for each of their respective
     //  measurement field groups
     var measurementConfigMenus = [document.getElementById("none_parameters_menu"),
@@ -851,27 +886,35 @@
                                 document.getElementById("vertical_capsule_parameters_menu"),
                                 document.getElementById("spherical_parameters_menu")];
 
-    //Changes fill level of the svg
-    function change_svg_height(liquid_height, total_height){
-        console.log(document.getElementById('water_fill').getAttribute('y'))
-        console.log(document.getElementById('tank').getAttribute('height'))
-        tank_bottom_y = 150
-        tank_height = parseInt(document.getElementById('tank').getAttribute('height'))
-        water_height = document.getElementById('water_fill').getAttribute('y')
-        new_height = tank_bottom_y - (liquid_height/total_height * tank_height)
 
-
+    //uses volume calculations from this link: https://www.calculatorsoup.com/calculators/construction/tank.php
+    //each svg must have className = water and shape attribute that will be passed in for identifying the correct SVG to change.
+    //For future development, only one svg is needed becaused it is a progress bar. Initializing it in one place and calling it when shown would be better.
+    function change_svg_height(liquid_height, total_height, shape){
+        /*
+        SHAPE names so far
+        rectangle
+        cylinder
+        vertical_oval
+        vertical_capsule
+        spherical
+        */
         console.log(liquid_height)
         console.log(total_height)
-        console.log(tank_height)
-        console.log('here :' + liquid_height/total_height)
+        tank_bottom_y = 150;
+        tank_height = parseInt(document.getElementById('tank').getAttribute('height'));
+        new_height = tank_bottom_y - (liquid_height/total_height * tank_height)
+        var elements = document.getElementsByClassName("water");
+        for (i = 0; i < elements.length; i++){
+            if (elements[i].getAttribute('shape') == shape){
+                console.log(elements[i].getAttribute('shape'))
+                console.log(shape)
+                elements[i].setAttribute('y', String(new_height))
+                elements[i].setAttribute('height', String(tank_bottom_y-new_height ))
+            }
+        }
         console.log(new_height)
-        document.getElementsByClassName('water')[0].setAttribute("y", String(new_height));
-        document.getElementsByClassName('water')[0].setAttribute("height", String(tank_bottom_y-new_height ));
-        /*
-        document.getElementById('water_fill').setAttribute('y', String(new_height))
-        document.getElementById('water_fill').setAttribute('height', String(tank_bottom_y-new_height ))
-        */
+        console.log(tank_bottom_y-new_height)
     }
 
     //Changes the measurement fields shown based on measurement type
@@ -925,6 +968,7 @@
                 alert("Please enter numeric input in all fields: rectangular specifications");
                 return;
             }
+
         //Replace cylindrical values if necessary
         } else if(mts.selectedIndex == 3) { //CYLINDRICAL
             diameter = parseInt(document.getElementById("cylindrical_diameter_field").value);
@@ -999,6 +1043,9 @@
         return (sensorBottom + relativeHeight).toFixed(2) + " in.";
     }
 
+
+    //Only the gallons versions are updated and working. The liters measurements didnt seem to be used so nothing was done to them.
+    //The formulas referenced for this code come from here https://www.calculatorsoup.com/calculators/construction/tank.php
     function calculateRectangularVolumeGals(width, length, height, sensorBottom, sensorTop) {
         //The height of the liquid relative to the sensor
 
@@ -1015,7 +1062,7 @@
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
         var liquidVolume = width * length * absoluteLiquidHeight;
-        change_svg_height(liquidVolume, width*length*height);
+        change_svg_height(liquidVolume, width*length*height,  "rectangle");
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
@@ -1050,8 +1097,8 @@
 
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-        var liquidVolume = 3.1415 * (diameter/2) * (diameter/2) * height;
-
+        var liquidVolume = 3.1415 * (diameter/2) * (diameter/2) * absoluteLiquidHeight;
+        change_svg_height(liquidVolume, 3.1415 * (diameter/2) * (diameter/2) * height,  "cylinder");
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
@@ -1069,7 +1116,6 @@
 
     function calculateVerticalOvalVolumeGals(length, width, height, sensorBottom, sensorTop) {
         //The height of the liquid relative to the sensor
-
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
                 return "Empty";
@@ -1077,14 +1123,33 @@
                 return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
             }
         }
-
+        var liquidVolume;
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
-
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
-
-        var liquidVolume = (((height - width) * width) + (3.1415 * ((width/2) * (width/2)))) * length;
-
+        var radius = width/2;
+        var a_length = height - width;
+        var tank_volume = (Math.PI * radius **  2 + 2 * radius * a_length  ) * length;
+        if (absoluteLiquidHeight < radius){
+            var m = radius - absoluteLiquidHeight;
+            var theta = 2*Math.acos(m/radius);
+            liquidVolume = 1/2 * radius**2 * (theta - Math.sin(theta))* length;
+        }
+        else if (absoluteLiquidHeight < radius + a_length){
+            var semicircle_volume = 1/2 * Math.PI * radius**2 * length;
+            var rectangular_portion = length*width*(absoluteLiquidHeight - radius);
+            liquidVolume = semicircle_volume + rectangular_portion;
+        }
+        else {
+            var semicircle_volume = 1/2 * Math.PI * radius**2 * length;
+            var rectangular_portion = length*width*(absoluteLiquidHeight - radius);
+            var m = absoluteLiquidHeight - (height-radius);
+            var theta = 2*Math.acos(m/radius);
+            liquidVolume = 1/2 * radius**2 * (theta - Math.sin(theta))* length;
+        }
+        
+        change_svg_height(liquidVolume, tank_volume, "vertical_oval" );
         return (liquidVolume / 231).toFixed(2) + " gal";
+
     }
 
     function calculateVerticalOvalVolumeLiters(length, width, height, sensorBottom, sensorTop, liquidLevel) {
@@ -1103,7 +1168,7 @@
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateVerticalCapsuleVolumeGals(length, diameter, sensorBottom, sensorTop) {
+    function calculateVerticalCapsuleVolumeGals(length, diameter, sensorBottom, sensorTop, liquidLevel) {
 
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
@@ -1112,13 +1177,35 @@
                 return "<" + ((width * length * sensorBottom)  / 231).toFixed(2) + " gal";
             }
         }
-
+        var liquidVolume;
+        var radius = diameter/2;
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
-
+        var f_length = length - diameter;
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
+        if (absoluteLiquidHeight > radius){
+            var sphere_part = 4/6 * 3.14 * radius**3;
+            var cylinder_part = 3.14 * radius ** 2 * f_length;
+            var length = (absoluteLiquidHeight - radius - f_length);
+            var new_part = 1/3 * 3.14 * length**2 * (3 * radius - length);
+            liquidVolume = sphere_part + cylinder_part + new_part;
+        }
+        else if (absoluteLiquidHeight > radius+f_length){
+            var sphere_part = (4/3 * 3.14 * radius**3)/2;
+            var cylinder_part = 3.14 * radius ** 2 * (absoluteLiquidHeight - radius);
+            liquidVolume = sphere_part + cylinder_part;
+        }
+        else{
+            liquidVolume = 1/3 * 3.14 * absoluteLiquidHeight * absoluteLiquidHeight * (3 * radius - (diameter - absoluteLiquidHeight));
+        }
+        
+        var tank_volume  = Math.PI * radius**2 * (4/3 * radius + f_length);
 
-        var liquidVolume = (3.1415 * (diameter/2) * length) + (4/3 * 3.1415 * ((diameter/2) * (diameter/2) * (diameter/2)));
-
+        console.log(f_length);
+        console.log(radius);
+        console.log(absoluteLiquidHeight);
+        console.log(liquidVolume);
+        console.log(tank_volume);
+        change_svg_height(liquidVolume, tank_volume, "vertical_capsule");
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
@@ -1137,7 +1224,7 @@
         return (liquidVolume / 61.024).toFixed(2) + "L";
     }
 
-    function calculateSphericalVolumeGals(diameter, sensorBottom, sensorTop) {
+    function calculateSphericalVolumeGals(diameter, sensorBottom, sensorTop, liquidLevel) {
 
         if(liquidLevel == 0) {
             if(sensorBottom == 0) {
@@ -1147,13 +1234,13 @@
             }
         }
 
-
+        var radius = diameter/2;
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
-
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
 
-        var liquidVolume = (1.3333 * 3.1415 * (diameter/2) * (diameter/2) * (diameter/2));
-
+        var liquidVolume = Math.PI * radius * absoluteLiquidHeight**2  - 1/3 * Math.PI * absoluteLiquidHeight**3;
+        var tank_volume = 4/3 * Math.PI * radius**3;
+        change_svg_height(liquidVolume, tank_volume, "spherical");
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
@@ -1185,10 +1272,10 @@
     } else if('{{settings[1]}}' == "Rectangular Tank") {
         mts.selectedIndex = 2;
         document.getElementById("rectangular_width_field").value = {{settings[2]}};
-	      document.getElementById("rectangular_length_field").value = {{settings[3]}};
+	document.getElementById("rectangular_length_field").value = {{settings[3]}};
         document.getElementById("rectangular_height_field").value = {{settings[5]}};
         document.getElementById("cylindrical_height_field").value = 0;
-	      document.getElementById("vertical_oval_height_field").value = 0;
+	document.getElementById("vertical_oval_height_field").value = 0;
         document.getElementById("vertical_oval_length_field").value = 0;
         document.getElementById("vertical_capsule_length_field").value = 0;
         document.getElementById("liquid_volume").innerHTML = calculateRectangularVolumeGals({{settings[2]}}, {{settings[3]}}, {{settings[5]}}, {{settings[6]}}, {{settings[7]}}, liquidLevel);
