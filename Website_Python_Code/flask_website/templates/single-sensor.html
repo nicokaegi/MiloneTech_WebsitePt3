@@ -190,6 +190,7 @@
 
               data = []
               //%m-%d-%Y %H:%M:%S
+              mid_day = x_vals[Math.floor((x_vals.length)/2)]
               parser = d3.timeParse('%Y-%m-%d %H:%M:%S');
               for(var pos = 0; pos < x_vals.length; pos++){
 
@@ -197,7 +198,10 @@
 
               }
 
-              console.log(data);
+
+
+              //console.log( Math.max());
+              //console.log(data);
 
               // set the dimensions and margins of the graph
               var margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -298,20 +302,36 @@
               }
 
               var format = d3.timeFormat('%Y-%m-%d %H:%M:%S');
+              var unix_epoch = d3.timeFormat("%s");
+
 
               function mousemove() {
                 // recover coordinate we need selectedData.x
                 var x0 = x.invert(d3.mouse(this)[0]);
                 var i = bisect(data, x0, 1);
                 selectedData = data[i]
-                focus
-                  .attr("cx", x(selectedData.x))
-                  .attr("cy", y(selectedData.y))
-                focusText
-                  .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
-                  .attr("x", x(selectedData.x)+15)
-                  .attr("y", y(selectedData.y))
+                console.log(unix_epoch(parser(mid_day)) < unix_epoch(selectedData.x))
+
+                if(unix_epoch(parser(mid_day)) > unix_epoch(selectedData.x)){
+                    focus
+                      .attr("cx", x(selectedData.x))
+                      .attr("cy", y(selectedData.y))
+                    focusText
+                      .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
+                      .attr("x", x(selectedData.x)+15)
+                      .attr("y", y(selectedData.y))
+                  }
+                  else{
+                    focus
+                      .attr("cx", x(selectedData.x))
+                      .attr("cy", y(selectedData.y))
+                    focusText
+                      .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
+                      .attr("x", x(selectedData.x)-260)
+                      .attr("y", y(selectedData.y))
+                  }
                 }
+
               function mouseout() {
                 focus.style("opacity", 0)
                 focusText.style("opacity", 0)
