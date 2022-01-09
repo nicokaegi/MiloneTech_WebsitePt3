@@ -456,12 +456,23 @@ def get_sensor_date_range_route():
     # elements are the lower and upper time bounds of the sensor readings we wish to query, in
     # datetime format: 'YYYY-MM-DD HH:MM:SS'
     data = request.json
-    first_date = datetime.datetime.strptime(data['first_date'], "%b %d %Y %I:%M%p")
-    second_date = datetime.datetime.strptime(data['second_date'], "%b %d %Y %I:%M%p")
+    #first_date = datetime.datetime.strptime(data['first_date'], "%Y-%m-%d %H:%M:%S")
+    #second_date = datetime.datetime.strptime(data['second_date'], "%Y-%m-%d %H:%M:%S")
+    date1 = datetime.datetime.strptime(data['first_date'], "%Y-%m-%d %H:%M:%S")
+    date2 = datetime.datetime.strptime(data['second_date'], "%Y-%m-%d %H:%M:%S")
+
+    if(date1 > date2):
+        first_date = date1
+        second_date = date2
+
+    else:
+        first_date = date2
+        second_date = date1
+
     time_delta = first_date - second_date
     #start_date.replace(hour=0, minute=0, second=0)
     sensor_id = data["sensor_id"]
-
+    # %Y-%m-%d %H:%M:%S
     # Dynamically determine number of datapoints to display
 
     num_datapoints = 0
@@ -483,7 +494,9 @@ def get_sensor_date_range_route():
     data = db.sensor_readings.get_sensor_data_points_by_date(sensor_id, second_date, end_date=first_date, max_size=num_datapoints)
     # Then parse it into a new JSON, chart_data, for a more usable form in the chart on the clientside
 
+
     chart_data = {"x_vals": [], "y_vals": []}
+    print(date1, date2, len(chart_data['x_vals']), file=sys.stderr)
     for datapoint in data:
         chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
         chart_data["y_vals"].append(datapoint[1])
