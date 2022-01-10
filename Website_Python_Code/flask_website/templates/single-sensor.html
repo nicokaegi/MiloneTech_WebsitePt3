@@ -234,10 +234,35 @@
                 .style("text-anchor","middle")
                 .text("Date and Time");
 
+                max_val = d3.max(y_vals)
 
+                if(max_val < 90){
+
+                  max_val = max_val + 10
+
+                }
+                else{
+
+                  max_val = 100
+
+                }
+
+                min_val = d3.min(y_vals)
+
+                if(min_val > 10){
+
+                  min_val = min_val - 10
+
+                }
+                else{
+
+                  min_val = 0
+
+                }
+                
               // Add Y axis
               var y = d3.scaleLinear()
-                .domain([0, 100 ])
+                .domain([min_val, max_val ])
                 //.domain([ 0 , d3.max(data)])      Supposed to scale y axis with data
                 .range([ height, 0 ]);
               svg.append("g")
