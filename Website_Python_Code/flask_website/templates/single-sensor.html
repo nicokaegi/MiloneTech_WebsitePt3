@@ -7,7 +7,7 @@
 <!--- Welcome to the most complex html document in the website --->
 
 <script>
-    var linechart
+  //  var linechart
     var chart_mode = 0  //Values: 0 = live, anything else = how many days are being displayed
 
     var liquidLevel = {{data.y_vals | last}}; //stores current liquid level
@@ -133,23 +133,18 @@
             async: false,
             success: function(response) {
                 console.log(response);
-                barchart.data.labels = response["x_vals"];
-                barchart.data.datasets.forEach((dataset) => {
-                    dataset.data = response["y_vals"];
-                });
-                barchart.update()
+                document.getElementById("chart").innerHTML = "";
+                build_chart(response['x_vals'], response['y_vals'])
 
             }
         });
     }
 
     function customDate(){
-        var date1 = prompt('Ending Date (Eg. Oct 1 2021 1:00PM)');
-        var date2 = prompt('Starting Date (Eg. Nov 1 2021 10:00AM)');
+        var date1 = prompt('first date (Eg. Oct 1 2021 1:00PM)');
+        var date2 = prompt('second date (Eg. Nov 1 2021 10:00AM)');
         /* switching dates, going out of scope, when user puts in invalid date */
         var curDate = new Date();
-        //var daysFromDate1 = curDate.getTime() - date1.getTime();
-        //var daysFromDate2 = curDate.getTime() - date2.getTime();
         gate_date_range(date1, date2);
 
     }
@@ -166,16 +161,16 @@
             dataType: 'json',
             async: false,
             success: function(response) {
-                linechart.data.labels = response["x_vals"];
-                linechart.data.datasets.forEach((dataset) => {
-                    dataset.data = response["y_vals"];
-                });
-                linechart.update()
+
+                console.log( response["x_vals"]);
+                console.log( response["y_vals"]);
+
             }
         });
     }
 
 </script>
+
 
 <!--- Row containing the graph, and the view+measurement interfaces --->
 <div class="form-group form-inline" style="width:100%">
@@ -186,9 +181,299 @@
             <h1 style="text-align:center">Sensor {{sensorID}}</h1>
 
             <!--- Chart canvas --->
-            <canvas id="chart"></canvas>
+            <div id="chart"></div>
 
-            <!--- Script initializing the chart --->
+            <!-- Script initialiing D3 chart-->
+            <script>
+
+            function build_chart(x_vals, y_vals){
+
+              data = []
+              //%m-%d-%Y %H:%M:%S
+              mid_day = x_vals[Math.floor((x_vals.length)/2)]
+              parser = d3.timeParse('%Y-%m-%d %H:%M:%S');
+              for(var pos = 0; pos < x_vals.length; pos++){
+
+                data.push({x : parser(x_vals[pos]), y : y_vals[pos]});
+
+              }
+
+
+
+              //console.log( Math.max());
+              //console.log(data);
+
+              // set the dimensions and margins of the graph
+              var margin = {top: 10, right: 30, bottom: 30, left: 60},
+                  width = 460 - margin.left - margin.right,
+                  height = 400 - margin.top - margin.bottom;
+
+              // append the svg object to the body of the page
+              var svg = d3.select("#chart")
+                .append("svg")
+                  .attr("width", width + margin.left + margin.right)
+                  .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                  .attr("transform",
+                        "translate(" + margin.left + "," + margin.top + ")");
+
+              //Read the data
+
+
+
+              // Add X axis --> it is a date format
+              var x = d3.scaleTime()
+                .domain([data[0].x, data[data.length - 1].x])
+                .range([ 0, width ]);
+              svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x))
+              // X-axis label
+              svg.append("text")
+                .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+                .style("text-anchor","middle")
+                .text("Date and Time");
+
+                max_val = d3.max(y_vals)
+
+                if(max_val < 90){
+
+                  max_val = max_val + 10
+
+                }
+                else{
+
+                  max_val = 100
+
+                }
+
+                min_val = d3.min(y_vals)
+
+                if(min_val > 10){
+
+                  min_val = min_val - 10
+
+                }
+                else{
+
+                  min_val = 0
+
+                }
+
+              // Add Y axis
+              var y = d3.scaleLinear()
+                .domain([min_val, max_val ])
+                //.domain([ 0 , d3.max(data)])      Supposed to scale y axis with data
+                .range([ height, 0 ]);
+              svg.append("g")
+                .call(d3.axisLeft(y))
+              // Y-axis label
+              svg.append("text")
+                .attr("transform","rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor","middle")
+                .text("Liquid Level %");
+
+              // This allows to find the closest X index of the mouse:
+              var bisect = d3.bisector(function(d) { return d.x; }).left;
+
+              // Create the circle that travels along the curve of chart
+              var focus = svg
+                .append('g')
+                .append('circle')
+                  .style("fill", "none")
+                  .attr("stroke", "black")
+                  .attr('r', 4.5)
+                  .style("opacity", 0)
+
+              // Create the text that travels along the curve of chart
+              var focusText = svg
+                .append('g')
+                .append('text')
+                  .style("opacity", 0)
+                  .attr("text-anchor", "left")
+                  .attr("alignment-baseline", "middle")
+
+              // Add the line
+              svg
+                .append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                  .x(function(d) { return x(d.x) })
+                  .y(function(d) { return y(d.y) })
+                  )
+
+              // Create a rect on top of the svg area: this rectangle recovers mouse position
+              svg
+                .append('rect')
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .attr('width', width)
+                .attr('height', height)
+                .on('mouseover', mouseover)
+                .on('mousemove', mousemove)
+                .on('mouseout', mouseout);
+
+
+              // What happens when the mouse move -> show the annotations at the right positions.
+              function mouseover() {
+                focus.style("opacity", 1)
+                focusText.style("opacity",1)
+              }
+
+              var format = d3.timeFormat('%Y-%m-%d %H:%M:%S');
+              var unix_epoch = d3.timeFormat("%s");
+
+
+              function mousemove() {
+                // recover coordinate we need selectedData.x
+                var x0 = x.invert(d3.mouse(this)[0]);
+                var i = bisect(data, x0, 1);
+                selectedData = data[i]
+                console.log(unix_epoch(parser(mid_day)) < unix_epoch(selectedData.x))
+
+                if(unix_epoch(parser(mid_day)) > unix_epoch(selectedData.x)){
+                    focus
+                      .attr("cx", x(selectedData.x))
+                      .attr("cy", y(selectedData.y))
+                    focusText
+                      .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
+                      .attr("x", x(selectedData.x)+15)
+                      .attr("y", y(selectedData.y))
+                  }
+                  else{
+                    focus
+                      .attr("cx", x(selectedData.x))
+                      .attr("cy", y(selectedData.y))
+                    focusText
+                      .html("time: " + format(selectedData.x) + "  -  " + "level: " + selectedData.y + "%")
+                      .attr("x", x(selectedData.x)-260)
+                      .attr("y", y(selectedData.y))
+                  }
+                }
+
+              function mouseout() {
+                focus.style("opacity", 0)
+                focusText.style("opacity", 0)
+              }
+
+           }
+
+           x_vals = []
+           {% for val in data.x_vals %}
+             x_vals.push("{{ val }}");
+
+           {% endfor %}
+
+           y_vals = []
+           {% for val in data.y_vals %}
+             y_vals.push({{ val }});
+
+           {% endfor %}
+
+           console.log(x_vals);
+           console.log(y_vals);
+
+           build_chart(x_vals, y_vals)
+
+            /*
+            d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_IC.csv",function(data) {
+
+              // Add X axis --> it is a date format
+              var x = d3.scaleLinear()
+                .domain([1,100])
+                .range([ 0, width ]);
+              svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+              // Add Y axis
+              var y = d3.scaleLinear()
+                .domain([0, 13])
+                .range([ height, 0 ]);
+              svg.append("g")
+                .call(d3.axisLeft(y));
+
+              // This allows to find the closest X index of the mouse:
+              var bisect = d3.bisector(function(d) { return d.x; }).left;
+
+              // Create the circle that travels along the curve of chart
+              var focus = svg
+                .append('g')
+                .append('circle')
+                  .style("fill", "none")
+                  .attr("stroke", "black")
+                  .attr('r', 8.5)
+                  .style("opacity", 0)
+
+              // Create the text that travels along the curve of chart
+              var focusText = svg
+                .append('g')
+                .append('text')
+                  .style("opacity", 0)
+                  .attr("text-anchor", "left")
+                  .attr("alignment-baseline", "middle")
+
+              // Add the line
+              svg
+                .append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                  .x(function(d) { return x(d.x) })
+                  .y(function(d) { return y(d.y) })
+                  )
+
+              // Create a rect on top of the svg area: this rectangle recovers mouse position
+              svg
+                .append('rect')
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .attr('width', width)
+                .attr('height', height)
+                .on('mouseover', mouseover)
+                .on('mousemove', mousemove)
+                .on('mouseout', mouseout);
+
+
+              // What happens when the mouse move -> show the annotations at the right positions.
+              function mouseover() {
+                focus.style("opacity", 1)
+                focusText.style("opacity",1)
+              }
+
+              function mousemove() {
+                // recover coordinate we need
+                var x0 = x.invert(d3.mouse(this)[0]);
+                var i = bisect(data, x0, 1);
+                selectedData = data[i]
+                focus
+                  .attr("cx", x(selectedData.x))
+                  .attr("cy", y(selectedData.y))
+                focusText
+                  .html("x:" + selectedData.x + "  -  " + "y:" + selectedData.y)
+                  .attr("x", x(selectedData.x)+15)
+                  .attr("y", y(selectedData.y))
+                }
+              function mouseout() {
+                focus.style("opacity", 0)
+                focusText.style("opacity", 0)
+              }
+
+            })
+            */
+
+            </script>
+
+            <!--- Script initializing the Chart.js chart --->
+            <!--
             <script>
                 var myChart = document.getElementById("chart").getContext('2d');
 
@@ -220,6 +505,25 @@
                         }]
                     },
                     options:{
+
+                        //For when chartjs zoom plugin works
+                        plugins:{
+                          zoom:{
+                            pan:{
+                              enabled: true,
+                              mode: 'x'
+                            },
+                            zoom:{
+                              wheel: {
+                                enabled: true
+                              },
+                              pinch:{
+                                enabled: true
+                              },
+                              mode: 'x'
+                            }
+                          }
+                        },
 
                         legend:{
                             display:true,
@@ -265,6 +569,7 @@
             });
 
             </script>
+            -->
         </div>
 
 
@@ -385,6 +690,7 @@
                               </svg>
                        </body> 
                         <img src="/static/rectangle.jpg" style="position:absolute; right:0%;" width="145" height="145">
+
                     </div>
                 </div>
             </div>
@@ -582,7 +888,6 @@
         <div class="form-group form-inline">
             <div style="width:30; margin-right:5%;">
                 <h4>Current Liquid Volume: <b id="liquid_volume">--</b></h4>
-                <button onclick="get_point_elevations([39.70179236136183, -75.12333012077949])">Test</button>
             </div>
             <div style="width:30">
                 <h4>Current Liquid Height: <b id="liquid_height">--</b></h4>
@@ -595,6 +900,7 @@
 
 <!--- Measurement Settings Functions --->
 <script>
+
     //Declare global variable measurementConfigMenus, that correspond with the divs for each of their respective
     //  measurement field groups
     var measurementConfigMenus = [document.getElementById("none_parameters_menu"),
@@ -605,7 +911,7 @@
                                 document.getElementById("vertical_capsule_parameters_menu"),
                                 document.getElementById("spherical_parameters_menu")];
 
-    //Changes fill level of the svg
+
     //uses volume calculations from this link: https://www.calculatorsoup.com/calculators/construction/tank.php
     //each svg must have className = water and shape attribute that will be passed in for identifying the correct SVG to change.
     //For future development, only one svg is needed becaused it is a progress bar. Initializing it in one place and calling it when shown would be better.
@@ -687,6 +993,7 @@
                 alert("Please enter numeric input in all fields: rectangular specifications");
                 return;
             }
+
         //Replace cylindrical values if necessary
         } else if(mts.selectedIndex == 3) { //CYLINDRICAL
             diameter = parseInt(document.getElementById("cylindrical_diameter_field").value);
@@ -864,7 +1171,7 @@
             var theta = 2*Math.acos(m/radius);
             liquidVolume = 1/2 * radius**2 * (theta - Math.sin(theta))* length;
         }
-        
+
         change_svg_height(liquidVolume, tank_volume, "vertical_oval" );
         return (liquidVolume / 231).toFixed(2) + " gal";
 
@@ -915,7 +1222,7 @@
         else{
             liquidVolume = 1/3 * 3.14 * absoluteLiquidHeight * absoluteLiquidHeight * (3 * radius - (diameter - absoluteLiquidHeight));
         }
-        
+
         var tank_volume  = Math.PI * radius**2 * (4/3 * radius + f_length);
 
         console.log(f_length);

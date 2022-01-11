@@ -42,6 +42,14 @@
                             {{ form.name(class="form-control form-control-lg") }}
                         {% endif %}
                     </div>
+                    <div>
+                        {{form.phone_number.label(class="form-control-label") }}
+                        {% if form.phone_number.errors %}
+                        {{form.phone_number(class="form-control form-control-lg is-invalid", placeholder="Please enter a valid phone-number")}}
+                        {%else %}
+                        {{form.phone_number(class="form-control form-control-lg", placeholder="Ex: 123-456-7890")}}
+                        {% endif %}
+                    </div>
 
                     <div class="form-group">
                         {{ form.password.label(class="form-control-label") }}

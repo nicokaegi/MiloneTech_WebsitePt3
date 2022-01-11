@@ -1,7 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, FloatField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.fields import IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
 import flask_website.dbAPI.app as db
+import re
+import sys
 
 #Registration form
 class RegistrationForm(FlaskForm):
@@ -13,6 +16,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    phone_number = StringField('Phone Number', validators=[Regexp("(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d"), Length(12,12)])
     submit = SubmitField('Sign Up')
 
 #Login form
@@ -72,6 +76,13 @@ class RequestResetForm(FlaskForm):
         print(user_email)
         if not user_email:
             raise ValidationError('That Email doesnt Exist. You must Regsiter First')
+
+class ProfileForm(FlaskForm):
+    first_name= StringField('Fast Name')
+    last_name = StringField('Last Name')
+    email = StringField('Email')
+    phone = StringField('Phone', validators=[Regexp("(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d")])
+    save = SubmitField('Save')
 
 class ResetPasswordForm(FlaskForm):
 

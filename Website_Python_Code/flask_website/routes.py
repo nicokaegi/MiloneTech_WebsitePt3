@@ -12,13 +12,14 @@ from flask_website.dbAPI.sensors import add_sensor, add_sensor_location, add_sen
 
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
-    RequestResetForm, ResetPasswordForm
+    RequestResetForm, ResetPasswordForm, ProfileForm
 from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
 import datetime
 import json
-
+import copy
+import re
 
 from pprint import pprint
 
@@ -303,7 +304,7 @@ def provide_group_of_sensors():
 
 @app.route('/admin-sensor')
 @login_required
-def admin_initial_page(): 
+def admin_initial_page():
     if current_user.status==5:
         return render_template('admin_sensor_select.html', sensors=db.sensors.get_every_sensor())
     else:
@@ -455,12 +456,23 @@ def get_sensor_date_range_route():
     # elements are the lower and upper time bounds of the sensor readings we wish to query, in
     # datetime format: 'YYYY-MM-DD HH:MM:SS'
     data = request.json
-    first_date = datetime.datetime.strptime(data['first_date'], "%b %d %Y %I:%M%p")
-    second_date = datetime.datetime.strptime(data['second_date'], "%b %d %Y %I:%M%p")
+    #first_date = datetime.datetime.strptime(data['first_date'], "%Y-%m-%d %H:%M:%S")
+    #second_date = datetime.datetime.strptime(data['second_date'], "%Y-%m-%d %H:%M:%S")
+    date1 = datetime.datetime.strptime(data['first_date'], "%Y-%m-%d %H:%M:%S")
+    date2 = datetime.datetime.strptime(data['second_date'], "%Y-%m-%d %H:%M:%S")
+
+    if(date1 > date2):
+        first_date = date1
+        second_date = date2
+
+    else:
+        first_date = date2
+        second_date = date1
+
     time_delta = first_date - second_date
     #start_date.replace(hour=0, minute=0, second=0)
     sensor_id = data["sensor_id"]
-
+    # %Y-%m-%d %H:%M:%S
     # Dynamically determine number of datapoints to display
 
     num_datapoints = 0
@@ -482,7 +494,9 @@ def get_sensor_date_range_route():
     data = db.sensor_readings.get_sensor_data_points_by_date(sensor_id, second_date, end_date=first_date, max_size=num_datapoints)
     # Then parse it into a new JSON, chart_data, for a more usable form in the chart on the clientside
 
+
     chart_data = {"x_vals": [], "y_vals": []}
+    print(date1, date2, len(chart_data['x_vals']), file=sys.stderr)
     for datapoint in data:
         chart_data['x_vals'].append(str(datapoint[0] - datetime.timedelta(hours=5)))
         chart_data["y_vals"].append(datapoint[1])
@@ -518,10 +532,36 @@ def provide_group_areas():
     print(groups_areas, file=sys.stderr)
     return groups_areas
 
-@app.route("/profile")
+@app.route("/profile",  methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('page-user.html')
+    form = ProfileForm()
+    fullname = db.accounts.get_name_by_id(current_user.id)
+    first_name = fullname[0]
+    last_name = fullname[1]
+    email = current_user.email
+    phone = db.accounts.get_phone_by_id(current_user.id)
+    if form.is_submitted() and form.validate():
+        phone_valid = True if re.search(r"(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d", form.phone.data) else False
+        #print(form.first_name.data, fullname[0])
+        if form.first_name.data != fullname[0] and form.first_name.data != None:
+            db.accounts.set_account_fname(current_user.id, form.first_name.data)
+            first_name = form.first_name.data
+        if form.last_name.data != fullname[1] and form.last_name.data != None:
+            db.accounts.set_account_lname(current_user.id, form.last_name.data)
+            last_name = form.last_name.data
+        if form.email.data != email and form.email.data != None:
+            db.accounts.set_account_email(current_user.id, form.email.data)
+            email = form.email.data
+        if form.phone.data != phone and phone_valid and form.phone.data != None:
+            db.accounts.set_account_phone(current_user.id, form.phone.data)
+            phone = form.phone.data
+
+    form.first_name.data = first_name
+    form.last_name.data = last_name
+    form.email.data = email
+    form.phone.data = phone
+    return render_template('page-user.html', form=form)
 
 
 @app.route("/notifications")
@@ -564,8 +604,10 @@ def register():
         fullname = form.name.data.split()
         firstname = fullname[0]
         lastname = fullname[-1]
-
-        db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
+        if not form.phone_number.data == '':
+            db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass, form.phone_number.data)
+        else: 
+            db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)
         token = User.get_confirmation_token(user_obj)
@@ -805,7 +847,7 @@ def settings():
             elevation = form.sensor_elevation.data
             add_sensor(name)
             add_sensor_to_account(name, current_user.email)
-            add_sensor_location(name, latitude,longitude,elevation)            
+            add_sensor_location(name, latitude,longitude,elevation)
 
     return render_template('settings.html', title='Settings', form=form, account_info=current_user.user_data,
                            alerts=alerts)

@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Settings{% endblock %}
+{% block title %}Settings{% endblock %} 
+
 
 {% block content %}
 
@@ -199,67 +200,24 @@
                         </div>
                 </div>
 
-				<h4 class>Change sensor group area</h4>
-				<div class="row">
-		                        <div class="col-5 mr-0 ml-0">
-		                        	{{ form.sensorGroup_2(class="btn btn-outline-success btn-lg") }}
-					</div>
-					<div class="col-3 mr-0 ml-0">
-															bottom corner coordinate
-		                        	{{ form.newBottomLat(class="form-control form-control-lg", placeholder=" enter latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter latitude'") }}
-															{{ form.newBottomLong(class="form-control form-control-lg", placeholder=" enter longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter longitude'") }}
-
-															top corner coordinate
-															{{ form.newTopLat(class="form-control form-control-lg", placeholder=" enter latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter latitude'") }}
-															{{ form.newTopLong(class="form-control form-control-lg", placeholder=" enter longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'enter longitude'") }}
-
-	                        </div>
-	                        <div class="col-1">
-	                                {{ form.modifyArea(class="btn btn-outline-warning btn-lg", style="text-align: center") }}
-	                        </div>
-		     </div>
-
 		</div>
 
 			<div class="content-section">
 					<h4>Delete Alert</h4>
 					<div class="row">
-					<div class="col-6">
-						{{ form.alerts(class="btn btn-outline-success btn-lg") }}
+					<div class="col-6" style="width: 800px;min-width: 700px; max-width: 1000px;">
+						<div>{{ form.alerts(class="btn btn-outline-success btn-lg btn-percent-lg") }}</div>
+						<div style="padding-left: 330px;">{{ form.removeAlert(class="btn btn-outline-danger btn-lg btn-percent-sm") }}</div>
 					</div>
 
 
 
-                        <div class="col-2">
-                                {{ form.removeAlert(class="btn btn-outline-danger btn-lg") }}
-                        </div>
+                        
                 	</div>
 
                 </div>
 
 		</div>
-
-	</div>
-
-	<div class="content-section">
-			<h4>Add Sensor</h4>
-			<div class="row">
-				<div class="col-2">
-					{{ form.sensor_add_value(class="form-control form-control-lg", placeholder=" Serial Number", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Serial Number'") }}
-					{{ form.sensor_add_latitude(class="form-control form-control-lg", placeholder=" Latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Latitude'") }}
-					{{ form.sensor_add_longitude(class="form-control form-control-lg", placeholder=" Longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Longitude'") }}
-				</div>
-				<div class="col-2">
-				{{ form.sensor_elevation(class="form-control form-control-lg", placeholder=" Elevation", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Elevation'") }}
-				</div>
-				<div class="col-2">
-					{{ form.add_sensor(class="btn btn-outline-success btn-lg") }}
-				</div>
-			</div>
-
-		</div>
-
-	</div>
 
 
 
@@ -268,3 +226,5 @@
     </div>
 {% endblock %}
 {% endblock %}
+
+
