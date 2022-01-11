@@ -9,6 +9,6 @@ socket = SocketIO(app, cors_allowed_origins="*")
 if __name__ == '__main__':
     print("getcwd():", os.getcwd())
     # and replace this
-    socket.run(app,  debug=True)
+    socket.run(app)
     # with this:
     # app.run()
