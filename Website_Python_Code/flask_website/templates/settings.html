@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}Settings{% endblock %} 
+{% block title %}Settings{% endblock %}
 
 
 {% block content %}
@@ -121,7 +121,7 @@
 	<h3>Notification Settings</h3>
         <form method="POST" action="">
         {{ form.hidden_tag() }}
-	    {{ form.csrf_token }}
+	    	{{ form.csrf_token }}
 			<div class="content-section">
             	<fieldset class="form-group"></fieldset>
             	<table id="trigger" style="width:100%">
@@ -212,7 +212,7 @@
 
 
 
-                        
+
                 	</div>
 
                 </div>
@@ -220,11 +220,26 @@
 		</div>
 
 
+			<div class="content-section">
+					<h4>Add Sensor</h4>
+					<div class="row">
+						<div class="col-2">
+							{{ form.sensor_add_value(class="form-control form-control-lg", placeholder=" Serial Number", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Serial Number'") }}
+							{{ form.sensor_add_latitude(class="form-control form-control-lg", placeholder=" Latitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Latitude'") }}
+							{{ form.sensor_add_longitude(class="form-control form-control-lg", placeholder=" Longitude", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Longitude'") }}
+						</div>
+						<div class="col-2">
+						{{ form.sensor_elevation(class="form-control form-control-lg", placeholder=" Elevation", style="text-align: center", onfocus="this.placeholder = ''", onblur="this.placeholder = 'Elevation'") }}
+						</div>
+						<div class="col-2">
+							{{ form.add_sensor(class="btn btn-outline-success btn-lg") }}
+						</div>
+					</div>
 
-	    </fieldset>
+			</div>
+
+
         </form>
     </div>
 {% endblock %}
 {% endblock %}
-
-
