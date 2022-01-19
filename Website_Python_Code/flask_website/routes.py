@@ -13,6 +13,8 @@ from flask_website.dbAPI.sensors import add_sensor, add_sensor_location, add_sen
 import flask_website.emailer as email
 from flask_website.forms import RegistrationForm, LoginForm, SettingsForm, AccountForm, SensorAccountForm, \
     RequestResetForm, ResetPasswordForm, ProfileForm
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
+
 from flask_website import app, bcrypt, db, login_manager, admin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import login_user, current_user, logout_user, login_required, UserMixin
@@ -47,17 +49,23 @@ class accountsView(ModelView):
 
     def is_accessible(self):
         try:
-            db.db.session.flush()
             db.db.session.commit()
         except:
             db.db.session.rollback()
         return current_user.status == 5
+
+
+    form_args = dict(
+        phoneNumber=dict(
+            validators=[Regexp("^((\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d)$")]
+        ),
+    )
+
     column_labels = dict(lname = 'Last Name', fname= 'First Name', phoneNumber='Phone Number', accountStatus = 'Account Status', accountEmail ='Account Email' )
 
 class alertsView(ModelView):
     def is_accessible(self):
         try:
-            db.db.session.flush()
             db.db.session.commit()
         except:
             db.db.session.rollback()
@@ -67,7 +75,6 @@ class alertsView(ModelView):
 class sensorsView(ModelView):
     def is_accessible(self):
         try:
-            db.db.session.flush()
             db.db.session.commit()
         except:
             db.db.session.rollback()
@@ -606,7 +613,7 @@ def register():
         lastname = fullname[-1]
         if not form.phone_number.data == '':
             db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass, form.phone_number.data)
-        else: 
+        else:
             db.accounts.create_account(form.email.data, firstname, lastname, hashed_pass)
         user = db.accounts.get_id_by_email(form.email.data)
         user_obj = User(user)

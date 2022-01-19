@@ -16,7 +16,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
-    phone_number = StringField('Phone Number', validators=[Regexp("(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d"), Length(12,12)])
+    phone_number = StringField('Phone Number', validators=[Regexp("^((\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d)$")])
     submit = SubmitField('Sign Up')
 
 #Login form
