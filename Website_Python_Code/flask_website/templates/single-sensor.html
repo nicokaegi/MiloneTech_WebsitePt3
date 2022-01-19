@@ -928,7 +928,7 @@
         console.log(total_height)
         tank_bottom_y = 150;
         tank_height = parseInt(document.getElementById('tank').getAttribute('height'));
-        new_height = tank_bottom_y - (liquid_height/total_height * tank_height)
+        new_height = tank_height - (liquid_height/total_height * tank_height)
         var elements = document.getElementsByClassName("water");
         for (i = 0; i < elements.length; i++){
             if (elements[i].getAttribute('shape') == shape){
@@ -1123,7 +1123,7 @@
         var sensorRelativeLiquidHeight = (sensorTop - sensorBottom) * (liquidLevel / 100);
         var absoluteLiquidHeight = sensorBottom + sensorRelativeLiquidHeight;
         var liquidVolume = 3.1415 * (diameter/2) * (diameter/2) * absoluteLiquidHeight;
-        change_svg_height(liquidVolume, 3.1415 * (diameter/2) * (diameter/2) * height,  "cylinder");
+        change_svg_height(liquidVolume, 3.1415 * (diameter/2) **2 * height,  "cylinder");
         return (liquidVolume / 231).toFixed(2) + " gal";
     }
 
@@ -1169,7 +1169,7 @@
             var rectangular_portion = length*width*(absoluteLiquidHeight - radius);
             var m = absoluteLiquidHeight - (height-radius);
             var theta = 2*Math.acos(m/radius);
-            liquidVolume = 1/2 * radius**2 * (theta - Math.sin(theta))* length;
+            liquidVolume = 1/2 * radius**2 * (theta - Math.sin(theta))* length + rectangular_portion + semicircle_volume;
         }
 
         change_svg_height(liquidVolume, tank_volume, "vertical_oval" );
