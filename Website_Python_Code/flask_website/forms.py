@@ -80,7 +80,7 @@ class RequestResetForm(FlaskForm):
 class ProfileForm(FlaskForm):
     first_name= StringField('Fast Name')
     last_name = StringField('Last Name')
-    email = StringField('Email')
+    email = StringField('Email', validators=[Email()])
     phone = StringField('Phone', validators=[Regexp("(\+\d{1,3}-)?\d\d\d-\d\d\d-\d\d\d\d")])
     save = SubmitField('Save')
 
