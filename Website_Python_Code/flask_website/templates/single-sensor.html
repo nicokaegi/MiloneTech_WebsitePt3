@@ -379,6 +379,13 @@
            console.log(x_vals);
            console.log(y_vals);
 
+           if(x_vals.length == 0){
+
+             x_vals.push("2021-11-29 08:31:46");
+             y_vals.push(0);
+
+           }
+
            build_chart(x_vals, y_vals)
 
             /*
@@ -688,7 +695,7 @@
                                   <title>Tank</title>
                                 </rect>
                               </svg>
-                       </body> 
+                       </body>
                         <img src="/static/rectangle.jpg" style="position:absolute; right:0%;" width="145" height="145">
 
                     </div>
